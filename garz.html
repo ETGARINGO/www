@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM_CORE_TERMINAL</title>
+    <style>
+        :root {
+            --bg-color: #012456; 
+            --text-color: #cccccc;
+            --accent-color: #00ffff;
+            --header-bg: #06316e;
+            --border-color: #1760c1;
+            --terminal-green: #00ff41;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background-color: #000;
+            color: var(--text-color);
+            font-family: 'Consolas', 'Lucida Console', monospace;
+            overflow: hidden;
+        }
+
+        /* Accelerated Boot Screen */
+        #boot-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            color: var(--terminal-green);
+            font-size: 12px;
+            overflow-y: hidden;
+            text-shadow: 0 0 3px var(--terminal-green);
+        }
+
+        #main-system {
+            opacity: 0;
+            display: none; /* Changed from just opacity to prevent interaction during boot */
+            height: 100%;
+            flex-direction: column;
+            background-color: var(--bg-color);
+        }
+
+        .system-bar {
+            background-color: var(--header-bg);
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        .btn-fullview {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 2px 8px;
+            cursor: pointer;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .viewport-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            background: #000;
+            position: relative;
+        }
+
+        iframe {
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .status-footer {
+            background: var(--header-bg);
+            height: 20px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            border-top: 1px solid var(--border-color);
+            color: var(--accent-color);
+        }
+
+        .crt-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+            z-index: 1500;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: var(--terminal-green);
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Rapid Fade Animation */
+        .glitch-in {
+            animation: glitchEffect 0.3s ease-out forwards;
+        }
+
+        @keyframes glitchEffect {
+            0% { opacity: 0; transform: scale(1.05); filter: brightness(2); }
+            100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="boot-screen">
+        <div id="boot-logs"></div>
+        <div><span class="cursor"></span></div>
+    </div>
+
+    <div id="main-system">
+        <div class="crt-overlay"></div>
+        <div class="system-bar">
+            <div class="title">PS C:\WINDOWS\system32\cyber_dns.exe</div>
+            <div class="controls">
+                <button class="btn-fullview" onclick="toggleFullScreen()">[ FULL VIEW ]</button>
+                <span style="color: #fff; margin-left: 10px;">_ □ X</span>
+            </div>
+        </div>
+
+        <div class="viewport-container">
+            <iframe id="target-frame" src="https://script.google.com/macros/s/AKfycbw8BaKGZX2M-pCz6JxsAmeWLASazhOVkovKbIggVhjYSN1eJyqW0wvSY00jo44aBFqljg/exec" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+            <div class="status-footer">
+                SYSTEM STATUS: ONLINE | ENCRYPTION: AES-256 | DNS_ENTRANCE: ACTIVE | <span id="clock"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const logs = [
+            "> INITIALIZING BOOT SEQUENCE...",
+            "> LOADING KERNEL MODULES...",
+            "> CHECKING MEMORY... 64GB OK",
+            "> ESTABLISHING SECURE PROTOCOL...",
+            "> BYPASSING FIREWALL... DONE",
+            "> MOUNTING VIRTUAL_DRIVE: /NETWORK/SIMULATION",
+            "> DECRYPTING INTERFACE...",
+            "> ACCESS GRANTED.",
+            "> EXECUTING COMMAND: slmgr /xpr",
+            "> EXECUTING COMMAND: slmgr /dlv",
+            "> EXECUTING COMMAND: slmgr /ato",
+            "> EXECUTING COMMAND: slmgr /ipk XXXXX-XXXXX-XXXXX-XXXXX-XXXXX",
+            "> EXECUTING COMMAND: systeminfo",
+            "> EXECUTING COMMAND: ipconfig",
+            "> EXECUTING COMMAND: ipconfig /flushdns",
+            "> EXECUTING COMMAND: ipconfig /release && ipconfig /renew",
+            "> EXECUTING COMMAND: ping google.com",
+            "> EXECUTING COMMAND: tracert google.com",
+            "> EXECUTING COMMAND: netsh winsock reset",
+            "> EXECUTING COMMAND: netcfg -d",
+            "> EXECUTING COMMAND: chkdsk /f",
+            "> EXECUTING COMMAND: sfc /scannow",
+            "> EXECUTING COMMAND: DISM /Online /Cleanup-Image /RestoreHealth",
+            "> EXECUTING COMMAND: taskmgr",
+            "> EXECUTING COMMAND: devmgmt.msc",
+            "> EXECUTING COMMAND: diskmgmt.msc",
+            "> EXECUTING COMMAND: services.msc",
+            "> EXECUTING COMMAND: regedit",
+            "> EXECUTING COMMAND: gpedit.msc",
+            "> EXECUTING COMMAND: lusrmgr.msc",
+            "> EXECUTING COMMAND: msconfig",
+            "> EXECUTING COMMAND: eventvwr",
+            "> EXECUTING COMMAND: resmon",
+            "> EXECUTING COMMAND: perfmon",
+            "> EXECUTING COMMAND: control",
+            "> EXECUTING COMMAND: appwiz.cpl",
+            "> EXECUTING COMMAND: shell:startup",
+            "> EXECUTING COMMAND: %temp%",
+            "> EXECUTING COMMAND: del /q/f/s %temp%\\*",
+            "> EXECUTING COMMAND: powercfg /batteryreport",
+            "> EXECUTING COMMAND: powercfg /sleepstudy",
+            "> EXECUTING COMMAND: powercfg /energy",
+            "> EXECUTING COMMAND: shutdown /s /t 0",
+            "> EXECUTING COMMAND: shutdown /r /t 0",
+            "> EXECUTING COMMAND: shutdown /r /f /t 0",
+            "> EXECUTING COMMAND: bcdedit /set {current} safeboot minimal",
+            "> EXECUTING COMMAND: driverquery",
+            "> EXECUTING COMMAND: winget upgrade --all",
+            "> EXECUTING COMMAND: winget upgrade --all --silent --accept-source-agreements --accept-package-agreements",
+            "> EXECUTING COMMAND: winget list",
+            "> EXECUTING COMMAND: winget uninstall AppName",
+            "> EXECUTING COMMAND: net user administrator /active:yes",
+            "> EXECUTING COMMAND: net user username password /add",
+            "> EXECUTING COMMAND: net localgroup administrators username /add",
+            "> EXECUTING COMMAND: tasklist",
+            "> EXECUTING COMMAND: taskkill /f /im app.exe",
+            "> EXECUTING COMMAND: start ms-settings:windowsupdate",
+            "> EXECUTING COMMAND: netsh wlan show networks",
+            "> EXECUTING COMMAND: netsh wlan show profile name=\"WiFiName\" key=clear",
+            "> EXECUTING COMMAND: netstat -ano",
+            "> EXECUTING COMMAND: net share",
+            "> EXECUTING COMMAND: mstsc",
+            "> EXECUTING COMMAND: windowsdefender:",
+            "> EXECUTING COMMAND: MpCmdRun.exe -Scan -ScanType 1",
+            "> EXECUTING COMMAND: MpCmdRun.exe -Scan -ScanType 2",
+            "> EXECUTING COMMAND: mdsched.exe",
+            "> EXECUTING COMMAND: start ms-settings:bluetooth",
+            "> EXECUTING COMMAND: mmsys.cpl",
+            "> EXECUTING COMMAND: timedate.cpl",
+            "> EXECUTING COMMAND: firewall.cpl",
+            "> EXECUTING COMMAND: netplwiz",
+            "> EXECUTING COMMAND: start ms-settings:clipboard",
+            "> EXECUTING COMMAND: start ms-settings:camera",
+            "> EXECUTING COMMAND: start ms-settings:storagesense",
+            "> EXECUTING COMMAND: start ms-settings:recovery",
+            "> EXECUTING COMMAND: optionalfeatures",
+            "> SYSTEM READY FOR DEPLOYMENT."
+        ];
+
+        const logContainer = document.getElementById('boot-logs');
+        const bootScreen = document.getElementById('boot-screen');
+        const mainSystem = document.getElementById('main-system');
+
+        async function runBootSequence() {
+            // Display first few slowly
+            for (let i = 0; i < 5; i++) {
+                addLog(logs[i]);
+                await sleep(150);
+            }
+            // Burst the rest rapidly
+            for (let i = 5; i < logs.length; i++) {
+                addLog(logs[i]);
+                await sleep(30); 
+            }
+            
+            await sleep(500);
+            bootScreen.style.display = 'none';
+            mainSystem.style.display = 'flex';
+            mainSystem.classList.add('glitch-in');
+        }
+
+        function addLog(text) {
+            const p = document.createElement('div');
+            p.textContent = text;
+            logContainer.appendChild(p);
+            // Auto-scroll logic
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
+        }
+
+        setInterval(() => {
+            document.getElementById('clock').textContent = new Date().toLocaleTimeString();
+        }, 1000);
+
+        window.onload = runBootSequence;
+    </script>
+</body>
+</html>
