@@ -3,251 +3,849 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SYSTEM_CORE_TERMINAL</title>
+    <title>NEXUS_CORE // SYSTEM TERMINAL v2.0</title>
     <style>
         :root {
-            --bg-color: #012456; 
-            --text-color: #cccccc;
-            --accent-color: #00ffff;
-            --header-bg: #06316e;
-            --border-color: #1760c1;
-            --terminal-green: #00ff41;
+            --bg-color: #0a0e17;
+            --panel-bg: #0d1320;
+            --text-color: #c5d0e6;
+            --accent-primary: #00f0ff;
+            --accent-secondary: #7b2cff;
+            --accent-success: #00ff88;
+            --accent-warning: #ffaa00;
+            --accent-danger: #ff3366;
+            --header-bg: #111827;
+            --border-color: #1e3a5f;
+            --terminal-green: #00ff88;
+            --glow-primary: 0 0 20px rgba(0, 240, 255, 0.4);
+            --glow-secondary: 0 0 20px rgba(123, 44, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
             height: 100%;
             width: 100%;
             background-color: #000;
             color: var(--text-color);
-            font-family: 'Consolas', 'Lucida Console', monospace;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
             overflow: hidden;
         }
 
-        /* Accelerated Boot Screen */
+        /* Boot Screen */
         #boot-screen {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000;
+            inset: 0;
+            background: linear-gradient(135deg, #000 0%, #0a0e17 100%);
             z-index: 2000;
             display: flex;
             flex-direction: column;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 30px;
             color: var(--terminal-green);
-            font-size: 12px;
-            overflow-y: hidden;
-            text-shadow: 0 0 3px var(--terminal-green);
+            font-size: 13px;
+            overflow: hidden;
+            text-shadow: 0 0 8px var(--terminal-green);
         }
 
+        #boot-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        #boot-header h1 {
+            font-size: 24px;
+            letter-spacing: 8px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        #boot-logs {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        #boot-logs::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        #boot-logs::-webkit-scrollbar-thumb {
+            background: var(--terminal-green);
+            border-radius: 2px;
+        }
+
+        .boot-line {
+            opacity: 0;
+            animation: fadeIn 0.1s forwards;
+            padding: 2px 0;
+        }
+
+        .boot-line.success { color: var(--accent-success); }
+        .boot-line.warning { color: var(--accent-warning); }
+        .boot-line.error { color: var(--accent-danger); }
+        .boot-line.info { color: var(--accent-primary); }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        #boot-progress {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(0, 255, 136, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-success));
+            box-shadow: var(--glow-primary);
+            transition: width 0.1s ease;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 18px;
+            background: var(--terminal-green);
+            animation: blink 0.6s infinite;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* Main System */
         #main-system {
             opacity: 0;
-            display: none; /* Changed from just opacity to prevent interaction during boot */
+            display: none;
             height: 100%;
             flex-direction: column;
-            background-color: var(--bg-color);
+            background: var(--bg-color);
         }
 
-        .system-bar {
-            background-color: var(--header-bg);
-            height: 30px;
+        /* Top Navigation Bar */
+        .nav-bar {
+            background: linear-gradient(180deg, var(--header-bg) 0%, var(--panel-bg) 100%);
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 15px;
+            padding: 0 20px;
             border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .version-tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            background: rgba(123, 44, 255, 0.2);
+            border: 1px solid var(--accent-secondary);
+            border-radius: 10px;
+            color: var(--accent-secondary);
+        }
+
+        /* Search Box */
+        .search-container {
+            flex: 1;
+            max-width: 600px;
+            margin: 0 40px;
+            position: relative;
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            color: var(--accent-primary);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 50px 10px 45px;
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: rgba(197, 208, 230, 0.4);
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-primary);
+            background: rgba(0, 240, 255, 0.1);
+            box-shadow: var(--glow-primary), inset 0 0 20px rgba(0, 240, 255, 0.05);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            padding: 6px 15px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            border-radius: 20px;
+            color: #000;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--glow-primary);
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-top: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .search-suggestions.active {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.2s;
+            border-bottom: 1px solid rgba(30, 58, 95, 0.5);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        .suggestion-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 240, 255, 0.1);
+            border-radius: 8px;
+            color: var(--accent-primary);
+            font-size: 12px;
+        }
+
+        .suggestion-text {
+            flex: 1;
+        }
+
+        .suggestion-title {
+            color: var(--text-color);
             font-size: 13px;
         }
 
-        .btn-fullview {
-            background: rgba(0, 255, 255, 0.1);
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            padding: 2px 8px;
-            cursor: pointer;
+        .suggestion-desc {
+            color: rgba(197, 208, 230, 0.5);
             font-size: 11px;
-            text-transform: uppercase;
+            margin-top: 2px;
         }
 
+        /* Nav Controls */
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            padding: 8px 16px;
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--accent-primary);
+            font-family: inherit;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(0, 240, 255, 0.2);
+            border-color: var(--accent-primary);
+            box-shadow: var(--glow-primary);
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            margin-left: 15px;
+        }
+
+        .win-btn {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .win-btn:hover { transform: scale(1.2); }
+        .win-btn.minimize { background: var(--accent-warning); }
+        .win-btn.maximize { background: var(--accent-success); }
+        .win-btn.close { background: var(--accent-danger); }
+
+        /* Quick Actions Bar */
+        .quick-actions {
+            background: var(--panel-bg);
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+
+        .quick-btn {
+            padding: 6px 14px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 11px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .quick-btn.active {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-color: transparent;
+            color: #000;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 60px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 0;
+            gap: 5px;
+        }
+
+        .sidebar-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .sidebar-btn:hover {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--accent-primary);
+        }
+
+        .sidebar-btn.active {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(123, 44, 255, 0.2));
+            color: var(--accent-primary);
+        }
+
+        .sidebar-btn.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 24px;
+            background: var(--accent-primary);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .sidebar-divider {
+            width: 30px;
+            height: 1px;
+            background: var(--border-color);
+            margin: 10px 0;
+        }
+
+        /* Viewport */
         .viewport-container {
-            flex-grow: 1;
+            flex: 1;
             display: flex;
             flex-direction: column;
             background: #000;
             position: relative;
         }
 
+        .viewport-header {
+            background: var(--header-bg);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .viewport-url {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .url-bar {
+            flex: 1;
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 12px;
+        }
+
+        .viewport-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--accent-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 240, 255, 0.2);
+            box-shadow: var(--glow-primary);
+        }
+
         iframe {
-            flex-grow: 1;
+            flex: 1;
             width: 100%;
-            height: 100%;
             border: none;
         }
 
+        /* Status Footer */
         .status-footer {
-            background: var(--header-bg);
-            height: 20px;
-            font-size: 10px;
+            background: linear-gradient(90deg, var(--header-bg) 0%, var(--panel-bg) 100%);
+            height: 28px;
             display: flex;
             align-items: center;
-            padding-left: 10px;
+            justify-content: space-between;
+            padding: 0 20px;
             border-top: 1px solid var(--border-color);
-            color: var(--accent-color);
+            font-size: 11px;
         }
 
+        .status-left, .status-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-success);
+            box-shadow: 0 0 10px var(--accent-success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* CRT Overlay */
         .crt-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
-            background-size: 100% 3px, 3px 100%;
+            inset: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 0, 0, 0.1) 0px,
+                    rgba(0, 0, 0, 0.1) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
             pointer-events: none;
             z-index: 1500;
+            opacity: 0.3;
         }
 
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 14px;
-            background: var(--terminal-green);
-            animation: blink 0.5s infinite;
-        }
-
-        @keyframes blink { 50% { opacity: 0; } }
-
-        /* Rapid Fade Animation */
+        /* Animations */
         .glitch-in {
-            animation: glitchEffect 0.3s ease-out forwards;
+            animation: glitchEffect 0.5s ease-out forwards;
         }
 
         @keyframes glitchEffect {
-            0% { opacity: 0; transform: scale(1.05); filter: brightness(2); }
-            100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+            0% { 
+                opacity: 0; 
+                transform: scale(1.02) translateY(-10px); 
+                filter: brightness(2) hue-rotate(90deg); 
+            }
+            50% { 
+                filter: brightness(1.5) hue-rotate(0deg); 
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1) translateY(0); 
+                filter: brightness(1); 
+            }
+        }
+
+        /* Tooltip */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 120%;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 6px 12px;
+            background: var(--header-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            z-index: 1000;
+            color: var(--text-color);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--panel-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
         }
     </style>
 </head>
 <body>
 
+    <!-- Boot Screen -->
     <div id="boot-screen">
+        <div id="boot-header">
+            <h1>NEXUS_CORE</h1>
+            <p style="opacity: 0.6; margin-top: 5px;">Advanced System Terminal v2.0</p>
+        </div>
         <div id="boot-logs"></div>
-        <div><span class="cursor"></span></div>
+        <div id="boot-progress">
+            <div style="display: flex; justify-content: space-between;">
+                <span>Initializing system components...</span>
+                <span id="progress-percent">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
     </div>
 
+    <!-- Main System -->
     <div id="main-system">
         <div class="crt-overlay"></div>
-        <div class="system-bar">
-            <div class="title">PS C:\WINDOWS\system32\cyber_dns.exe</div>
-            <div class="controls">
-                <button class="btn-fullview" onclick="toggleFullScreen()">[ FULL VIEW ]</button>
-                <span style="color: #fff; margin-left: 10px;">_ □ X</span>
+        
+        <!-- Navigation Bar -->
+        <div class="nav-bar">
+            <div class="nav-left">
+                <div class="logo">NEXUS</div>
+                <span class="version-tag">v2.0</span>
+            </div>
+
+            <!-- Search Container -->
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="search-input"
+                        placeholder="Search commands, settings, tools..."
+                        autocomplete="off"
+                    >
+                    <button class="search-btn" onclick="executeSearch()">GO</button>
+                </div>
+                <div class="search-suggestions" id="suggestions">
+                    <!-- Dynamic suggestions -->
+                </div>
+            </div>
+
+            <div class="nav-controls">
+                <button class="nav-btn" onclick="toggleFullScreen()">⛶ FULLSCREEN</button>
+                <button class="nav-btn" onclick="refreshFrame()">↻ REFRESH</button>
+                <div class="window-controls">
+                    <div class="win-btn minimize"></div>
+                    <div class="win-btn maximize"></div>
+                    <div class="win-btn close"></div>
+                </div>
             </div>
         </div>
 
-        <div class="viewport-container">
-            <iframe id="target-frame" src="https://script.google.com/macros/s/AKfycbw8BaKGZX2M-pCz6JxsAmeWLASazhOVkovKbIggVhjYSN1eJyqW0wvSY00jo44aBFqljg/exec" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
-            <div class="status-footer">
-                SYSTEM STATUS: ONLINE | ENCRYPTION: AES-256 | DNS_ENTRANCE: ACTIVE | <span id="clock"></span>
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <button class="quick-btn active">🏠 Home</button>
+            <button class="quick-btn" onclick="navigateTo('[google.com](https://www.google.com)')">🔎 Google</button>
+            <button class="quick-btn" onclick="navigateTo('[github.com](https://github.com)')">💻 GitHub</button>
+            <button class="quick-btn" onclick="navigateTo('[stackoverflow.com](https://stackoverflow.com)')">📚 Stack Overflow</button>
+            <button class="quick-btn" onclick="openTerminal()">⌨️ Terminal</button>
+            <button class="quick-btn" onclick="openSettings()">⚙️ Settings</button>
+            <button class="quick-btn" onclick="openNetwork()">📡 Network</button>
+            <button class="quick-btn" onclick="openSecurity()">🛡️ Security</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <button class="sidebar-btn active" data-tooltip="Dashboard">📊</button>
+                <button class="sidebar-btn" data-tooltip="Files">📁</button>
+                <button class="sidebar-btn" data-tooltip="Network">🌐</button>
+                <button class="sidebar-btn" data-tooltip="Processes">⚡</button>
+                <div class="sidebar-divider"></div>
+                <button class="sidebar-btn" data-tooltip="Terminal">💻</button>
+                <button class="sidebar-btn" data-tooltip="Logs">📋</button>
+                <button class="sidebar-btn" data-tooltip="Monitor">📈</button>
+                <div class="sidebar-divider"></div>
+                <button class="sidebar-btn" data-tooltip="Settings">⚙️</button>
+                <button class="sidebar-btn" data-tooltip="Help">❓</button>
+            </div>
+
+            <!-- Viewport -->
+            <div class="viewport-container">
+                <div class="viewport-header">
+                    <div class="viewport-url">
+                        <span style="color: var(--accent-success);">🔒</span>
+                        <input type="text" class="url-bar" id="url-bar" value="secure://nexus.system/dashboard" readonly>
+                    </div>
+                    <div class="viewport-actions">
+                        <button class="action-btn" onclick="goBack()" title="Back">◀</button>
+                        <button class="action-btn" onclick="goForward()" title="Forward">▶</button>
+                        <button class="action-btn" onclick="refreshFrame()" title="Refresh">↻</button>
+                        <button class="action-btn" onclick="openInNewTab()" title="Open External">↗</button>
+                    </div>
+                </div>
+                <iframe 
+                    id="target-frame" 
+                    src="[script.google.com](https://script.google.com/macros/s/AKfycbw8BaKGZX2M-pCz6JxsAmeWLASazhOVkovKbIggVhjYSN1eJyqW0wvSY00jo44aBFqljg/exec)" 
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                ></iframe>
+            </div>
+        </div>
+
+        <!-- Status Footer -->
+        <div class="status-footer">
+            <div class="status-left">
+                <div class="status-item">
+                    <span class="status-dot"></span>
+                    <span>SYSTEM ONLINE</span>
+                </div>
+                <div class="status-item">
+                    <span>🔐 AES-256</span>
+                </div>
+                <div class="status-item">
+                    <span>📡 DNS ACTIVE</span>
+                </div>
+                <div class="status-item">
+                    <span>🛡️ FIREWALL ON</span>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-item">
+                    <span>CPU: <span id="cpu-usage">23%</span></span>
+                </div>
+                <div class="status-item">
+                    <span>MEM: <span id="mem-usage">4.2GB</span></span>
+                </div>
+                <div class="status-item">
+                    <span>⏱️ <span id="clock">00:00:00</span></span>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const logs = [
-            "> INITIALIZING BOOT SEQUENCE...",
-            "> LOADING KERNEL MODULES...",
-            "> CHECKING MEMORY... 64GB OK",
-            "> ESTABLISHING SECURE PROTOCOL...",
-            "> BYPASSING FIREWALL... DONE",
-            "> MOUNTING VIRTUAL_DRIVE: /NETWORK/SIMULATION",
-            "> DECRYPTING INTERFACE...",
-            "> ACCESS GRANTED.",
-            "> EXECUTING COMMAND: slmgr /xpr",
-            "> EXECUTING COMMAND: slmgr /dlv",
-            "> EXECUTING COMMAND: slmgr /ato",
-            "> EXECUTING COMMAND: slmgr /ipk XXXXX-XXXXX-XXXXX-XXXXX-XXXXX",
-            "> EXECUTING COMMAND: systeminfo",
-            "> EXECUTING COMMAND: ipconfig",
-            "> EXECUTING COMMAND: ipconfig /flushdns",
-            "> EXECUTING COMMAND: ipconfig /release && ipconfig /renew",
-            "> EXECUTING COMMAND: ping google.com",
-            "> EXECUTING COMMAND: tracert google.com",
-            "> EXECUTING COMMAND: netsh winsock reset",
-            "> EXECUTING COMMAND: netcfg -d",
-            "> EXECUTING COMMAND: chkdsk /f",
-            "> EXECUTING COMMAND: sfc /scannow",
-            "> EXECUTING COMMAND: DISM /Online /Cleanup-Image /RestoreHealth",
-            "> EXECUTING COMMAND: taskmgr",
-            "> EXECUTING COMMAND: devmgmt.msc",
-            "> EXECUTING COMMAND: diskmgmt.msc",
-            "> EXECUTING COMMAND: services.msc",
-            "> EXECUTING COMMAND: regedit",
-            "> EXECUTING COMMAND: gpedit.msc",
-            "> EXECUTING COMMAND: lusrmgr.msc",
-            "> EXECUTING COMMAND: msconfig",
-            "> EXECUTING COMMAND: eventvwr",
-            "> EXECUTING COMMAND: resmon",
-            "> EXECUTING COMMAND: perfmon",
-            "> EXECUTING COMMAND: control",
-            "> EXECUTING COMMAND: appwiz.cpl",
-            "> EXECUTING COMMAND: shell:startup",
-            "> EXECUTING COMMAND: %temp%",
-            "> EXECUTING COMMAND: del /q/f/s %temp%\\*",
-            "> EXECUTING COMMAND: powercfg /batteryreport",
-            "> EXECUTING COMMAND: powercfg /sleepstudy",
-            "> EXECUTING COMMAND: powercfg /energy",
-            "> EXECUTING COMMAND: shutdown /s /t 0",
-            "> EXECUTING COMMAND: shutdown /r /t 0",
-            "> EXECUTING COMMAND: shutdown /r /f /t 0",
-            "> EXECUTING COMMAND: bcdedit /set {current} safeboot minimal",
-            "> EXECUTING COMMAND: driverquery",
-            "> EXECUTING COMMAND: winget upgrade --all",
-            "> EXECUTING COMMAND: winget upgrade --all --silent --accept-source-agreements --accept-package-agreements",
-            "> EXECUTING COMMAND: winget list",
-            "> EXECUTING COMMAND: winget uninstall AppName",
-            "> EXECUTING COMMAND: net user administrator /active:yes",
-            "> EXECUTING COMMAND: net user username password /add",
-            "> EXECUTING COMMAND: net localgroup administrators username /add",
-            "> EXECUTING COMMAND: tasklist",
-            "> EXECUTING COMMAND: taskkill /f /im app.exe",
-            "> EXECUTING COMMAND: start ms-settings:windowsupdate",
-            "> EXECUTING COMMAND: netsh wlan show networks",
-            "> EXECUTING COMMAND: netsh wlan show profile name=\"WiFiName\" key=clear",
-            "> EXECUTING COMMAND: netstat -ano",
-            "> EXECUTING COMMAND: net share",
-            "> EXECUTING COMMAND: mstsc",
-            "> EXECUTING COMMAND: windowsdefender:",
-            "> EXECUTING COMMAND: MpCmdRun.exe -Scan -ScanType 1",
-            "> EXECUTING COMMAND: MpCmdRun.exe -Scan -ScanType 2",
-            "> EXECUTING COMMAND: mdsched.exe",
-            "> EXECUTING COMMAND: start ms-settings:bluetooth",
-            "> EXECUTING COMMAND: mmsys.cpl",
-            "> EXECUTING COMMAND: timedate.cpl",
-            "> EXECUTING COMMAND: firewall.cpl",
-            "> EXECUTING COMMAND: netplwiz",
-            "> EXECUTING COMMAND: start ms-settings:clipboard",
-            "> EXECUTING COMMAND: start ms-settings:camera",
-            "> EXECUTING COMMAND: start ms-settings:storagesense",
-            "> EXECUTING COMMAND: start ms-settings:recovery",
-            "> EXECUTING COMMAND: optionalfeatures",
-            "> SYSTEM READY FOR DEPLOYMENT."
+        // Boot sequence data
+        const bootLogs = [
+            { text: "NEXUS_CORE BOOT SEQUENCE INITIATED", type: "info" },
+            { text: "Loading kernel modules...", type: "" },
+            { text: "[OK] Kernel 6.2.0-NEXUS loaded", type: "success" },
+            { text: "Initializing memory management...", type: "" },
+            { text: "[OK] 64GB RAM detected and allocated", type: "success" },
+            { text: "Starting security subsystems...", type: "" },
+            { text: "[OK] Firewall initialized", type: "success" },
+            { text: "[OK] Intrusion detection active", type: "success" },
+            { text: "[OK] AES-256 encryption enabled", type: "success" },
+            { text: "Establishing network connections...", type: "" },
+            { text: "[OK] Primary DNS resolved", type: "success" },
+            { text: "[OK] Secure tunnel established", type: "success" },
+            { text: "Loading system services...", type: "" },
+            { text: "> systemctl start nexus-core", type: "" },
+            { text: "> systemctl start network-manager", type: "" },
+            { text: "> systemctl start security-daemon", type: "" },
+            { text: "[OK] All services running", type: "success" },
+            { text: "Mounting virtual filesystems...", type: "" },
+            { text: "[OK] /dev/nexus mounted", type: "success" },
+            { text: "[OK] /secure/vault mounted", type: "success" },
+            { text: "Running integrity checks...", type: "" },
+            { text: "[OK] System integrity verified", type: "success" },
+            { text: "Loading user interface...", type: "" },
+            { text: "[OK] UI components loaded", type: "success" },
+            { text: "[OK] Theme engine initialized", type: "success" },
+            { text: "──────────────────────────────────────", type: "info" },
+            { text: "NEXUS_CORE v2.0 - READY", type: "info" },
+            { text: "ACCESS GRANTED - Welcome, Operator", type: "success" }
+        ];
+
+        // Search suggestions data
+        const searchData = [
+            { title: "System Settings", desc: "Configure system preferences", icon: "⚙️", action: "settings" },
+            { title: "Network Monitor", desc: "View network statistics", icon: "📡", action: "network" },
+            { title: "Process Manager", desc: "Manage running processes", icon: "⚡", action: "processes" },
+            { title: "Terminal", desc: "Open command terminal", icon: "💻", action: "terminal" },
+            { title: "Security Center", desc: "Security and firewall settings", icon: "🛡️", action: "security" },
+            { title: "File Explorer", desc: "Browse system files", icon: "📁", action: "files" },
+            { title: "System Logs", desc: "View system event logs", icon: "📋", action: "logs" },
+            { title: "Performance Monitor", desc: "CPU, Memory, Disk usage", icon: "📈", action: "performance" },
+            { title: "User Management", desc: "Manage user accounts", icon: "👥", action: "users" },
+            { title: "Backup & Recovery", desc: "System backup options", icon: "💾", action: "backup" },
+            { title: "Google Search", desc: "Search the web", icon: "🔍", url: "[google.com](https://www.google.com/search?q=)" },
+            { title: "GitHub", desc: "Open GitHub", icon: "🐙", url: "[github.com](https://github.com)" },
+            { title: "Stack Overflow", desc: "Developer Q&A", icon: "📚", url: "[stackoverflow.com](https://stackoverflow.com)" }
         ];
 
         const logContainer = document.getElementById('boot-logs');
         const bootScreen = document.getElementById('boot-screen');
         const mainSystem = document.getElementById('main-system');
+        const progressFill = document.getElementById('progress-fill');
+        const progressPercent = document.getElementById('progress-percent');
 
+        // Boot sequence
         async function runBootSequence() {
-            // Display first few slowly
-            for (let i = 0; i < 5; i++) {
-                addLog(logs[i]);
-                await sleep(150);
+            for (let i = 0; i < bootLogs.length; i++) {
+                addLog(bootLogs[i].text, bootLogs[i].type);
+                const progress = Math.round(((i + 1) / bootLogs.length) * 100);
+                progressFill.style.width = progress + '%';
+                progressPercent.textContent = progress + '%';
+                await sleep(i < 3 ? 150 : 60);
             }
-            // Burst the rest rapidly
-            for (let i = 5; i < logs.length; i++) {
-                addLog(logs[i]);
-                await sleep(30); 
-            }
+            
+            await sleep(800);
+            bootScreen.style.transition = 'opacity 0.5s ease';
+            bootScreen.style.opacity = '0';
             
             await sleep(500);
             bootScreen.style.display = 'none';
@@ -255,25 +853,181 @@
             mainSystem.classList.add('glitch-in');
         }
 
-        function addLog(text) {
-            const p = document.createElement('div');
-            p.textContent = text;
-            logContainer.appendChild(p);
-            // Auto-scroll logic
-            window.scrollTo(0, document.body.scrollHeight);
+        function addLog(text, type) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            div.className = 'boot-line ' + type;
+            logContainer.appendChild(div);
+            logContainer.scrollTop = logContainer.scrollHeight;
         }
 
-        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Search functionality
+        const searchInput = document.getElementById('search-input');
+        const suggestionsBox = document.getElementById('suggestions');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            if (query.length < 1) {
+                suggestionsBox.classList.remove('active');
+                return;
+            }
+
+            const filtered = searchData.filter(item => 
+                item.title.toLowerCase().includes(query) || 
+                item.desc.toLowerCase().includes(query)
+            );
+
+            if (filtered.length > 0) {
+                suggestionsBox.innerHTML = filtered.map(item => `
+                    <div class="suggestion-item" onclick="selectSuggestion('${item.url || item.action}', '${item.title}')">
+                        <div class="suggestion-icon">${item.icon}</div>
+                        <div class="suggestion-text">
+                            <div class="suggestion-title">${item.title}</div>
+                            <div class="suggestion-desc">${item.desc}</div>
+                        </div>
+                    </div>
+                `).join('');
+                suggestionsBox.classList.add('active');
+            } else {
+                // Show web search option
+                suggestionsBox.innerHTML = `
+                    <div class="suggestion-item" onclick="webSearch('${query}')">
+                        <div class="suggestion-icon">🌐</div>
+                        <div class="suggestion-text">
+                            <div class="suggestion-title">Search web for "${query}"</div>
+                            <div class="suggestion-desc">Press Enter to search Google</div>
+                        </div>
+                    </div>
+                `;
+                suggestionsBox.classList.add('active');
+            }
+        });
+
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                executeSearch();
+            }
+            if (e.key === 'Escape') {
+                suggestionsBox.classList.remove('active');
+            }
+        });
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                suggestionsBox.classList.remove('active');
+            }
+        });
+
+        function selectSuggestion(actionOrUrl, title) {
+            searchInput.value = title;
+            suggestionsBox.classList.remove('active');
+            
+            if (actionOrUrl.startsWith('http')) {
+                navigateTo(actionOrUrl);
+            } else {
+                // Handle internal actions
+                console.log('Action:', actionOrUrl);
+                // Add your action handlers here
+            }
+        }
+
+        function executeSearch() {
+            const query = searchInput.value.trim();
+            if (query) {
+                webSearch(query);
+            }
+        }
+
+        function webSearch(query) {
+            const searchUrl = `[google.com](https://www.google.com/search?q=${encodeURIComponent(query)})`;
+            navigateTo(searchUrl);
+            suggestionsBox.classList.remove('active');
+        }
+
+        // Navigation functions
+        function navigateTo(url) {
+            document.getElementById('target-frame').src = url;
+            document.getElementById('url-bar').value = url;
+        }
+
+        function refreshFrame() {
+            const frame = document.getElementById('target-frame');
+            frame.src = frame.src;
+        }
+
+        function goBack() {
+            try {
+                document.getElementById('target-frame').contentWindow.history.back();
+            } catch(e) {
+                console.log('Cannot access frame history');
+            }
+        }
+
+        function goForward() {
+            try {
+                document.getElementById('target-frame').contentWindow.history.forward();
+            } catch(e) {
+                console.log('Cannot access frame history');
+            }
+        }
+
+        function openInNewTab() {
+            const url = document.getElementById('target-frame').src;
+            window.open(url, '_blank');
+        }
 
         function toggleFullScreen() {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-            else document.exitFullscreen();
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
         }
 
-        setInterval(() => {
-            document.getElementById('clock').textContent = new Date().toLocaleTimeString();
-        }, 1000);
+        // Placeholder functions for quick actions
+        function openTerminal() { alert('Terminal module coming soon!'); }
+        function openSettings() { alert('Settings module coming soon!'); }
+        function openNetwork() { alert('Network module coming soon!'); }
+        function openSecurity() { alert('Security module coming soon!'); }
 
+        // Clock and system stats
+        function updateClock() {
+            document.getElementById('clock').textContent = new Date().toLocaleTimeString();
+        }
+
+        function updateStats() {
+            // Simulated stats - replace with real data if available
+            document.getElementById('cpu-usage').textContent = (15 + Math.random() * 20).toFixed(0) + '%';
+            document.getElementById('mem-usage').textContent = (3.5 + Math.random() * 2).toFixed(1) + 'GB';
+        }
+
+        setInterval(updateClock, 1000);
+        setInterval(updateStats, 3000);
+
+        // Sidebar button handling
+        document.querySelectorAll('.sidebar-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Quick action button handling
+        document.querySelectorAll('.quick-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (!this.onclick) {
+                    document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Initialize
         window.onload = runBootSequence;
     </script>
 </body>
