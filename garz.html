@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS_CORE // SYSTEM TERMINAL v2.0</title>
+    <title>PC TROUBLESHOOT // SYSTEM TERMINAL v3.0</title>
     <style>
         :root {
             --bg-color: #0a0e17;
@@ -116,16 +116,6 @@
             background: linear-gradient(90deg, var(--accent-primary), var(--accent-success));
             box-shadow: var(--glow-primary);
             transition: width 0.1s ease;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            height: 18px;
-            background: var(--terminal-green);
-            animation: blink 0.6s infinite;
-            vertical-align: middle;
-            margin-left: 5px;
         }
 
         @keyframes blink { 50% { opacity: 0; } }
@@ -249,7 +239,7 @@
             border: 1px solid var(--border-color);
             border-radius: 10px;
             margin-top: 8px;
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: auto;
             display: none;
             z-index: 1000;
@@ -260,14 +250,24 @@
             display: block;
         }
 
+        .suggestion-category {
+            padding: 8px 15px;
+            background: rgba(0, 240, 255, 0.05);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-primary);
+        }
+
         .suggestion-item {
             padding: 12px 20px;
             cursor: pointer;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 12px;
             transition: background 0.2s;
-            border-bottom: 1px solid rgba(30, 58, 95, 0.5);
+            border-bottom: 1px solid rgba(30, 58, 95, 0.3);
         }
 
         .suggestion-item:last-child {
@@ -279,31 +279,70 @@
         }
 
         .suggestion-icon {
-            width: 30px;
-            height: 30px;
+            width: 36px;
+            height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: rgba(0, 240, 255, 0.1);
             border-radius: 8px;
-            color: var(--accent-primary);
-            font-size: 12px;
+            font-size: 16px;
+            flex-shrink: 0;
         }
+
+        .suggestion-icon.cmd { background: rgba(0, 255, 136, 0.15); }
+        .suggestion-icon.ps { background: rgba(0, 120, 215, 0.2); }
+        .suggestion-icon.settings { background: rgba(123, 44, 255, 0.15); }
+        .suggestion-icon.program { background: rgba(255, 170, 0, 0.15); }
 
         .suggestion-text {
             flex: 1;
+            min-width: 0;
         }
 
         .suggestion-title {
             color: var(--text-color);
             font-size: 13px;
+            font-weight: 500;
+        }
+
+        .suggestion-cmd {
+            color: var(--accent-success);
+            font-size: 11px;
+            margin-top: 3px;
+            font-family: monospace;
+            background: rgba(0, 255, 136, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
         }
 
         .suggestion-desc {
-            color: rgba(197, 208, 230, 0.5);
+            color: rgba(197, 208, 230, 0.6);
             font-size: 11px;
-            margin-top: 2px;
+            margin-top: 4px;
+            line-height: 1.4;
         }
+
+        .suggestion-tags {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag.cmd { background: rgba(0, 255, 136, 0.2); color: var(--accent-success); }
+        .tag.ps { background: rgba(0, 120, 215, 0.2); color: #0078d7; }
+        .tag.settings { background: rgba(123, 44, 255, 0.2); color: var(--accent-secondary); }
+        .tag.program { background: rgba(255, 170, 0, 0.2); color: var(--accent-warning); }
 
         /* Nav Controls */
         .nav-controls {
@@ -351,10 +390,10 @@
         .win-btn.maximize { background: var(--accent-success); }
         .win-btn.close { background: var(--accent-danger); }
 
-        /* Quick Actions Bar */
-        .quick-actions {
+        /* Category Tabs */
+        .category-tabs {
             background: var(--panel-bg);
-            padding: 8px 20px;
+            padding: 10px 20px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -362,29 +401,39 @@
             overflow-x: auto;
         }
 
-        .quick-btn {
-            padding: 6px 14px;
+        .category-tab {
+            padding: 8px 16px;
             background: transparent;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             color: var(--text-color);
             font-family: inherit;
-            font-size: 11px;
+            font-size: 12px;
             cursor: pointer;
             white-space: nowrap;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .quick-btn:hover {
+        .category-tab:hover {
             background: rgba(0, 240, 255, 0.1);
             border-color: var(--accent-primary);
             color: var(--accent-primary);
         }
 
-        .quick-btn.active {
+        .category-tab.active {
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             border-color: transparent;
             color: #000;
+        }
+
+        .category-count {
+            font-size: 10px;
+            padding: 2px 6px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
         }
 
         /* Main Content */
@@ -397,125 +446,404 @@
 
         /* Sidebar */
         .sidebar {
-            width: 60px;
+            width: 240px;
             background: var(--panel-bg);
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            padding: 15px 0;
-            gap: 5px;
+            overflow-y: auto;
         }
 
-        .sidebar-btn {
-            width: 44px;
-            height: 44px;
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-primary);
+        }
+
+        .sidebar-section {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-section-title {
+            padding: 8px 15px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(197, 208, 230, 0.5);
+        }
+
+        .sidebar-item {
+            padding: 10px 15px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: none;
-            border-radius: 12px;
-            color: var(--text-color);
+            gap: 10px;
             cursor: pointer;
-            transition: all 0.3s;
-            position: relative;
+            transition: all 0.2s;
+            font-size: 12px;
         }
 
-        .sidebar-btn:hover {
+        .sidebar-item:hover {
             background: rgba(0, 240, 255, 0.1);
             color: var(--accent-primary);
         }
 
-        .sidebar-btn.active {
-            background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(123, 44, 255, 0.2));
+        .sidebar-item.active {
+            background: linear-gradient(90deg, rgba(0, 240, 255, 0.15), transparent);
             color: var(--accent-primary);
+            border-left: 3px solid var(--accent-primary);
         }
 
-        .sidebar-btn.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3px;
-            height: 24px;
-            background: var(--accent-primary);
-            border-radius: 0 3px 3px 0;
+        .sidebar-item-icon {
+            font-size: 16px;
         }
 
-        .sidebar-divider {
-            width: 30px;
-            height: 1px;
-            background: var(--border-color);
-            margin: 10px 0;
-        }
-
-        /* Viewport */
-        .viewport-container {
+        /* Content Panel */
+        .content-panel {
             flex: 1;
             display: flex;
             flex-direction: column;
-            background: #000;
-            position: relative;
+            overflow: hidden;
         }
 
-        .viewport-header {
+        .content-header {
             background: var(--header-bg);
-            padding: 10px 20px;
+            padding: 15px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .viewport-url {
+        .content-title {
+            font-size: 16px;
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 10px;
-            flex: 1;
-            max-width: 500px;
         }
 
-        .url-bar {
-            flex: 1;
-            padding: 8px 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-color);
-            font-family: inherit;
-            font-size: 12px;
+        .content-title-icon {
+            font-size: 20px;
         }
 
-        .viewport-actions {
+        .content-actions {
             display: flex;
             gap: 8px;
         }
 
-        .action-btn {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .content-btn {
+            padding: 8px 14px;
             background: rgba(0, 240, 255, 0.1);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--accent-primary);
+            border-radius: 6px;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 11px;
             cursor: pointer;
             transition: all 0.2s;
         }
 
-        .action-btn:hover {
+        .content-btn:hover {
             background: rgba(0, 240, 255, 0.2);
-            box-shadow: var(--glow-primary);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
         }
 
-        iframe {
-            flex: 1;
-            width: 100%;
+        .content-btn.primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             border: none;
+            color: #000;
+        }
+
+        /* Commands Grid */
+        .commands-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 15px;
+        }
+
+        .command-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .command-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--glow-primary);
+            transform: translateY(-2px);
+        }
+
+        .command-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .command-card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .command-card-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+
+        .command-card-icon.cmd { background: rgba(0, 255, 136, 0.15); }
+        .command-card-icon.ps { background: rgba(0, 120, 215, 0.2); }
+        .command-card-icon.settings { background: rgba(123, 44, 255, 0.15); }
+        .command-card-icon.program { background: rgba(255, 170, 0, 0.15); }
+
+        .command-card-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .command-card-type {
+            font-size: 10px;
+            color: rgba(197, 208, 230, 0.5);
+            margin-top: 2px;
+        }
+
+        .command-card-copy {
+            padding: 6px 12px;
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--accent-primary);
+            font-size: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .command-card-copy:hover {
+            background: var(--accent-primary);
+            color: #000;
+        }
+
+        .command-card-copy.copied {
+            background: var(--accent-success);
+            border-color: var(--accent-success);
+            color: #000;
+        }
+
+        .command-card-cmd {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--accent-success);
+            margin-bottom: 12px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .command-card-desc {
+            font-size: 12px;
+            color: rgba(197, 208, 230, 0.7);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .command-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .command-card-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .command-card-run {
+            padding: 6px 14px;
+            background: linear-gradient(135deg, var(--accent-success), #00cc6a);
+            border: none;
+            border-radius: 6px;
+            color: #000;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .command-card-run:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+
+        /* Detail Panel */
+        .detail-panel {
+            position: fixed;
+            top: 0;
+            right: -500px;
+            width: 500px;
+            height: 100%;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--border-color);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .detail-panel.active {
+            right: 0;
+        }
+
+        .detail-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .detail-close {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid var(--accent-danger);
+            border-radius: 8px;
+            color: var(--accent-danger);
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .detail-close:hover {
+            background: var(--accent-danger);
+            color: #000;
+        }
+
+        .detail-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .detail-section {
+            margin-bottom: 25px;
+        }
+
+        .detail-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-primary);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-cmd-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-cmd-box code {
+            font-family: monospace;
+            font-size: 13px;
+            color: var(--accent-success);
+            display: block;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .detail-cmd-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .detail-steps {
+            list-style: none;
+        }
+
+        .detail-step {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(30, 58, 95, 0.3);
+        }
+
+        .detail-step:last-child {
+            border-bottom: none;
+        }
+
+        .detail-step-num {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 50%;
+            color: #000;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .detail-step-text {
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-color);
+        }
+
+        .detail-warning {
+            background: rgba(255, 170, 0, 0.1);
+            border: 1px solid var(--accent-warning);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .detail-warning-icon {
+            font-size: 18px;
+        }
+
+        .detail-warning-text {
+            font-size: 12px;
+            color: var(--accent-warning);
+            line-height: 1.4;
         }
 
         /* Status Footer */
@@ -594,25 +922,31 @@
             }
         }
 
-        /* Tooltip */
-        [data-tooltip] {
-            position: relative;
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--panel-bg);
+            border: 1px solid var(--accent-success);
+            padding: 12px 24px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            z-index: 2000;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
-        [data-tooltip]:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            left: 120%;
-            top: 50%;
-            transform: translateY(-50%);
-            padding: 6px 12px;
-            background: var(--header-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 11px;
-            white-space: nowrap;
-            z-index: 1000;
-            color: var(--text-color);
+        .toast.active {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            font-size: 18px;
         }
 
         /* Scrollbar */
@@ -633,6 +967,52 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--accent-primary);
         }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: rgba(197, 208, 230, 0.5);
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .empty-state-desc {
+            font-size: 13px;
+            max-width: 400px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -640,13 +1020,13 @@
     <!-- Boot Screen -->
     <div id="boot-screen">
         <div id="boot-header">
-            <h1>NEXUS_CORE</h1>
-            <p style="opacity: 0.6; margin-top: 5px;">Advanced System Terminal v2.0</p>
+            <h1>PC_TROUBLESHOOT</h1>
+            <p style="opacity: 0.6; margin-top: 5px;">System Diagnostic Terminal v3.0</p>
         </div>
         <div id="boot-logs"></div>
         <div id="boot-progress">
             <div style="display: flex; justify-content: space-between;">
-                <span>Initializing system components...</span>
+                <span>Loading troubleshooting database...</span>
                 <span id="progress-percent">0%</span>
             </div>
             <div class="progress-bar">
@@ -662,8 +1042,8 @@
         <!-- Navigation Bar -->
         <div class="nav-bar">
             <div class="nav-left">
-                <div class="logo">NEXUS</div>
-                <span class="version-tag">v2.0</span>
+                <div class="logo">PC TROUBLESHOOT</div>
+                <span class="version-tag">v3.0</span>
             </div>
 
             <!-- Search Container -->
@@ -674,19 +1054,16 @@
                         type="text" 
                         class="search-input" 
                         id="search-input"
-                        placeholder="Search commands, settings, tools..."
+                        placeholder="Search commands, settings, programs... (e.g., 'disk cleanup', 'ip address', 'startup')"
                         autocomplete="off"
                     >
-                    <button class="search-btn" onclick="executeSearch()">GO</button>
+                    <button class="search-btn" onclick="executeSearch()">SEARCH</button>
                 </div>
-                <div class="search-suggestions" id="suggestions">
-                    <!-- Dynamic suggestions -->
-                </div>
+                <div class="search-suggestions" id="suggestions"></div>
             </div>
 
             <div class="nav-controls">
-                <button class="nav-btn" onclick="toggleFullScreen()">⛶ FULLSCREEN</button>
-                <button class="nav-btn" onclick="refreshFrame()">↻ REFRESH</button>
+                <button class="nav-btn" onclick="exportCommands()">📥 EXPORT</button>
                 <div class="window-controls">
                     <div class="win-btn minimize"></div>
                     <div class="win-btn maximize"></div>
@@ -695,54 +1072,132 @@
             </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-            <button class="quick-btn active">🏠 Home</button>
-            <button class="quick-btn" onclick="navigateTo('[google.com](https://www.google.com)')">🔎 Google</button>
-            <button class="quick-btn" onclick="navigateTo('[github.com](https://github.com)')">💻 GitHub</button>
-            <button class="quick-btn" onclick="navigateTo('[stackoverflow.com](https://stackoverflow.com)')">📚 Stack Overflow</button>
-            <button class="quick-btn" onclick="openTerminal()">⌨️ Terminal</button>
-            <button class="quick-btn" onclick="openSettings()">⚙️ Settings</button>
-            <button class="quick-btn" onclick="openNetwork()">📡 Network</button>
-            <button class="quick-btn" onclick="openSecurity()">🛡️ Security</button>
+        <!-- Category Tabs -->
+        <div class="category-tabs">
+            <button class="category-tab active" data-category="all">
+                📋 All Commands
+                <span class="category-count" id="count-all">0</span>
+            </button>
+            <button class="category-tab" data-category="cmd">
+                ⌨️ CMD
+                <span class="category-count" id="count-cmd">0</span>
+            </button>
+            <button class="category-tab" data-category="powershell">
+                💠 PowerShell
+                <span class="category-count" id="count-powershell">0</span>
+            </button>
+            <button class="category-tab" data-category="settings">
+                ⚙️ Settings
+                <span class="category-count" id="count-settings">0</span>
+            </button>
+            <button class="category-tab" data-category="programs">
+                📁 Programs
+                <span class="category-count" id="count-programs">0</span>
+            </button>
+            <button class="category-tab" data-category="network">
+                🌐 Network
+                <span class="category-count" id="count-network">0</span>
+            </button>
+            <button class="category-tab" data-category="disk">
+                💾 Disk & Storage
+                <span class="category-count" id="count-disk">0</span>
+            </button>
+            <button class="category-tab" data-category="performance">
+                📈 Performance
+                <span class="category-count" id="count-performance">0</span>
+            </button>
+            <button class="category-tab" data-category="security">
+                🛡️ Security
+                <span class="category-count" id="count-security">0</span>
+            </button>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
             <!-- Sidebar -->
             <div class="sidebar">
-                <button class="sidebar-btn active" data-tooltip="Dashboard">📊</button>
-                <button class="sidebar-btn" data-tooltip="Files">📁</button>
-                <button class="sidebar-btn" data-tooltip="Network">🌐</button>
-                <button class="sidebar-btn" data-tooltip="Processes">⚡</button>
-                <div class="sidebar-divider"></div>
-                <button class="sidebar-btn" data-tooltip="Terminal">💻</button>
-                <button class="sidebar-btn" data-tooltip="Logs">📋</button>
-                <button class="sidebar-btn" data-tooltip="Monitor">📈</button>
-                <div class="sidebar-divider"></div>
-                <button class="sidebar-btn" data-tooltip="Settings">⚙️</button>
-                <button class="sidebar-btn" data-tooltip="Help">❓</button>
-            </div>
-
-            <!-- Viewport -->
-            <div class="viewport-container">
-                <div class="viewport-header">
-                    <div class="viewport-url">
-                        <span style="color: var(--accent-success);">🔒</span>
-                        <input type="text" class="url-bar" id="url-bar" value="secure://nexus.system/dashboard" readonly>
+                <div class="sidebar-header">🛠️ Quick Access</div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Common Issues</div>
+                    <div class="sidebar-item" onclick="filterByTag('slow-pc')">
+                        <span class="sidebar-item-icon">🐌</span>
+                        <span>Slow PC</span>
                     </div>
-                    <div class="viewport-actions">
-                        <button class="action-btn" onclick="goBack()" title="Back">◀</button>
-                        <button class="action-btn" onclick="goForward()" title="Forward">▶</button>
-                        <button class="action-btn" onclick="refreshFrame()" title="Refresh">↻</button>
-                        <button class="action-btn" onclick="openInNewTab()" title="Open External">↗</button>
+                    <div class="sidebar-item" onclick="filterByTag('internet')">
+                        <span class="sidebar-item-icon">📶</span>
+                        <span>Internet Issues</span>
+                    </div>
+                    <div class="sidebar-item" onclick="filterByTag('startup')">
+                        <span class="sidebar-item-icon">🚀</span>
+                        <span>Startup Problems</span>
+                    </div>
+                    <div class="sidebar-item" onclick="filterByTag('bsod')">
+                        <span class="sidebar-item-icon">💀</span>
+                        <span>Blue Screen (BSOD)</span>
+                    </div>
+                    <div class="sidebar-item" onclick="filterByTag('storage')">
+                        <span class="sidebar-item-icon">💽</span>
+                        <span>Storage Full</span>
                     </div>
                 </div>
-                <iframe 
-                    id="target-frame" 
-                    src="[script.google.com](https://script.google.com/macros/s/AKfycbw8BaKGZX2M-pCz6JxsAmeWLASazhOVkovKbIggVhjYSN1eJyqW0wvSY00jo44aBFqljg/exec)" 
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                ></iframe>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">System Tools</div>
+                    <div class="sidebar-item" onclick="filterByTag('diagnostic')">
+                        <span class="sidebar-item-icon">🔬</span>
+                        <span>Diagnostics</span>
+                    </div>
+                    <div class="sidebar-item" onclick="filterByTag('repair')">
+                        <span class="sidebar-item-icon">🔧</span>
+                        <span>System Repair</span>
+                    </div>
+                    <div class="sidebar-item" onclick="filterByTag('cleanup')">
+                        <span class="sidebar-item-icon">🧹</span>
+                        <span>Cleanup Tools</span>
+                    </div>
+                    <div class="sidebar-item" onclick="filterByTag('backup')">
+                        <span class="sidebar-item-icon">💾</span>
+                        <span>Backup & Restore</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">Admin Tools</div>
+                    <div class="sidebar-item" onclick="filterByTag('admin')">
+                        <span class="sidebar-item-icon">👑</span>
+                        <span>Admin Commands</span>
+                    </div>
+                    <div class="sidebar-item" onclick="filterByTag('registry')">
+                        <span class="sidebar-item-icon">📝</span>
+                        <span>Registry</span>
+                    </div>
+                    <div class="sidebar-item" onclick="filterByTag('services')">
+                        <span class="sidebar-item-icon">⚡</span>
+                        <span>Services</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Panel -->
+            <div class="content-panel">
+                <div class="content-header">
+                    <div class="content-title">
+                        <span class="content-title-icon">📋</span>
+                        <span id="content-title-text">All Commands</span>
+                    </div>
+                    <div class="content-actions">
+                        <button class="content-btn" onclick="sortCommands('name')">Sort: Name</button>
+                        <button class="content-btn" onclick="sortCommands('category')">Sort: Category</button>
+                        <button class="content-btn primary" onclick="showRandomTip()">💡 Quick Tip</button>
+                    </div>
+                </div>
+
+                <div class="commands-container" id="commands-container">
+                    <div class="commands-grid" id="commands-grid">
+                        <!-- Commands will be rendered here -->
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -751,25 +1206,16 @@
             <div class="status-left">
                 <div class="status-item">
                     <span class="status-dot"></span>
-                    <span>SYSTEM ONLINE</span>
+                    <span>DATABASE ONLINE</span>
                 </div>
                 <div class="status-item">
-                    <span>🔐 AES-256</span>
+                    <span>📊 <span id="total-commands">0</span> Commands</span>
                 </div>
                 <div class="status-item">
-                    <span>📡 DNS ACTIVE</span>
-                </div>
-                <div class="status-item">
-                    <span>🛡️ FIREWALL ON</span>
+                    <span>🔍 <span id="filtered-count">0</span> Showing</span>
                 </div>
             </div>
             <div class="status-right">
-                <div class="status-item">
-                    <span>CPU: <span id="cpu-usage">23%</span></span>
-                </div>
-                <div class="status-item">
-                    <span>MEM: <span id="mem-usage">4.2GB</span></span>
-                </div>
                 <div class="status-item">
                     <span>⏱️ <span id="clock">00:00:00</span></span>
                 </div>
@@ -777,54 +1223,1499 @@
         </div>
     </div>
 
+    <!-- Detail Panel -->
+    <div class="overlay" id="overlay" onclick="closeDetailPanel()"></div>
+    <div class="detail-panel" id="detail-panel">
+        <div class="detail-header">
+            <div class="content-title">
+                <span class="content-title-icon" id="detail-icon">⌨️</span>
+                <span id="detail-title">Command Details</span>
+            </div>
+            <button class="detail-close" onclick="closeDetailPanel()">✕</button>
+        </div>
+        <div class="detail-content" id="detail-content">
+            <!-- Dynamic content -->
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✓</span>
+        <span id="toast-message">Command copied to clipboard!</span>
+    </div>
+
     <script>
-        // Boot sequence data
-        const bootLogs = [
-            { text: "NEXUS_CORE BOOT SEQUENCE INITIATED", type: "info" },
-            { text: "Loading kernel modules...", type: "" },
-            { text: "[OK] Kernel 6.2.0-NEXUS loaded", type: "success" },
-            { text: "Initializing memory management...", type: "" },
-            { text: "[OK] 64GB RAM detected and allocated", type: "success" },
-            { text: "Starting security subsystems...", type: "" },
-            { text: "[OK] Firewall initialized", type: "success" },
-            { text: "[OK] Intrusion detection active", type: "success" },
-            { text: "[OK] AES-256 encryption enabled", type: "success" },
-            { text: "Establishing network connections...", type: "" },
-            { text: "[OK] Primary DNS resolved", type: "success" },
-            { text: "[OK] Secure tunnel established", type: "success" },
-            { text: "Loading system services...", type: "" },
-            { text: "> systemctl start nexus-core", type: "" },
-            { text: "> systemctl start network-manager", type: "" },
-            { text: "> systemctl start security-daemon", type: "" },
-            { text: "[OK] All services running", type: "success" },
-            { text: "Mounting virtual filesystems...", type: "" },
-            { text: "[OK] /dev/nexus mounted", type: "success" },
-            { text: "[OK] /secure/vault mounted", type: "success" },
-            { text: "Running integrity checks...", type: "" },
-            { text: "[OK] System integrity verified", type: "success" },
-            { text: "Loading user interface...", type: "" },
-            { text: "[OK] UI components loaded", type: "success" },
-            { text: "[OK] Theme engine initialized", type: "success" },
-            { text: "──────────────────────────────────────", type: "info" },
-            { text: "NEXUS_CORE v2.0 - READY", type: "info" },
-            { text: "ACCESS GRANTED - Welcome, Operator", type: "success" }
+        // Comprehensive troubleshooting database
+        const troubleshootingDB = [
+            // ==================== CMD COMMANDS ====================
+            {
+                id: 1,
+                name: "System File Checker (SFC)",
+                category: "cmd",
+                command: "sfc /scannow",
+                description: "Scans and repairs corrupted Windows system files. Run this when experiencing random crashes, errors, or system instability.",
+                tags: ["repair", "diagnostic", "bsod", "admin"],
+                steps: [
+                    "Open Command Prompt as Administrator",
+                    "Type the command and press Enter",
+                    "Wait for the scan to complete (may take 15-30 minutes)",
+                    "Restart your computer after completion",
+                    "If issues found, run the command again to verify repairs"
+                ],
+                warning: "This scan requires Administrator privileges and may take significant time. Do not interrupt the process.",
+                relatedCommands: ["DISM /Online /Cleanup-Image /RestoreHealth", "chkdsk /f"]
+            },
+            {
+                id: 2,
+                name: "DISM Health Restore",
+                category: "cmd",
+                command: "DISM /Online /Cleanup-Image /RestoreHealth",
+                description: "Repairs the Windows component store and fixes corruption that SFC cannot repair. Use before running SFC if you suspect deep system corruption.",
+                tags: ["repair", "diagnostic", "bsod", "admin"],
+                steps: [
+                    "Open Command Prompt as Administrator",
+                    "Run the DISM command first",
+                    "Wait for completion (can take 30+ minutes)",
+                    "Then run sfc /scannow",
+                    "Restart and check if issues are resolved"
+                ],
+                warning: "Requires internet connection to download repair files from Windows Update.",
+                relatedCommands: ["sfc /scannow", "DISM /Online /Cleanup-Image /CheckHealth"]
+            },
+            {
+                id: 3,
+                name: "Check Disk",
+                category: "cmd",
+                command: "chkdsk C: /f /r",
+                description: "Checks disk for errors and repairs file system issues. Use when experiencing slow disk performance, file corruption, or read/write errors.",
+                tags: ["disk", "repair", "diagnostic", "storage"],
+                steps: [
+                    "Open Command Prompt as Administrator",
+                    "Type the command (replace C: with target drive)",
+                    "If system drive, you'll be prompted to schedule on restart",
+                    "Type 'Y' and restart your computer",
+                    "Let the check complete before using your PC"
+                ],
+                warning: "This will lock the drive during the check. For system drives, a restart is required. Process cannot be interrupted.",
+                relatedCommands: ["chkdsk /scan", "fsutil dirty query C:"]
+            },
+            {
+                id: 4,
+                name: "IP Configuration",
+                category: "cmd",
+                command: "ipconfig /all",
+                description: "Displays detailed IP configuration for all network adapters. Essential for diagnosing network connectivity issues.",
+                tags: ["network", "diagnostic", "internet"],
+                steps: [
+                    "Open Command Prompt",
+                    "Type the command and press Enter",
+                    "Look for your active adapter's information",
+                    "Note the IP address, subnet mask, default gateway, and DNS servers"
+                ],
+                warning: null,
+                relatedCommands: ["ipconfig /release", "ipconfig /renew", "ipconfig /flushdns"]
+            },
+            {
+                id: 5,
+                name: "Flush DNS Cache",
+                category: "cmd",
+                command: "ipconfig /flushdns",
+                description: "Clears the DNS resolver cache. Use when websites aren't loading properly or you're getting 'DNS not found' errors.",
+                tags: ["network", "internet", "repair"],
+                steps: [
+                    "Open Command Prompt as Administrator",
+                    "Type the command and press Enter",
+                    "You should see 'Successfully flushed the DNS Resolver Cache'",
+                    "Try accessing the problematic website again"
+                ],
+                warning: null,
+                relatedCommands: ["netsh winsock reset", "ipconfig /registerdns"]
+            },
+            {
+                id: 6,
+                name: "Release IP Address",
+                category: "cmd",
+                command: "ipconfig /release && ipconfig /renew",
+                description: "Releases current IP and requests a new one from DHCP. Useful for resolving IP conflicts or connectivity issues.",
+                tags: ["network", "internet", "repair"],
+                steps: [
+                    "Open Command Prompt as Administrator",
+                    "Run the command to release and renew IP",
+                    "Wait for the new IP to be assigned",
+                    "Verify with ipconfig /all"
+                ],
+                warning: "Your internet connection will be temporarily lost during this process.",
+                relatedCommands: ["ipconfig /flushdns", "netsh int ip reset"]
+            },
+            {
+                id: 7,
+                name: "Reset TCP/IP Stack",
+                category: "cmd",
+                command: "netsh int ip reset",
+                description: "Resets the TCP/IP networking stack to default. Use for persistent network issues that other fixes haven't resolved.",
+                tags: ["network", "repair", "internet", "admin"],
+                steps: [
+                    "Open Command Prompt as Administrator",
+                    "Run the command",
+                    "Restart your computer",
+                    "Reconfigure network settings if needed"
+                ],
+                warning: "This will reset all networking configurations. You may need to reconfigure VPNs, proxies, or static IPs.",
+                relatedCommands: ["netsh winsock reset", "netsh interface ipv4 reset"]
+            },
+            {
+                id: 8,
+                name: "Reset Winsock",
+                category: "cmd",
+                command: "netsh winsock reset",
+                description: "Resets the Winsock catalog to fix network connectivity caused by corrupt catalog entries or malware.",
+                tags: ["network", "repair", "internet", "admin", "security"],
+                steps: [
+                    "Open Command Prompt as Administrator",
+                    "Run the command",
+                    "Restart your computer",
+                    "Test network connectivity"
+                ],
+                warning: "Some programs that modify Winsock may need to be reinstalled after this reset.",
+                relatedCommands: ["netsh int ip reset", "ipconfig /flushdns"]
+            },
+            {
+                id: 9,
+                name: "Ping Test",
+                category: "cmd",
+                command: "ping google.com -t",
+                description: "Tests network connectivity to a host. The -t flag runs continuously. Press Ctrl+C to stop and see statistics.",
+                tags: ["network", "diagnostic", "internet"],
+                steps: [
+                    "Open Command Prompt",
+                    "Type the command (change host as needed)",
+                    "Watch for response times and packet loss",
+                    "Press Ctrl+C to stop and view summary"
+                ],
+                warning: null,
+                relatedCommands: ["tracert google.com", "pathping google.com"]
+            },
+            {
+                id: 10,
+                name: "Trace Route",
+                category: "cmd",
+                command: "tracert google.com",
+                description: "Shows the path packets take to reach a destination. Helps identify where network delays or failures occur.",
+                tags: ["network", "diagnostic", "internet"],
+                steps: [
+                    "Open Command Prompt",
+                    "Run the command with your target host",
+                    "Wait for all hops to complete",
+                    "Look for high latency or timeouts at specific hops"
+                ],
+                warning: "Some routers may not respond to trace packets, showing timeouts even on healthy connections.",
+                relatedCommands: ["ping google.com", "pathping google.com"]
+            },
+            {
+                id: 11,
+                name: "Network Statistics",
+                category: "cmd",
+                command: "netstat -ano",
+                description: "Shows all active network connections with process IDs. Useful for finding programs using network resources or detecting suspicious connections.",
+                tags: ["network", "diagnostic", "security"],
+                steps: [
+                    "Open Command Prompt",
+                    "Run the command",
+                    "Note suspicious or unknown connections",
+                    "Match PIDs to processes in Task Manager"
+                ],
+                warning: null,
+                relatedCommands: ["netstat -b", "netstat -r"]
+            },
+            {
+                id: 12,
+                name: "System Information",
+                category: "cmd",
+                command: "systeminfo",
+                description: "Displays detailed system configuration including OS version, hardware, network config, and installed hotfixes.",
+                tags: ["diagnostic", "admin"],
+                steps: [
+                    "Open Command Prompt",
+                    "Run the command",
+                    "Scroll through the output for system details",
+                    "Use 'systeminfo | more' for paginated output"
+                ],
+                warning: null,
+                relatedCommands: ["msinfo32", "winver"]
+            },
+            {
+                id: 13,
+                name: "Disk Cleanup (Command Line)",
+                category: "cmd",
+                command: "cleanmgr /d C: /sagerun:1",
+                description: "Runs Disk Cleanup with preset options. First run 'cleanmgr /d C: /sageset:1' to configure what to clean.",
+                tags: ["disk", "cleanup", "storage", "slow-pc"],
+                steps: [
+                    "Run 'cleanmgr /d C: /sageset:1' to select cleanup options",
+                    "Check items you want to clean (temp files, thumbnails, etc.)",
+                    "Click OK to save settings",
+                    "Run 'cleanmgr /d C: /sagerun:1' to execute cleanup"
+                ],
+                warning: "Review selected items carefully. Some cached data may be useful to keep.",
+                relatedCommands: ["Dism.exe /online /Cleanup-Image /StartComponentCleanup"]
+            },
+            {
+                id: 14,
+                name: "List Running Processes",
+                category: "cmd",
+                command: "tasklist",
+                description: "Lists all currently running processes with their PIDs and memory usage. Useful for identifying resource-heavy processes.",
+                tags: ["diagnostic", "performance", "slow-pc"],
+                steps: [
+                    "Open Command Prompt",
+                    "Run the command",
+                    "Sort by memory: tasklist /fi \"memusage gt 100000\"",
+                    "Find specific process: tasklist /fi \"imagename eq chrome.exe\""
+                ],
+                warning: null,
+                relatedCommands: ["taskkill /im processname.exe /f", "wmic process list brief"]
+            },
+            {
+                id: 15,
+                name: "Kill Process",
+                category: "cmd",
+                command: "taskkill /im processname.exe /f",
+                description: "Forcefully terminates a process by name. Replace 'processname.exe' with the target process.",
+                tags: ["performance", "admin", "slow-pc"],
+                steps: [
+                    "Identify the process name using tasklist or Task Manager",
+                    "Open Command Prompt as Administrator",
+                    "Run taskkill with the process name",
+                    "Use /pid XXXX to kill by process ID instead"
+                ],
+                warning: "Force killing system processes can cause instability. Use with caution.",
+                relatedCommands: ["tasklist", "wmic process where name='processname.exe' delete"]
+            },
+            {
+                id: 16,
+                name: "Shutdown Timer",
+                category: "cmd",
+                command: "shutdown /s /t 3600",
+                description: "Schedules system shutdown. Time is in seconds (3600 = 1 hour). Use /a to abort a scheduled shutdown.",
+                tags: ["admin"],
+                steps: [
+                    "Open Command Prompt",
+                    "Set desired time in seconds",
+                    "Run the command",
+                    "To cancel: shutdown /a"
+                ],
+                warning: "Make sure to save all work before the scheduled shutdown.",
+                relatedCommands: ["shutdown /r /t 0", "shutdown /h", "shutdown /a"]
+            },
+            {
+                id: 17,
+                name: "Restart Now",
+                category: "cmd",
+                command: "shutdown /r /t 0",
+                description: "Immediately restarts the computer. Useful for remote management or scripting.",
+                tags: ["admin"],
+                steps: [
+                    "Save all open work",
+                    "Open Command Prompt as Administrator",
+                    "Run the command",
+                    "System will restart immediately"
+                ],
+                warning: "This will restart immediately without warning. Save your work first!",
+                relatedCommands: ["shutdown /s /t 0", "shutdown /g /t 0"]
+            },
+            {
+                id: 18,
+                name: "Driver Query",
+                category: "cmd",
+                command: "driverquery /v",
+                description: "Lists all installed drivers with detailed information. Useful for troubleshooting driver-related issues.",
+                tags: ["diagnostic", "admin"],
+                steps: [
+                    "Open Command Prompt",
+                    "Run the command",
+                    "Export to file: driverquery /v > drivers.txt",
+                    "Look for stopped or problem drivers"
+                ],
+                warning: null,
+                relatedCommands: ["pnputil /enum-drivers", "msinfo32"]
+            },
+            {
+                id: 19,
+                name: "Battery Report",
+                category: "cmd",
+                command: "powercfg /batteryreport",
+                description: "Generates a detailed battery health report for laptops. Shows capacity history and usage patterns.",
+                tags: ["diagnostic", "admin"],
+                steps: [
+                    "Open Command Prompt as Administrator",
+                    "Run the command",
+                    "Open the generated HTML report",
+                    "Check design capacity vs full charge capacity"
+                ],
+                warning: "Only works on devices with batteries (laptops, tablets).",
+                relatedCommands: ["powercfg /energy", "powercfg /sleepstudy"]
+            },
+            {
+                id: 20,
+                name: "Energy Report",
+                category: "cmd",
+                command: "powercfg /energy",
+                description: "Analyzes system for energy efficiency issues. Great for troubleshooting battery drain or sleep problems.",
+                tags: ["diagnostic", "performance", "admin"],
+                steps: [
+                    "Open Command Prompt as Administrator",
+                    "Run the command",
+                    "Wait 60 seconds for analysis",
+                    "Review the generated HTML report"
+                ],
+                warning: "Analysis takes 60 seconds and monitors system behavior.",
+                relatedCommands: ["powercfg /batteryreport", "powercfg /requests"]
+            },
+            {
+                id: 21,
+                name: "Display Active Power Requests",
+                category: "cmd",
+                command: "powercfg /requests",
+                description: "Shows applications preventing sleep or display timeout. Helps identify what's keeping your PC awake.",
+                tags: ["diagnostic", "performance"],
+                steps: [
+                    "Open Command Prompt as Administrator",
+                    "Run the command",
+                    "Check each category for active requests",
+                    "Address problematic applications"
+                ],
+                warning: null,
+                relatedCommands: ["powercfg /energy", "powercfg /lastwake"]
+            },
+            {
+                id: 22,
+                name: "Boot Configuration",
+                category: "cmd",
+                command: "bcdedit",
+                description: "Displays and manages boot configuration data. Use to fix boot issues or configure boot options.",
+                tags: ["startup", "admin", "diagnostic"],
+                steps: [
+                    "Open Command Prompt as Administrator",
+                    "Run bcdedit to view current config",
+                    "Use bcdedit /set commands to modify",
+                    "Be extremely careful with changes"
+                ],
+                warning: "Incorrect changes can prevent Windows from booting. Create a system restore point first.",
+                relatedCommands: ["bootrec /fixmbr", "bootrec /fixboot", "bootrec /rebuildbcd"]
+            },
+            {
+                id: 23,
+                name: "Repair Boot Record",
+                category: "cmd",
+                command: "bootrec /fixmbr && bootrec /fixboot && bootrec /rebuildbcd",
+                description: "Repairs the Master Boot Record and boot configuration. Use from Windows Recovery Environment for boot issues.",
+                tags: ["startup", "repair", "admin", "bsod"],
+                steps: [
+                    "Boot into Windows Recovery Environment",
+                    "Open Command Prompt",
+                    "Run bootrec /fixmbr",
+                    "Run bootrec /fixboot",
+                    "Run bootrec /rebuildbcd",
+                    "Restart and test"
+                ],
+                warning: "Run from Recovery Environment. These commands can affect system booting.",
+                relatedCommands: ["bcdedit", "bcdboot"]
+            },
+            {
+                id: 24,
+                name: "File Attributes",
+                category: "cmd",
+                command: "attrib -h -r -s /s /d C:\\path\\*.*",
+                description: "Removes hidden, read-only, and system attributes from files. Useful for recovering hidden files from infected drives.",
+                tags: ["repair", "security", "admin"],
+                steps: [
+                    "Open Command Prompt as Administrator",
+                    "Navigate to the target drive/folder",
+                    "Run the command with correct path",
+                    "Files should now be visible"
+                ],
+                warning: "Don't run on system folders as it may expose protected files.",
+                relatedCommands: ["dir /a", "icacls"]
+            },
+
+            // ==================== POWERSHELL COMMANDS ====================
+            {
+                id: 25,
+                name: "Get System Uptime",
+                category: "powershell",
+                command: "(Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime",
+                description: "Shows how long the system has been running since last boot. Useful for tracking system stability.",
+                tags: ["diagnostic", "performance"],
+                steps: [
+                    "Open PowerShell",
+                    "Run the command",
+                    "View the uptime in days, hours, minutes, seconds"
+                ],
+                warning: null,
+                relatedCommands: ["systeminfo | find \"Boot Time\""]
+            },
+            {
+                id: 26,
+                name: "List Installed Programs",
+                category: "powershell",
+                command: "Get-ItemProperty HKLM:\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\* | Select-Object DisplayName, DisplayVersion, Publisher | Sort-Object DisplayName | Format-Table -AutoSize",
+                description: "Lists all installed programs from the registry. More comprehensive than Programs & Features.",
+                tags: ["diagnostic", "admin"],
+                steps: [
+                    "Open PowerShell",
+                    "Run the command",
+                    "Export: Add '| Out-File programs.txt' to save"
+                ],
+                warning: null,
+                relatedCommands: ["Get-WmiObject -Class Win32_Product", "winget list"]
+            },
+            {
+                id: 27,
+                name: "Disk Space Analysis",
+                category: "powershell",
+                command: "Get-WmiObject Win32_LogicalDisk | Select-Object DeviceID, @{n='Size(GB)';e={[math]::Round($_.Size/1GB,2)}}, @{n='Free(GB)';e={[math]::Round($_.FreeSpace/1GB,2)}}, @{n='%Free';e={[math]::Round($_.FreeSpace/$_.Size*100,1)}}",
+                description: "Shows disk space usage for all drives in a readable format with percentages.",
+                tags: ["disk", "diagnostic", "storage"],
+                steps: [
+                    "Open PowerShell",
+                    "Run the command",
+                    "Review space on each drive"
+                ],
+                warning: null,
+                relatedCommands: ["Get-Volume", "Get-Partition"]
+            },
+            {
+                id: 28,
+                name: "Find Large Files",
+                category: "powershell",
+                command: "Get-ChildItem C:\\ -Recurse -ErrorAction SilentlyContinue | Where-Object {$_.Length -gt 500MB} | Sort-Object Length -Descending | Select-Object FullName, @{n='Size(MB)';e={[math]::Round($_.Length/1MB,2)}} | Format-Table -AutoSize",
+                description: "Finds files larger than 500MB on C: drive. Helps identify what's consuming disk space.",
+                tags: ["disk", "cleanup", "storage", "slow-pc"],
+                steps: [
+                    "Open PowerShell as Administrator",
+                    "Run the command",
+                    "Review large files for potential deletion",
+                    "Adjust 500MB threshold as needed"
+                ],
+                warning: "Running on entire drive takes time. Consider limiting to specific folders.",
+                relatedCommands: ["TreeSize (program)", "WinDirStat (program)"]
+            },
+            {
+                id: 29,
+                name: "Clear Temp Files",
+                category: "powershell",
+                command: "Remove-Item -Path $env:TEMP\\* -Recurse -Force -ErrorAction SilentlyContinue; Remove-Item -Path C:\\Windows\\Temp\\* -Recurse -Force -ErrorAction SilentlyContinue",
+                description: "Clears user and system temporary files. Safe way to free up disk space.",
+                tags: ["cleanup", "disk", "storage", "slow-pc"],
+                steps: [
+                    "Open PowerShell as Administrator",
+                    "Close other applications",
+                    "Run the command",
+                    "Some files in use may be skipped (normal)"
+                ],
+                warning: "Some temp files may be in use and will be skipped. This is normal.",
+                relatedCommands: ["cleanmgr", "Disk Cleanup"]
+            },
+            {
+                id: 30,
+                name: "Windows Update History",
+                category: "powershell",
+                command: "Get-WmiObject -Class Win32_QuickFixEngineering | Sort-Object InstalledOn -Descending | Select-Object HotFixID, Description, InstalledOn | Format-Table -AutoSize",
+                description: "Shows recently installed Windows updates. Helpful for tracking update-related issues.",
+                tags: ["diagnostic", "admin"],
+                steps: [
+                    "Open PowerShell",
+                    "Run the command",
+                    "Review recent updates",
+                    "Note problematic updates for potential uninstall"
+                ],
+                warning: null,
+                relatedCommands: ["wusa /uninstall /kb:XXXXXXX", "Get-WindowsUpdate"]
+            },
+            {
+                id: 31,
+                name: "Startup Programs",
+                category: "powershell",
+                command: "Get-CimInstance Win32_StartupCommand | Select-Object Name, Command, Location | Format-Table -AutoSize",
+                description: "Lists all programs that run at startup. Helps identify what might be slowing down boot time.",
+                tags: ["startup", "diagnostic", "slow-pc", "performance"],
+                steps: [
+                    "Open PowerShell",
+                    "Run the command",
+                    "Identify unnecessary startup items",
+                    "Disable via Task Manager > Startup tab"
+                ],
+                warning: null,
+                relatedCommands: ["msconfig", "Task Manager Startup tab"]
+            },
+            {
+                id: 32,
+                name: "Running Services",
+                category: "powershell",
+                command: "Get-Service | Where-Object {$_.Status -eq 'Running'} | Sort-Object DisplayName | Format-Table DisplayName, Name, Status -AutoSize",
+                description: "Lists all currently running Windows services. Useful for service troubleshooting.",
+                tags: ["services", "diagnostic", "performance"],
+                steps: [
+                    "Open PowerShell",
+                    "Run the command",
+                    "Review running services",
+                    "Stop unnecessary services with Stop-Service"
+                ],
+                warning: "Don't stop system-critical services without understanding their purpose.",
+                relatedCommands: ["services.msc", "Stop-Service", "Restart-Service"]
+            },
+            {
+                id: 33,
+                name: "Stop Service",
+                category: "powershell",
+                command: "Stop-Service -Name \"ServiceName\" -Force",
+                description: "Stops a Windows service by name. Replace 'ServiceName' with the actual service name.",
+                tags: ["services", "admin"],
+                steps: [
+                    "Find service name using Get-Service",
+                    "Open PowerShell as Administrator",
+                    "Replace ServiceName with actual name",
+                    "Run the command"
+                ],
+                warning: "Stopping critical services can affect system stability.",
+                relatedCommands: ["Start-Service", "Restart-Service", "Set-Service"]
+            },
+            {
+                id: 34,
+                name: "Network Adapter Info",
+                category: "powershell",
+                command: "Get-NetAdapter | Select-Object Name, Status, MacAddress, LinkSpeed | Format-Table -AutoSize",
+                description: "Displays network adapter information including status and speed.",
+                tags: ["network", "diagnostic"],
+                steps: [
+                    "Open PowerShell",
+                    "Run the command",
+                    "Note adapter names and status"
+                ],
+                warning: null,
+                relatedCommands: ["Get-NetIPAddress", "Get-NetIPConfiguration"]
+            },
+            {
+                id: 35,
+                name: "Reset Network Adapter",
+                category: "powershell",
+                command: "Restart-NetAdapter -Name \"Wi-Fi\"",
+                description: "Restarts a network adapter. Replace 'Wi-Fi' with your adapter name. Fixes many connectivity issues.",
+                tags: ["network", "repair", "internet"],
+                steps: [
+                    "Get adapter name: Get-NetAdapter",
+                    "Open PowerShell as Administrator",
+                    "Replace Wi-Fi with your adapter name",
+                    "Run the command"
+                ],
+                warning: "Network connection will be interrupted briefly.",
+                relatedCommands: ["Disable-NetAdapter", "Enable-NetAdapter"]
+            },
+            {
+                id: 36,
+                name: "Windows Firewall Status",
+                category: "powershell",
+                command: "Get-NetFirewallProfile | Select-Object Name, Enabled | Format-Table -AutoSize",
+                description: "Shows Windows Firewall status for all profiles (Domain, Private, Public).",
+                tags: ["security", "diagnostic", "network"],
+                steps: [
+                    "Open PowerShell",
+                    "Run the command",
+                    "Check if profiles are enabled"
+                ],
+                warning: null,
+                relatedCommands: ["Set-NetFirewallProfile", "Get-NetFirewallRule"]
+            },
+            {
+                id: 37,
+                name: "Event Log Errors",
+                category: "powershell",
+                command: "Get-EventLog -LogName System -EntryType Error -Newest 20 | Select-Object TimeGenerated, Source, Message | Format-Table -Wrap",
+                description: "Shows the 20 most recent system errors from Event Log. Essential for troubleshooting crashes and issues.",
+                tags: ["diagnostic", "bsod", "admin"],
+                steps: [
+                    "Open PowerShell",
+                    "Run the command",
+                    "Review error messages for patterns",
+                    "Search error sources online for solutions"
+                ],
+                warning: null,
+                relatedCommands: ["Get-EventLog -LogName Application -EntryType Error -Newest 20", "eventvwr.msc"]
+            },
+            {
+                id: 38,
+                name: "Memory Usage by Process",
+                category: "powershell",
+                command: "Get-Process | Sort-Object WorkingSet64 -Descending | Select-Object -First 10 ProcessName, @{n='Memory(MB)';e={[math]::Round($_.WorkingSet64/1MB,2)}} | Format-Table -AutoSize",
+                description: "Shows top 10 memory-consuming processes. Helps identify memory hogs.",
+                tags: ["performance", "diagnostic", "slow-pc"],
+                steps: [
+                    "Open PowerShell",
+                    "Run the command",
+                    "Identify high memory processes",
+                    "Close or investigate problematic processes"
+                ],
+                warning: null,
+                relatedCommands: ["Get-Process | Stop-Process", "Task Manager"]
+            },
+            {
+                id: 39,
+                name: "CPU Usage by Process",
+                category: "powershell",
+                command: "Get-Process | Sort-Object CPU -Descending | Select-Object -First 10 ProcessName, CPU, @{n='Memory(MB)';e={[math]::Round($_.WorkingSet64/1MB,2)}} | Format-Table -AutoSize",
+                description: "Shows top 10 CPU-consuming processes based on cumulative CPU time.",
+                tags: ["performance", "diagnostic", "slow-pc"],
+                steps: [
+                    "Open PowerShell",
+                    "Run the command",
+                    "Identify CPU-heavy processes",
+                    "Monitor or terminate as needed"
+                ],
+                warning: "CPU value shows total time used, not current percentage.",
+                relatedCommands: ["Get-Counter", "Performance Monitor"]
+            },
+            {
+                id: 40,
+                name: "Windows Defender Scan",
+                category: "powershell",
+                command: "Start-MpScan -ScanType QuickScan",
+                description: "Initiates a Windows Defender quick scan. Use 'FullScan' for comprehensive scanning.",
+                tags: ["security", "diagnostic"],
+                steps: [
+                    "Open PowerShell as Administrator",
+                    "Run the command",
+                    "Wait for scan completion",
+                    "Review results in Windows Security app"
+                ],
+                warning: "Full scans can take several hours depending on data volume.",
+                relatedCommands: ["Start-MpScan -ScanType FullScan", "Update-MpSignature", "Get-MpThreatDetection"]
+            },
+            {
+                id: 41,
+                name: "Update Defender Definitions",
+                category: "powershell",
+                command: "Update-MpSignature",
+                description: "Updates Windows Defender virus definitions to the latest version.",
+                tags: ["security", "admin"],
+                steps: [
+                    "Open PowerShell as Administrator",
+                    "Run the command",
+                    "Wait for download and installation",
+                    "Verify in Windows Security app"
+                ],
+                warning: "Requires internet connection.",
+                relatedCommands: ["Start-MpScan", "Get-MpComputerStatus"]
+            },
+            {
+                id: 42,
+                name: "Disk Health Check (SMART)",
+                category: "powershell",
+                command: "Get-PhysicalDisk | Select-Object FriendlyName, MediaType, OperationalStatus, HealthStatus, Size | Format-Table -AutoSize",
+                description: "Checks physical disk health status. Shows if drives are healthy, degraded, or failing.",
+                tags: ["disk", "diagnostic", "storage"],
+                steps: [
+                    "Open PowerShell",
+                    "Run the command",
+                    "Check HealthStatus column",
+                    "Replace disks showing 'Warning' or 'Unhealthy'"
+                ],
+                warning: "Back up data immediately if HealthStatus is not 'Healthy'.",
+                relatedCommands: ["Get-Disk", "wmic diskdrive get status"]
+            },
+            {
+                id: 43,
+                name: "Clear Windows Update Cache",
+                category: "powershell",
+                command: "Stop-Service wuauserv; Remove-Item C:\\Windows\\SoftwareDistribution\\* -Recurse -Force; Start-Service wuauserv",
+                description: "Clears the Windows Update download cache. Fixes stuck or failed updates.",
+                tags: ["repair", "admin", "cleanup"],
+                steps: [
+                    "Open PowerShell as Administrator",
+                    "Run the command",
+                    "Wait for service restart",
+                    "Try Windows Update again"
+                ],
+                warning: "This will delete pending updates. They'll re-download when you check for updates.",
+                relatedCommands: ["DISM /Online /Cleanup-Image /RestoreHealth"]
+            },
+            {
+                id: 44,
+                name: "Export WiFi Password",
+                category: "powershell",
+                command: "netsh wlan show profile name=\"WIFI_NAME\" key=clear",
+                description: "Shows saved WiFi password. Replace WIFI_NAME with the network name.",
+                tags: ["network", "admin"],
+                steps: [
+                    "Open PowerShell as Administrator",
+                    "First list networks: netsh wlan show profiles",
+                    "Replace WIFI_NAME with actual network name",
+                    "Look for 'Key Content' in output"
+                ],
+                warning: null,
+                relatedCommands: ["netsh wlan show profiles"]
+            },
+
+            // ==================== SETTINGS PATHS ====================
+            {
+                id: 45,
+                name: "System Settings",
+                category: "settings",
+                command: "ms-settings:",
+                description: "Opens the main Windows Settings app. Central hub for all system configuration.",
+                tags: ["admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:about", "ms-settings:display"]
+            },
+            {
+                id: 46,
+                name: "Display Settings",
+                category: "settings",
+                command: "ms-settings:display",
+                description: "Opens display settings for resolution, scaling, and multi-monitor configuration.",
+                tags: ["admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["desk.cpl", "ms-settings:nightlight"]
+            },
+            {
+                id: 47,
+                name: "Network & Internet Settings",
+                category: "settings",
+                command: "ms-settings:network",
+                description: "Opens Network & Internet settings for WiFi, Ethernet, VPN, and proxy configuration.",
+                tags: ["network", "internet"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:network-wifi", "ncpa.cpl"]
+            },
+            {
+                id: 48,
+                name: "WiFi Settings",
+                category: "settings",
+                command: "ms-settings:network-wifi",
+                description: "Opens WiFi settings for connecting to networks and managing wireless preferences.",
+                tags: ["network", "internet"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:network", "netsh wlan show profiles"]
+            },
+            {
+                id: 49,
+                name: "Apps & Features",
+                category: "settings",
+                command: "ms-settings:appsfeatures",
+                description: "Opens Apps & Features to uninstall programs or modify app settings.",
+                tags: ["admin", "cleanup"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["appwiz.cpl", "ms-settings:defaultapps"]
+            },
+            {
+                id: 50,
+                name: "Startup Apps",
+                category: "settings",
+                command: "ms-settings:startupapps",
+                description: "Opens Startup Apps settings to enable/disable programs that run at boot.",
+                tags: ["startup", "slow-pc", "performance"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Disable unnecessary startup apps",
+                    "Restart to apply changes"
+                ],
+                warning: "Don't disable security software or essential system utilities.",
+                relatedCommands: ["msconfig", "Task Manager Startup"]
+            },
+            {
+                id: 51,
+                name: "Windows Update",
+                category: "settings",
+                command: "ms-settings:windowsupdate",
+                description: "Opens Windows Update settings to check for and install updates.",
+                tags: ["admin", "security"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Click 'Check for updates'"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:windowsupdate-history", "wuauclt /detectnow"]
+            },
+            {
+                id: 52,
+                name: "Recovery Options",
+                category: "settings",
+                command: "ms-settings:recovery",
+                description: "Opens Recovery settings for Reset this PC, Advanced startup, and recovery options.",
+                tags: ["repair", "admin", "backup"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Choose recovery option as needed"
+                ],
+                warning: "Reset this PC will delete your programs. Back up important data first.",
+                relatedCommands: ["rstrui.exe", "ms-settings:backup"]
+            },
+            {
+                id: 53,
+                name: "Windows Security",
+                category: "settings",
+                command: "ms-settings:windowsdefender",
+                description: "Opens Windows Security settings for antivirus, firewall, and protection options.",
+                tags: ["security"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:windowsdefender-antivirus", "mrt"]
+            },
+            {
+                id: 54,
+                name: "Storage Settings",
+                category: "settings",
+                command: "ms-settings:storagesense",
+                description: "Opens Storage settings to view usage, configure Storage Sense, and free up space.",
+                tags: ["disk", "storage", "cleanup"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Review storage usage",
+                    "Enable Storage Sense for auto-cleanup"
+                ],
+                warning: null,
+                relatedCommands: ["cleanmgr", "ms-settings:savelocations"]
+            },
+            {
+                id: 55,
+                name: "Power & Battery",
+                category: "settings",
+                command: "ms-settings:powersleep",
+                description: "Opens Power & Battery settings for power plans and sleep options.",
+                tags: ["performance", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Adjust power settings as needed"
+                ],
+                warning: null,
+                relatedCommands: ["powercfg.cpl", "ms-settings:batterysaver"]
+            },
+            {
+                id: 56,
+                name: "Sound Settings",
+                category: "settings",
+                command: "ms-settings:sound",
+                description: "Opens Sound settings for audio devices and volume configuration.",
+                tags: ["admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["mmsys.cpl", "ms-settings:sound-devices"]
+            },
+            {
+                id: 57,
+                name: "Bluetooth Settings",
+                category: "settings",
+                command: "ms-settings:bluetooth",
+                description: "Opens Bluetooth & devices settings for pairing and managing Bluetooth devices.",
+                tags: ["network", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:connecteddevices", "bthprops.cpl"]
+            },
+            {
+                id: 58,
+                name: "Date & Time",
+                category: "settings",
+                command: "ms-settings:dateandtime",
+                description: "Opens Date & Time settings for time zone and synchronization configuration.",
+                tags: ["admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["timedate.cpl", "w32tm /resync"]
+            },
+            {
+                id: 59,
+                name: "Region & Language",
+                category: "settings",
+                command: "ms-settings:regionlanguage",
+                description: "Opens Region & Language settings for locale and display language.",
+                tags: ["admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["intl.cpl", "ms-settings:regionformatting"]
+            },
+            {
+                id: 60,
+                name: "Privacy Settings",
+                category: "settings",
+                command: "ms-settings:privacy",
+                description: "Opens Privacy settings for controlling app permissions and data collection.",
+                tags: ["security", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Review and adjust privacy settings"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:privacy-location", "ms-settings:privacy-microphone"]
+            },
+            {
+                id: 61,
+                name: "About This PC",
+                category: "settings",
+                command: "ms-settings:about",
+                description: "Shows system information including Windows version, PC name, and specifications.",
+                tags: ["diagnostic"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["winver", "systeminfo"]
+            },
+            {
+                id: 62,
+                name: "Device Manager (Settings)",
+                category: "settings",
+                command: "ms-settings:devicemanager",
+                description: "Opens Device Manager for managing hardware devices and drivers.",
+                tags: ["diagnostic", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["devmgmt.msc", "hdwwiz.cpl"]
+            },
+
+            // ==================== PROGRAMS / UTILITIES ====================
+            {
+                id: 63,
+                name: "Task Manager",
+                category: "programs",
+                command: "taskmgr",
+                description: "Opens Task Manager for managing processes, performance monitoring, and startup apps.",
+                tags: ["performance", "diagnostic", "slow-pc"],
+                steps: [
+                    "Press Ctrl + Shift + Esc (direct)",
+                    "Or press Win + R, type taskmgr",
+                    "Or right-click taskbar > Task Manager"
+                ],
+                warning: null,
+                relatedCommands: ["resmon", "perfmon"]
+            },
+            {
+                id: 64,
+                name: "Resource Monitor",
+                category: "programs",
+                command: "resmon",
+                description: "Opens Resource Monitor for detailed CPU, memory, disk, and network monitoring.",
+                tags: ["performance", "diagnostic", "slow-pc"],
+                steps: [
+                    "Press Win + R",
+                    "Type resmon",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["taskmgr", "perfmon"]
+            },
+            {
+                id: 65,
+                name: "Performance Monitor",
+                category: "programs",
+                command: "perfmon",
+                description: "Opens Performance Monitor for advanced system performance analysis and logging.",
+                tags: ["performance", "diagnostic"],
+                steps: [
+                    "Press Win + R",
+                    "Type perfmon",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["resmon", "taskmgr"]
+            },
+            {
+                id: 66,
+                name: "Device Manager",
+                category: "programs",
+                command: "devmgmt.msc",
+                description: "Opens Device Manager for managing hardware, updating drivers, and troubleshooting devices.",
+                tags: ["diagnostic", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type devmgmt.msc",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["hdwwiz.cpl", "driverquery"]
+            },
+            {
+                id: 67,
+                name: "Disk Management",
+                category: "programs",
+                command: "diskmgmt.msc",
+                description: "Opens Disk Management for partitioning, formatting, and managing disk volumes.",
+                tags: ["disk", "storage", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type diskmgmt.msc",
+                    "Press Enter"
+                ],
+                warning: "Be careful when modifying partitions. Data loss is possible.",
+                relatedCommands: ["diskpart", "chkdsk"]
+            },
+            {
+                id: 68,
+                name: "Services",
+                category: "programs",
+                command: "services.msc",
+                description: "Opens Services console for managing Windows services and their startup behavior.",
+                tags: ["services", "admin", "performance"],
+                steps: [
+                    "Press Win + R",
+                    "Type services.msc",
+                    "Press Enter"
+                ],
+                warning: "Don't disable services you don't understand.",
+                relatedCommands: ["msconfig", "sc query"]
+            },
+            {
+                id: 69,
+                name: "System Configuration (MSConfig)",
+                category: "programs",
+                command: "msconfig",
+                description: "Opens System Configuration for boot options, service management, and diagnostic startup.",
+                tags: ["startup", "diagnostic", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type msconfig",
+                    "Press Enter"
+                ],
+                warning: "Changes require restart. Diagnostic boot disables many features.",
+                relatedCommands: ["services.msc", "ms-settings:startupapps"]
+            },
+            {
+                id: 70,
+                name: "Event Viewer",
+                category: "programs",
+                command: "eventvwr.msc",
+                description: "Opens Event Viewer for viewing Windows logs, errors, and system events.",
+                tags: ["diagnostic", "admin", "bsod"],
+                steps: [
+                    "Press Win + R",
+                    "Type eventvwr.msc",
+                    "Check Windows Logs > System for errors"
+                ],
+                warning: null,
+                relatedCommands: ["Get-EventLog", "wevtutil"]
+            },
+            {
+                id: 71,
+                name: "Computer Management",
+                category: "programs",
+                command: "compmgmt.msc",
+                description: "Opens Computer Management for comprehensive system administration tools.",
+                tags: ["admin", "diagnostic"],
+                steps: [
+                    "Press Win + R",
+                    "Type compmgmt.msc",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["devmgmt.msc", "diskmgmt.msc", "services.msc"]
+            },
+            {
+                id: 72,
+                name: "Registry Editor",
+                category: "programs",
+                command: "regedit",
+                description: "Opens Registry Editor for viewing and modifying Windows registry. Use with extreme caution.",
+                tags: ["registry", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type regedit",
+                    "Press Enter"
+                ],
+                warning: "Incorrect registry changes can break Windows. Always backup before editing.",
+                relatedCommands: ["reg export", "reg import"]
+            },
+            {
+                id: 73,
+                name: "Group Policy Editor",
+                category: "programs",
+                command: "gpedit.msc",
+                description: "Opens Local Group Policy Editor for advanced system configuration (Pro/Enterprise only).",
+                tags: ["admin", "security"],
+                steps: [
+                    "Press Win + R",
+                    "Type gpedit.msc",
+                    "Press Enter"
+                ],
+                warning: "Available only in Windows Pro/Enterprise. Not in Home edition.",
+                relatedCommands: ["secpol.msc", "rsop.msc"]
+            },
+            {
+                id: 74,
+                name: "Control Panel",
+                category: "programs",
+                command: "control",
+                description: "Opens the classic Control Panel for traditional Windows settings.",
+                tags: ["admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type control",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:", "appwiz.cpl"]
+            },
+            {
+                id: 75,
+                name: "Programs and Features",
+                category: "programs",
+                command: "appwiz.cpl",
+                description: "Opens Programs and Features for uninstalling programs and Windows features.",
+                tags: ["admin", "cleanup"],
+                steps: [
+                    "Press Win + R",
+                    "Type appwiz.cpl",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:appsfeatures", "optionalfeatures"]
+            },
+            {
+                id: 76,
+                name: "Windows Features",
+                category: "programs",
+                command: "optionalfeatures",
+                description: "Opens Windows Features to enable/disable Windows components like Hyper-V, WSL, etc.",
+                tags: ["admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type optionalfeatures",
+                    "Press Enter"
+                ],
+                warning: "Some features require restart to enable/disable.",
+                relatedCommands: ["dism /online /get-features", "appwiz.cpl"]
+            },
+            {
+                id: 77,
+                name: "Network Connections",
+                category: "programs",
+                command: "ncpa.cpl",
+                description: "Opens Network Connections for managing network adapters and their properties.",
+                tags: ["network", "internet", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type ncpa.cpl",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:network", "netsh"]
+            },
+            {
+                id: 78,
+                name: "Windows Firewall",
+                category: "programs",
+                command: "firewall.cpl",
+                description: "Opens Windows Defender Firewall settings for managing firewall rules.",
+                tags: ["security", "network", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type firewall.cpl",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["wf.msc", "netsh advfirewall"]
+            },
+            {
+                id: 79,
+                name: "Advanced Firewall",
+                category: "programs",
+                command: "wf.msc",
+                description: "Opens Windows Defender Firewall with Advanced Security for detailed rule management.",
+                tags: ["security", "network", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type wf.msc",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["firewall.cpl", "netsh advfirewall"]
+            },
+            {
+                id: 80,
+                name: "System Restore",
+                category: "programs",
+                command: "rstrui.exe",
+                description: "Opens System Restore to restore Windows to a previous restore point.",
+                tags: ["repair", "backup", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type rstrui.exe",
+                    "Select a restore point",
+                    "Follow the wizard"
+                ],
+                warning: "System Restore doesn't affect personal files but may remove recently installed programs.",
+                relatedCommands: ["ms-settings:recovery", "sysdm.cpl"]
+            },
+            {
+                id: 81,
+                name: "System Properties",
+                category: "programs",
+                command: "sysdm.cpl",
+                description: "Opens System Properties for computer name, domain, Remote Desktop, and System Protection.",
+                tags: ["admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type sysdm.cpl",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:about", "systeminfo"]
+            },
+            {
+                id: 82,
+                name: "DirectX Diagnostic",
+                category: "programs",
+                command: "dxdiag",
+                description: "Opens DirectX Diagnostic Tool for graphics and sound driver information.",
+                tags: ["diagnostic", "performance"],
+                steps: [
+                    "Press Win + R",
+                    "Type dxdiag",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["devmgmt.msc", "msinfo32"]
+            },
+            {
+                id: 83,
+                name: "System Information",
+                category: "programs",
+                command: "msinfo32",
+                description: "Opens System Information for comprehensive hardware and software details.",
+                tags: ["diagnostic"],
+                steps: [
+                    "Press Win + R",
+                    "Type msinfo32",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["systeminfo", "dxdiag"]
+            },
+            {
+                id: 84,
+                name: "Memory Diagnostic",
+                category: "programs",
+                command: "mdsched.exe",
+                description: "Opens Windows Memory Diagnostic to check RAM for errors. Requires restart.",
+                tags: ["diagnostic", "repair", "bsod", "performance"],
+                steps: [
+                    "Press Win + R",
+                    "Type mdsched.exe",
+                    "Choose to restart now or next time",
+                    "Test runs automatically on restart"
+                ],
+                warning: "Computer will restart and run tests before Windows loads.",
+                relatedCommands: ["perfmon /report"]
+            },
+            {
+                id: 85,
+                name: "Disk Cleanup",
+                category: "programs",
+                command: "cleanmgr",
+                description: "Opens Disk Cleanup to remove temporary files and free up disk space.",
+                tags: ["disk", "cleanup", "storage", "slow-pc"],
+                steps: [
+                    "Press Win + R",
+                    "Type cleanmgr",
+                    "Select drive to clean",
+                    "Choose file types to delete"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:storagesense", "cleanmgr /sageset:1"]
+            },
+            {
+                id: 86,
+                name: "Reliability Monitor",
+                category: "programs",
+                command: "perfmon /rel",
+                description: "Opens Reliability Monitor showing system stability history and problem events.",
+                tags: ["diagnostic", "bsod"],
+                steps: [
+                    "Press Win + R",
+                    "Type perfmon /rel",
+                    "Review stability graph",
+                    "Click events for details"
+                ],
+                warning: null,
+                relatedCommands: ["eventvwr.msc", "perfmon /report"]
+            },
+            {
+                id: 87,
+                name: "Performance Report",
+                category: "programs",
+                command: "perfmon /report",
+                description: "Generates a detailed system health report analyzing performance issues.",
+                tags: ["diagnostic", "performance"],
+                steps: [
+                    "Press Win + R",
+                    "Type perfmon /report",
+                    "Wait 60 seconds for data collection",
+                    "Review the generated report"
+                ],
+                warning: "Report generation takes about 60 seconds.",
+                relatedCommands: ["perfmon /rel", "resmon"]
+            },
+            {
+                id: 88,
+                name: "Windows Troubleshooters",
+                category: "programs",
+                command: "msdt.exe",
+                description: "Opens Microsoft Support Diagnostic Tool for running built-in troubleshooters.",
+                tags: ["diagnostic", "repair"],
+                steps: [
+                    "Press Win + R",
+                    "Type msdt.exe",
+                    "Or go to Settings > Troubleshoot"
+                ],
+                warning: null,
+                relatedCommands: ["ms-settings:troubleshoot", "control /name Microsoft.Troubleshooting"]
+            },
+            {
+                id: 89,
+                name: "Local Users and Groups",
+                category: "programs",
+                command: "lusrmgr.msc",
+                description: "Opens Local Users and Groups for user account management (Pro/Enterprise only).",
+                tags: ["admin", "security"],
+                steps: [
+                    "Press Win + R",
+                    "Type lusrmgr.msc",
+                    "Press Enter"
+                ],
+                warning: "Available only in Windows Pro/Enterprise. Not in Home edition.",
+                relatedCommands: ["netplwiz", "control userpasswords2"]
+            },
+            {
+                id: 90,
+                name: "User Accounts",
+                category: "programs",
+                command: "netplwiz",
+                description: "Opens User Accounts for managing user login and passwords.",
+                tags: ["admin", "security"],
+                steps: [
+                    "Press Win + R",
+                    "Type netplwiz",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["lusrmgr.msc", "ms-settings:otherusers"]
+            },
+            {
+                id: 91,
+                name: "Malicious Software Removal Tool",
+                category: "programs",
+                command: "mrt",
+                description: "Opens Microsoft Malicious Software Removal Tool for scanning and removing malware.",
+                tags: ["security", "repair"],
+                steps: [
+                    "Press Win + R",
+                    "Type mrt",
+                    "Press Enter",
+                    "Run a scan"
+                ],
+                warning: null,
+                relatedCommands: ["Start-MpScan", "ms-settings:windowsdefender"]
+            },
+            {
+                id: 92,
+                name: "Credential Manager",
+                category: "programs",
+                command: "control /name Microsoft.CredentialManager",
+                description: "Opens Credential Manager for viewing and managing saved passwords and certificates.",
+                tags: ["security", "admin"],
+                steps: [
+                    "Press Win + R",
+                    "Type the command",
+                    "Press Enter"
+                ],
+                warning: null,
+                relatedCommands: ["certmgr.msc", "ms-settings:privacy"]
+            }
         ];
 
-        // Search suggestions data
-        const searchData = [
-            { title: "System Settings", desc: "Configure system preferences", icon: "⚙️", action: "settings" },
-            { title: "Network Monitor", desc: "View network statistics", icon: "📡", action: "network" },
-            { title: "Process Manager", desc: "Manage running processes", icon: "⚡", action: "processes" },
-            { title: "Terminal", desc: "Open command terminal", icon: "💻", action: "terminal" },
-            { title: "Security Center", desc: "Security and firewall settings", icon: "🛡️", action: "security" },
-            { title: "File Explorer", desc: "Browse system files", icon: "📁", action: "files" },
-            { title: "System Logs", desc: "View system event logs", icon: "📋", action: "logs" },
-            { title: "Performance Monitor", desc: "CPU, Memory, Disk usage", icon: "📈", action: "performance" },
-            { title: "User Management", desc: "Manage user accounts", icon: "👥", action: "users" },
-            { title: "Backup & Recovery", desc: "System backup options", icon: "💾", action: "backup" },
-            { title: "Google Search", desc: "Search the web", icon: "🔍", url: "[google.com](https://www.google.com/search?q=)" },
-            { title: "GitHub", desc: "Open GitHub", icon: "🐙", url: "[github.com](https://github.com)" },
-            { title: "Stack Overflow", desc: "Developer Q&A", icon: "📚", url: "[stackoverflow.com](https://stackoverflow.com)" }
+        // Additional tags mapping for filtering
+        const tagMappings = {
+            'slow-pc': ['performance', 'cleanup', 'startup'],
+            'internet': ['network'],
+            'bsod': ['diagnostic', 'repair'],
+            'storage': ['disk', 'cleanup']
+        };
+
+        // Boot sequence
+        const bootLogs = [
+            { text: "PC_TROUBLESHOOT DIAGNOSTIC SYSTEM LOADING", type: "info" },
+            { text: "Initializing troubleshooting database...", type: "" },
+            { text: "[OK] Command database loaded: " + troubleshootingDB.length + " entries", type: "success" },
+            { text: "Loading CMD commands...", type: "" },
+            { text: "[OK] CMD commands indexed", type: "success" },
+            { text: "Loading PowerShell commands...", type: "" },
+            { text: "[OK] PowerShell commands indexed", type: "success" },
+            { text: "Loading Settings paths...", type: "" },
+            { text: "[OK] Settings paths indexed", type: "success" },
+            { text: "Loading Program shortcuts...", type: "" },
+            { text: "[OK] Program shortcuts indexed", type: "success" },
+            { text: "Initializing search engine...", type: "" },
+            { text: "[OK] Full-text search enabled", type: "success" },
+            { text: "Starting user interface...", type: "" },
+            { text: "[OK] UI components loaded", type: "success" },
+            { text: "──────────────────────────────────────", type: "info" },
+            { text: "PC_TROUBLESHOOT v3.0 - READY", type: "info" },
+            { text: "Database: " + troubleshootingDB.length + " commands available", type: "success" }
         ];
 
         const logContainer = document.getElementById('boot-logs');
@@ -832,6 +2723,10 @@
         const mainSystem = document.getElementById('main-system');
         const progressFill = document.getElementById('progress-fill');
         const progressPercent = document.getElementById('progress-percent');
+
+        let currentCategory = 'all';
+        let currentFilter = '';
+        let currentTag = '';
 
         // Boot sequence
         async function runBootSequence() {
@@ -843,7 +2738,7 @@
                 await sleep(i < 3 ? 150 : 60);
             }
             
-            await sleep(800);
+            await sleep(500);
             bootScreen.style.transition = 'opacity 0.5s ease';
             bootScreen.style.opacity = '0';
             
@@ -851,6 +2746,8 @@
             bootScreen.style.display = 'none';
             mainSystem.style.display = 'flex';
             mainSystem.classList.add('glitch-in');
+            
+            initializeApp();
         }
 
         function addLog(text, type) {
@@ -865,169 +2762,438 @@
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        // Search functionality
-        const searchInput = document.getElementById('search-input');
-        const suggestionsBox = document.getElementById('suggestions');
+        // Initialize application
+        function initializeApp() {
+            updateCategoryCounts();
+            renderCommands();
+            setupSearch();
+            setupCategoryTabs();
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
 
-        searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase().trim();
-            if (query.length < 1) {
-                suggestionsBox.classList.remove('active');
+        // Update category counts
+        function updateCategoryCounts() {
+            document.getElementById('count-all').textContent = troubleshootingDB.length;
+            document.getElementById('count-cmd').textContent = troubleshootingDB.filter(c => c.category === 'cmd').length;
+            document.getElementById('count-powershell').textContent = troubleshootingDB.filter(c => c.category === 'powershell').length;
+            document.getElementById('count-settings').textContent = troubleshootingDB.filter(c => c.category === 'settings').length;
+            document.getElementById('count-programs').textContent = troubleshootingDB.filter(c => c.category === 'programs').length;
+            document.getElementById('count-network').textContent = troubleshootingDB.filter(c => c.tags.includes('network')).length;
+            document.getElementById('count-disk').textContent = troubleshootingDB.filter(c => c.tags.includes('disk') || c.tags.includes('storage')).length;
+            document.getElementById('count-performance').textContent = troubleshootingDB.filter(c => c.tags.includes('performance')).length;
+            document.getElementById('count-security').textContent = troubleshootingDB.filter(c => c.tags.includes('security')).length;
+            document.getElementById('total-commands').textContent = troubleshootingDB.length;
+        }
+
+        // Render commands
+        function renderCommands() {
+            const grid = document.getElementById('commands-grid');
+            let filtered = troubleshootingDB;
+
+            // Filter by category
+            if (currentCategory !== 'all') {
+                if (['cmd', 'powershell', 'settings', 'programs'].includes(currentCategory)) {
+                    filtered = filtered.filter(c => c.category === currentCategory);
+                } else {
+                    // Tag-based categories
+                    filtered = filtered.filter(c => c.tags.includes(currentCategory));
+                }
+            }
+
+            // Filter by search
+            if (currentFilter) {
+                const search = currentFilter.toLowerCase();
+                filtered = filtered.filter(c => 
+                    c.name.toLowerCase().includes(search) ||
+                    c.command.toLowerCase().includes(search) ||
+                    c.description.toLowerCase().includes(search) ||
+                    c.tags.some(t => t.toLowerCase().includes(search))
+                );
+            }
+
+            // Filter by tag
+            if (currentTag) {
+                filtered = filtered.filter(c => c.tags.includes(currentTag));
+            }
+
+            document.getElementById('filtered-count').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">🔍</div>
+                        <div class="empty-state-title">No commands found</div>
+                        <div class="empty-state-desc">Try a different search term or category</div>
+                    </div>
+                `;
                 return;
             }
 
-            const filtered = searchData.filter(item => 
-                item.title.toLowerCase().includes(query) || 
-                item.desc.toLowerCase().includes(query)
-            );
-
-            if (filtered.length > 0) {
-                suggestionsBox.innerHTML = filtered.map(item => `
-                    <div class="suggestion-item" onclick="selectSuggestion('${item.url || item.action}', '${item.title}')">
-                        <div class="suggestion-icon">${item.icon}</div>
-                        <div class="suggestion-text">
-                            <div class="suggestion-title">${item.title}</div>
-                            <div class="suggestion-desc">${item.desc}</div>
+            grid.innerHTML = filtered.map(cmd => `
+                <div class="command-card" onclick="showDetail(${cmd.id})">
+                    <div class="command-card-header">
+                        <div class="command-card-title">
+                            <div class="command-card-icon ${cmd.category}">
+                                ${getCategoryIcon(cmd.category)}
+                            </div>
+                            <div>
+                                <div class="command-card-name">${cmd.name}</div>
+                                <div class="command-card-type">${getCategoryLabel(cmd.category)}</div>
+                            </div>
                         </div>
+                        <button class="command-card-copy" onclick="event.stopPropagation(); copyCommand('${escapeHtml(cmd.command)}', this)">
+                            📋 Copy
+                        </button>
                     </div>
-                `).join('');
-                suggestionsBox.classList.add('active');
-            } else {
-                // Show web search option
-                suggestionsBox.innerHTML = `
-                    <div class="suggestion-item" onclick="webSearch('${query}')">
-                        <div class="suggestion-icon">🌐</div>
-                        <div class="suggestion-text">
-                            <div class="suggestion-title">Search web for "${query}"</div>
-                            <div class="suggestion-desc">Press Enter to search Google</div>
+                    <div class="command-card-cmd">${escapeHtml(cmd.command)}</div>
+                    <div class="command-card-desc">${cmd.description.substring(0, 120)}${cmd.description.length > 120 ? '...' : ''}</div>
+                    <div class="command-card-footer">
+                        <div class="command-card-tags">
+                            ${cmd.tags.slice(0, 3).map(tag => `<span class="tag ${getTagClass(tag)}">${tag}</span>`).join('')}
                         </div>
+                        <button class="command-card-run" onclick="event.stopPropagation(); runCommand('${escapeHtml(cmd.command)}', '${cmd.category}')">
+                            ▶ Run
+                        </button>
                     </div>
-                `;
-                suggestionsBox.classList.add('active');
-            }
-        });
+                </div>
+            `).join('');
+        }
 
-        searchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                executeSearch();
-            }
-            if (e.key === 'Escape') {
-                suggestionsBox.classList.remove('active');
-            }
-        });
+        function getCategoryIcon(category) {
+            const icons = {
+                cmd: '⌨️',
+                powershell: '💠',
+                settings: '⚙️',
+                programs: '📁'
+            };
+            return icons[category] || '📋';
+        }
 
-        // Close suggestions when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.search-container')) {
-                suggestionsBox.classList.remove('active');
-            }
-        });
+        function getCategoryLabel(category) {
+            const labels = {
+                cmd: 'Command Prompt',
+                powershell: 'PowerShell',
+                settings: 'Settings URI',
+                programs: 'Program / Utility'
+            };
+            return labels[category] || category;
+        }
 
-        function selectSuggestion(actionOrUrl, title) {
-            searchInput.value = title;
-            suggestionsBox.classList.remove('active');
-            
-            if (actionOrUrl.startsWith('http')) {
-                navigateTo(actionOrUrl);
-            } else {
-                // Handle internal actions
-                console.log('Action:', actionOrUrl);
-                // Add your action handlers here
-            }
+        function getTagClass(tag) {
+            if (['network', 'internet'].includes(tag)) return 'cmd';
+            if (['security', 'admin'].includes(tag)) return 'ps';
+            if (['startup', 'cleanup'].includes(tag)) return 'settings';
+            if (['performance', 'diagnostic'].includes(tag)) return 'program';
+            return '';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            const suggestionsBox = document.getElementById('suggestions');
+
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                currentFilter = query;
+                
+                if (query.length < 1) {
+                    suggestionsBox.classList.remove('active');
+                    renderCommands();
+                    return;
+                }
+
+                // Show suggestions
+                const filtered = troubleshootingDB.filter(c => 
+                    c.name.toLowerCase().includes(query) ||
+                    c.command.toLowerCase().includes(query) ||
+                    c.description.toLowerCase().includes(query) ||
+                    c.tags.some(t => t.toLowerCase().includes(query))
+                ).slice(0, 8);
+
+                if (filtered.length > 0) {
+                    suggestionsBox.innerHTML = filtered.map(item => `
+                        <div class="suggestion-item" onclick="selectCommand(${item.id})">
+                            <div class="suggestion-icon ${item.category}">${getCategoryIcon(item.category)}</div>
+                            <div class="suggestion-text">
+                                <div class="suggestion-title">${item.name}</div>
+                                <div class="suggestion-cmd">${escapeHtml(item.command)}</div>
+                                <div class="suggestion-desc">${item.description.substring(0, 80)}...</div>
+                                <div class="suggestion-tags">
+                                    ${item.tags.slice(0, 3).map(tag => `<span class="tag ${getTagClass(tag)}">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    suggestionsBox.classList.add('active');
+                } else {
+                    suggestionsBox.classList.remove('active');
+                }
+
+                renderCommands();
+            });
+
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    suggestionsBox.classList.remove('active');
+                    renderCommands();
+                }
+                if (e.key === 'Escape') {
+                    suggestionsBox.classList.remove('active');
+                    this.value = '';
+                    currentFilter = '';
+                    renderCommands();
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-container')) {
+                    suggestionsBox.classList.remove('active');
+                }
+            });
+        }
+
+        function selectCommand(id) {
+            document.getElementById('suggestions').classList.remove('active');
+            showDetail(id);
         }
 
         function executeSearch() {
-            const query = searchInput.value.trim();
-            if (query) {
-                webSearch(query);
+            document.getElementById('suggestions').classList.remove('active');
+            renderCommands();
+        }
+
+        // Category tabs
+        function setupCategoryTabs() {
+            document.querySelectorAll('.category-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentCategory = this.dataset.category;
+                    currentTag = '';
+                    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+                    updateContentTitle();
+                    renderCommands();
+                });
+            });
+        }
+
+        function updateContentTitle() {
+            const titles = {
+                all: '📋 All Commands',
+                cmd: '⌨️ CMD Commands',
+                powershell: '💠 PowerShell Commands',
+                settings: '⚙️ Settings URIs',
+                programs: '📁 Programs & Utilities',
+                network: '🌐 Network Commands',
+                disk: '💾 Disk & Storage',
+                performance: '📈 Performance Tools',
+                security: '🛡️ Security Tools'
+            };
+            document.getElementById('content-title-text').textContent = titles[currentCategory] || currentCategory;
+        }
+
+        // Sidebar filtering
+        function filterByTag(tag) {
+            currentTag = tag;
+            currentCategory = 'all';
+            document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector('.category-tab[data-category="all"]').classList.add('active');
+            document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+            event.target.closest('.sidebar-item').classList.add('active');
+            document.getElementById('content-title-text').textContent = `🏷️ Tag: ${tag}`;
+            renderCommands();
+        }
+
+        // Command actions
+        function copyCommand(command, btn) {
+            navigator.clipboard.writeText(command).then(() => {
+                btn.innerHTML = '✓ Copied';
+                btn.classList.add('copied');
+                showToast('Command copied to clipboard!');
+                setTimeout(() => {
+                    btn.innerHTML = '📋 Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function runCommand(command, category) {
+            let instructions = '';
+            
+            if (category === 'cmd') {
+                instructions = `To run this command:\n\n1. Press Win + R\n2. Type "cmd" and press Ctrl+Shift+Enter (for admin)\n3. Paste and run:\n\n${command}`;
+            } else if (category === 'powershell') {
+                instructions = `To run this command:\n\n1. Press Win + X, then select "Windows Terminal (Admin)"\n2. Or search "PowerShell" and run as Administrator\n3. Paste and run:\n\n${command}`;
+            } else if (category === 'settings') {
+                instructions = `To open this setting:\n\n1. Press Win + R\n2. Paste: ${command}\n3. Press Enter`;
+            } else if (category === 'programs') {
+                instructions = `To open this program:\n\n1. Press Win + R\n2. Type: ${command}\n3. Press Enter`;
             }
+
+            alert(instructions);
+            navigator.clipboard.writeText(command);
+            showToast('Command copied - ready to paste!');
         }
 
-        function webSearch(query) {
-            const searchUrl = `[google.com](https://www.google.com/search?q=${encodeURIComponent(query)})`;
-            navigateTo(searchUrl);
-            suggestionsBox.classList.remove('active');
-        }
+        // Detail panel
+        function showDetail(id) {
+            const cmd = troubleshootingDB.find(c => c.id === id);
+            if (!cmd) return;
 
-        // Navigation functions
-        function navigateTo(url) {
-            document.getElementById('target-frame').src = url;
-            document.getElementById('url-bar').value = url;
-        }
+            document.getElementById('detail-icon').textContent = getCategoryIcon(cmd.category);
+            document.getElementById('detail-title').textContent = cmd.name;
 
-        function refreshFrame() {
-            const frame = document.getElementById('target-frame');
-            frame.src = frame.src;
-        }
+            let content = `
+                <div class="detail-section">
+                    <div class="detail-section-title">Command</div>
+                    <div class="detail-cmd-box">
+                        <code>${escapeHtml(cmd.command)}</code>
+                    </div>
+                    <div class="detail-cmd-actions">
+                        <button class="content-btn primary" onclick="copyCommand('${escapeHtml(cmd.command)}', this)">📋 Copy Command</button>
+                        <button class="content-btn" onclick="runCommand('${escapeHtml(cmd.command)}', '${cmd.category}')">▶ How to Run</button>
+                    </div>
+                </div>
 
-        function goBack() {
-            try {
-                document.getElementById('target-frame').contentWindow.history.back();
-            } catch(e) {
-                console.log('Cannot access frame history');
+                <div class="detail-section">
+                    <div class="detail-section-title">Description</div>
+                    <p style="line-height: 1.6; color: var(--text-color);">${cmd.description}</p>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">Steps</div>
+                    <ol class="detail-steps">
+                        ${cmd.steps.map((step, i) => `
+                            <li class="detail-step">
+                                <span class="detail-step-num">${i + 1}</span>
+                                <span class="detail-step-text">${step}</span>
+                            </li>
+                        `).join('')}
+                    </ol>
+                </div>
+            `;
+
+            if (cmd.warning) {
+                content += `
+                    <div class="detail-section">
+                        <div class="detail-section-title">⚠️ Warning</div>
+                        <div class="detail-warning">
+                            <span class="detail-warning-icon">⚠️</span>
+                            <span class="detail-warning-text">${cmd.warning}</span>
+                        </div>
+                    </div>
+                `;
             }
-        }
 
-        function goForward() {
-            try {
-                document.getElementById('target-frame').contentWindow.history.forward();
-            } catch(e) {
-                console.log('Cannot access frame history');
+            if (cmd.relatedCommands && cmd.relatedCommands.length > 0) {
+                content += `
+                    <div class="detail-section">
+                        <div class="detail-section-title">Related Commands</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            ${cmd.relatedCommands.map(rc => `
+                                <span style="padding: 6px 12px; background: rgba(0, 240, 255, 0.1); border: 1px solid var(--border-color); border-radius: 6px; font-size: 11px; font-family: monospace; cursor: pointer;" onclick="copyCommand('${escapeHtml(rc)}', this)">${escapeHtml(rc)}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
             }
+
+            content += `
+                <div class="detail-section">
+                    <div class="detail-section-title">Tags</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        ${cmd.tags.map(tag => `<span class="tag ${getTagClass(tag)}">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('detail-content').innerHTML = content;
+            document.getElementById('detail-panel').classList.add('active');
+            document.getElementById('overlay').classList.add('active');
         }
 
-        function openInNewTab() {
-            const url = document.getElementById('target-frame').src;
-            window.open(url, '_blank');
+        function closeDetailPanel() {
+            document.getElementById('detail-panel').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
         }
 
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                document.exitFullscreen();
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.add('active');
+            setTimeout(() => toast.classList.remove('active'), 3000);
+        }
+
+        // Utility functions
+        function sortCommands(by) {
+            if (by === 'name') {
+                troubleshootingDB.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (by === 'category') {
+                troubleshootingDB.sort((a, b) => a.category.localeCompare(b.category));
             }
+            renderCommands();
+            showToast(`Sorted by ${by}`);
         }
 
-        // Placeholder functions for quick actions
-        function openTerminal() { alert('Terminal module coming soon!'); }
-        function openSettings() { alert('Settings module coming soon!'); }
-        function openNetwork() { alert('Network module coming soon!'); }
-        function openSecurity() { alert('Security module coming soon!'); }
+        function showRandomTip() {
+            const tips = [
+                "💡 Run Command Prompt as Admin by pressing Ctrl+Shift+Enter after typing 'cmd' in Run dialog",
+                "💡 Windows + X opens the Quick Link menu with admin tools",
+                "💡 Create a System Restore point before making major changes",
+                "💡 Use 'sfc /scannow' regularly to check system file integrity",
+                "💡 The 'netstat -ano' command helps identify programs using network ports",
+                "💡 PowerShell can do everything CMD can, plus much more",
+                "💡 Press F8 during boot to access Safe Mode (may need Shift+Restart on newer PCs)",
+                "💡 Event Viewer (eventvwr.msc) shows what caused crashes and errors",
+                "💡 Use 'taskkill /f /im process.exe' to force close stuck programs",
+                "💡 Windows Memory Diagnostic (mdsched.exe) helps diagnose RAM issues"
+            ];
+            alert(tips[Math.floor(Math.random() * tips.length)]);
+        }
 
-        // Clock and system stats
+        function exportCommands() {
+            const data = troubleshootingDB.map(c => ({
+                name: c.name,
+                category: c.category,
+                command: c.command,
+                description: c.description,
+                tags: c.tags.join(', ')
+            }));
+            
+            const csv = [
+                ['Name', 'Category', 'Command', 'Description', 'Tags'].join(','),
+                ...data.map(row => [
+                    `"${row.name}"`,
+                    row.category,
+                    `"${row.command}"`,
+                    `"${row.description}"`,
+                    `"${row.tags}"`
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pc-troubleshoot-commands.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Commands exported to CSV!');
+        }
+
         function updateClock() {
             document.getElementById('clock').textContent = new Date().toLocaleTimeString();
         }
 
-        function updateStats() {
-            // Simulated stats - replace with real data if available
-            document.getElementById('cpu-usage').textContent = (15 + Math.random() * 20).toFixed(0) + '%';
-            document.getElementById('mem-usage').textContent = (3.5 + Math.random() * 2).toFixed(1) + 'GB';
-        }
-
-        setInterval(updateClock, 1000);
-        setInterval(updateStats, 3000);
-
-        // Sidebar button handling
-        document.querySelectorAll('.sidebar-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.sidebar-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // Quick action button handling
-        document.querySelectorAll('.quick-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (!this.onclick) {
-                    document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                }
-            });
-        });
-
-        // Initialize
+        // Initialize on load
         window.onload = runBootSequence;
     </script>
 </body>
