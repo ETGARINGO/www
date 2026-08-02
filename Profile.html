@@ -55,7 +55,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Interactive Particle & Grid Background Canvas */
+        /* Interactive Particle & World Grid Canvas */
         #cyber-canvas {
             position: absolute;
             top: 0;
@@ -69,26 +69,26 @@
         /* Cyber Background Ambient Glow */
         .bg-glow {
             position: absolute;
-            width: 700px;
-            height: 700px;
+            width: 800px;
+            height: 800px;
             background: radial-gradient(circle, var(--glow), transparent 70%);
-            top: -250px;
-            left: -250px;
+            top: -300px;
+            left: -300px;
             animation: cyberFloat 14s infinite alternate ease-in-out;
             pointer-events: none;
             z-index: 2;
         }
 
-        /* Futuristic Scanline Effect */
+        /* Futuristic Laser Scanline */
         .scanline {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 4px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            opacity: 0.6;
-            animation: scanAnim 6s linear infinite;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--accent), transparent);
+            opacity: 0.75;
+            animation: scanAnim 4s linear infinite;
             z-index: 9998;
             pointer-events: none;
         }
@@ -101,87 +101,119 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: rgba(3, 7, 18, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(3, 7, 18, 0.96);
+            backdrop-filter: blur(12px);
             z-index: 9999;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+            transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.9s;
         }
 
-        /* Dynamic Holographic Logo Container */
+        /* World Radar & Dynamic Holographic Logo Container */
+        .logo-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .world-radar {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 1px dashed rgba(0, 217, 255, 0.3);
+            animation: radarRotate 10s linear infinite;
+        }
+
+        .world-radar::after {
+            content: '';
+            position: absolute;
+            inset: 15px;
+            border-radius: 50%;
+            border: 1px dotted rgba(0, 255, 153, 0.4);
+            animation: radarRotateReverse 6s linear infinite;
+        }
+
         .logo-wrapper {
             position: relative;
-            width: 130px;
-            height: 130px;
+            width: 140px;
+            height: 140px;
             display: flex;
             justify-content: center;
             align-items: center;
             border-radius: 50%;
-            background: rgba(0, 217, 255, 0.03);
-            border: 1px solid rgba(0, 217, 255, 0.4);
-            box-shadow: 0 0 45px rgba(0, 217, 255, 0.3), inset 0 0 25px rgba(0, 217, 255, 0.15);
+            background: rgba(0, 217, 255, 0.04);
+            border: 1px solid rgba(0, 217, 255, 0.5);
+            box-shadow: 0 0 50px rgba(0, 217, 255, 0.35), inset 0 0 30px rgba(0, 217, 255, 0.2);
             animation: logoPulse 3s infinite ease-in-out;
-        }
-
-        /* Animated Ring Around Logo */
-        .logo-wrapper::before {
-            content: '';
-            position: absolute;
-            inset: -8px;
-            border-radius: 50%;
-            border: 2px dashed rgba(0, 255, 153, 0.5);
-            animation: rotateRing 12s linear infinite;
+            z-index: 2;
         }
 
         .logo-wrapper img {
-            width: 85px;
-            height: 85px;
+            width: 90px;
+            height: 90px;
             object-fit: contain;
-            filter: drop-shadow(0 0 15px rgba(0, 217, 255, 0.9));
+            filter: drop-shadow(0 0 18px rgba(0, 217, 255, 0.95));
         }
 
-        /* Entrance Typography */
+        /* Entrance Typography & Navigation Telemetry */
         .entrance-text {
             margin-top: 35px;
             color: var(--text-main);
-            font-size: 32px;
+            font-size: 30px;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             text-align: center;
             text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+            font-family: monospace, sans-serif;
         }
 
         .subtitle-text {
-            margin-top: 10px;
+            margin-top: 8px;
             color: var(--accent);
-            font-size: 13px;
+            font-size: 12px;
             letter-spacing: 4px;
             text-transform: uppercase;
             text-align: center;
             font-weight: 600;
-            opacity: 0.9;
+            opacity: 0.95;
         }
 
-        /* Cyber Loading Progress Bar */
+        /* Live Navigating Status Log */
+        .nav-telemetry {
+            margin-top: 18px;
+            font-family: monospace;
+            font-size: 11px;
+            color: var(--primary);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            background: rgba(0, 217, 255, 0.08);
+            padding: 4px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 217, 255, 0.25);
+            animation: telemetryBlink 1.5s infinite alternate;
+        }
+
+        /* Cyber Progress Bar */
         .progress-container {
             position: relative;
-            width: 300px;
+            width: 320px;
             height: 6px;
-            margin-top: 40px;
+            margin-top: 25px;
             overflow: hidden;
             border-radius: 20px;
             background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(0, 217, 255, 0.2);
+            border: 1px solid rgba(0, 217, 255, 0.3);
         }
 
         .progress-bar {
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
-            box-shadow: 0 0 15px var(--primary);
+            box-shadow: 0 0 18px var(--primary);
             animation: loading 2.2s infinite ease-in-out;
         }
 
-        /* Application iFrame Styling */
+        /* Full Screen Application Frame */
         iframe {
             position: relative;
             z-index: 10;
@@ -190,9 +222,9 @@
             border: none;
             display: block;
             opacity: 0;
-            transform: scale(1.02);
-            filter: blur(10px);
-            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: scale(1.04);
+            filter: blur(12px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         iframe.loaded {
@@ -206,7 +238,7 @@
             visibility: hidden !important;
         }
 
-        /* Keyframe Animations */
+        /* Animations */
         @keyframes loading {
             0% { transform: translateX(-100%); }
             50% { transform: translateX(-10%); }
@@ -220,17 +252,27 @@
 
         @keyframes logoPulse {
             0%, 100% { transform: scale(1); box-shadow: 0 0 35px rgba(0, 217, 255, 0.3); }
-            50% { transform: scale(1.06); box-shadow: 0 0 55px rgba(0, 217, 255, 0.6); }
+            50% { transform: scale(1.07); box-shadow: 0 0 60px rgba(0, 217, 255, 0.7); }
         }
 
-        @keyframes rotateRing {
+        @keyframes radarRotate {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
+        }
+
+        @keyframes radarRotateReverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
         }
 
         @keyframes scanAnim {
             0% { top: 0%; }
             100% { top: 100%; }
+        }
+
+        @keyframes telemetryBlink {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; box-shadow: 0 0 10px rgba(0, 217, 255, 0.4); }
         }
     </style>
 </head>
@@ -241,45 +283,76 @@
     <div class="bg-glow"></div>
     <div class="scanline"></div>
 
-    <!-- Cyber Loader Screen -->
+    <!-- Cyber Loader Screen with World Map Telemetry -->
     <div id="loader">
-        <div class="logo-wrapper">
-            <img src="profile.gif" alt="Cyber Profile Logo">
+        <div class="logo-container">
+            <div class="world-radar"></div>
+            <div class="logo-wrapper">
+                <img src="profile.gif" alt="Cyber Profile Logo">
+            </div>
         </div>
-        <h1 class="entrance-text">My Cyber Profile</h1>
+
+        <h1 class="entrance-text">MY CYBER PROFILE</h1>
         <p class="subtitle-text">Cybersecurity • ICT • Security Management</p>
+
+        <div class="nav-telemetry" id="telemetry-text">> NAVIGATING GLOBAL NET NODE...</div>
 
         <div class="progress-container">
             <div class="progress-bar"></div>
         </div>
     </div>
 
-    <!-- Main Web Application -->
+    <!-- Main Web Application Frame (Full-Screen & Permissions Enabled) -->
     <iframe
         id="app-frame"
         src="https://script.google.com/macros/s/AKfycbw5wBPimm2ulyNWfh-eZCCQzH4T7gabIPuKTSBbkdiVnbIKfMp5T_QVnRHaZJe-8lAJ/exec"
-        allow="camera; microphone; geolocation; clipboard-write"
+        allow="fullscreen; camera; microphone; geolocation; clipboard-write; display-capture"
+        allowfullscreen="true"
+        webkitallowfullscreen="true"
+        mozallowfullscreen="true"
         sandbox="allow-downloads allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
     </iframe>
 
     <script>
-        // Smooth Loader Initialization Logic
+        // Smooth Loader & Navigation Status Sequence
         const iframe = document.getElementById("app-frame");
         const loader = document.getElementById("loader");
+        const telemetryText = document.getElementById("telemetry-text");
         let appLoaded = false;
+
+        // Telemetry Text Sequence for "Navigating WWW & World Map"
+        const navLogs = [
+            "> INITIALIZING GLOBAL NODE LINK...",
+            "> SYNCHRONIZING WORLD MAP GRID...",
+            "> ESTABLISHING ENCRYPTED TUNNEL...",
+            "> ACCESS GRANTED • LAUNCHING FRAME..."
+        ];
+        let logIndex = 0;
+
+        const logInterval = setInterval(() => {
+            logIndex = (logIndex + 1) % navLogs.length;
+            if (telemetryText) {
+                telemetryText.textContent = navLogs[logIndex];
+            }
+        }, 700);
 
         function initializeApp() {
             if (appLoaded) return;
             appLoaded = true;
 
-            iframe.classList.add("loaded");
-            loader.classList.add("fade-out");
+            clearInterval(logInterval);
+            if (telemetryText) telemetryText.textContent = "> SYSTEM ONLINE • FULL ACCESS ENABLED";
+
+            setTimeout(() => {
+                iframe.classList.add("loaded");
+                loader.classList.add("fade-out");
+            }, 300);
         }
 
         iframe.addEventListener("load", initializeApp);
-        setTimeout(initializeApp, 3500); // Fallback initialization
+        setTimeout(initializeApp, 3500); // Fallback timeout
 
-        // --- Interactive Cyber Particle System ---
+        // --- Cyber Particle & World Map Grid Background Canvas ---
         const canvas = document.getElementById('cyber-canvas');
         const ctx = canvas.getContext('2d');
 
@@ -291,7 +364,7 @@
         window.addEventListener('resize', resizeCanvas);
 
         const particles = [];
-        const particleCount = 45;
+        const particleCount = 50;
 
         class Particle {
             constructor() {
@@ -301,10 +374,10 @@
             reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * 0.8;
-                this.vy = (Math.random() - 0.5) * 0.8;
+                this.vx = (Math.random() - 0.5) * 0.9;
+                this.vy = (Math.random() - 0.5) * 0.9;
                 this.size = Math.random() * 2 + 1;
-                this.color = Math.random() > 0.5 ? '#00d9ff' : '#00ff99';
+                this.color = Math.random() > 0.4 ? '#00d9ff' : '#00ff99';
             }
 
             update() {
@@ -329,6 +402,7 @@
             particles.push(new Particle());
         }
 
+        // Draw World Mesh Connections
         function drawConnections() {
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
@@ -336,11 +410,11 @@
                     const dy = particles[i].y - particles[j].y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
-                    if (dist < 120) {
+                    if (dist < 130) {
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(0, 217, 255, ${1 - dist / 120})`;
+                        ctx.strokeStyle = `rgba(0, 217, 255, ${1 - dist / 130})`;
                         ctx.lineWidth = 0.5;
                         ctx.stroke();
                     }
@@ -348,8 +422,30 @@
             }
         }
 
+        // Render Perspective Net Topology Grid
+        function drawPerspectiveGrid() {
+            ctx.strokeStyle = "rgba(0, 217, 255, 0.05)";
+            ctx.lineWidth = 1;
+            const gridSpacing = 60;
+
+            for (let x = 0; x < canvas.width; x += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+
+            for (let y = 0; y < canvas.height; y += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+
         function animateCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPerspectiveGrid();
             particles.forEach(p => {
                 p.update();
                 p.draw();
