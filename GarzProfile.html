@@ -2,16 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MY CYBER PROFILE</title>
-<link rel="icon" type="image/png" href="1 LOGO 3D (1).png">
+<title>MY CYBER PROFILE // GLOBAL SIGNAL MONITOR</title>
+<link rel="icon" type="image/png" href="profile.gif">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   :root {
-    --bg-dark: #0a0e17;
+    --bg-dark: #05070d;
+    --panel-bg: rgba(11, 16, 27, 0.92);
     --neon-cyan: #00f0ff;
     --neon-blue: #0077ff;
+    --neon-magenta: #ff00c8;
     --text-main: #e2e8f0;
+    --text-dim: #7d8ba1;
+    --border-color: rgba(0, 240, 255, 0.28);
   }
+
+  * { box-sizing: border-box; }
 
   body {
     margin: 0;
@@ -36,58 +44,145 @@
     pointer-events: none;
   }
 
-  /* MOVABLE FLOATING CYBER CONTROLS */
-  .floating-controls {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+  /* TOP STATUS / IDENTITY BAR */
+  .top-bar {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 10px;
-    z-index: 100;
-    background: rgba(13, 20, 33, 0.9);
-    backdrop-filter: blur(12px);
-    padding: 10px 14px;
-    border: 1px solid rgba(0, 240, 255, 0.4);
-    border-radius: 8px;
-    box-shadow: 0 4px 25px rgba(0, 240, 255, 0.25);
-    cursor: grab;
-    touch-action: none;
-  }
-
-  .floating-controls:active {
-    cursor: grabbing;
-  }
-
-  .drag-handle {
-    color: var(--neon-cyan);
-    font-size: 14px;
-    margin-right: 2px;
-    opacity: 0.7;
-    letter-spacing: -2px;
-  }
-
-  /* UI BUTTONS */
-  .cyber-btn {
-    background: rgba(0, 240, 255, 0.1);
-    border: 1px solid var(--neon-cyan);
-    color: var(--neon-cyan);
-    padding: 6px 12px;
-    font-weight: bold;
+    background: var(--panel-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 18px;
     font-size: 11px;
     letter-spacing: 1px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-    box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.2);
-    text-transform: uppercase;
+    z-index: 100;
+    font-family: 'Courier New', Courier, monospace;
   }
 
-  .cyber-btn:hover {
+  .brand {
+    color: var(--neon-cyan);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .brand span.dot {
+    width: 8px;
+    height: 8px;
+    background: #00ff88;
+    box-shadow: 0 0 8px #00ff88;
+    border-radius: 50%;
+    display: inline-block;
+    animation: blink 2s infinite ease-in-out;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  .telemetry {
+    display: flex;
+    gap: 20px;
+    color: var(--text-dim);
+  }
+
+  .telemetry b { color: var(--neon-cyan); }
+
+  /* ASSISTIVE-TOUCH STYLE FLOATING ORB */
+  .touch-orb {
+    position: fixed;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    left: 0;
+    top: 0;
+    z-index: 900;
+    background: radial-gradient(circle at 35% 30%, rgba(0,240,255,0.35), rgba(6,10,18,0.95) 70%);
+    border: 1.5px solid var(--neon-cyan);
+    box-shadow: 0 0 18px rgba(0, 240, 255, 0.45), inset 0 0 12px rgba(0,240,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    touch-action: none;
+    transition: box-shadow 0.25s ease, transform 0.15s ease;
+  }
+
+  .touch-orb:active { cursor: grabbing; transform: scale(0.94); }
+
+  .touch-orb.open {
+    box-shadow: 0 0 26px rgba(0, 240, 255, 0.75), inset 0 0 14px rgba(0,240,255,0.3);
+  }
+
+  .touch-orb-icon {
+    width: 20px;
+    height: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5px;
+    transition: transform 0.3s ease;
+  }
+
+  .touch-orb.open .touch-orb-icon { transform: rotate(45deg); }
+
+  .touch-orb-icon span {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    box-shadow: 0 0 4px var(--neon-cyan);
+  }
+
+  /* Radial / stacked action menu that appears around the orb */
+  .touch-menu {
+    position: fixed;
+    z-index: 899;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .touch-menu.open { display: flex; }
+
+  .touch-menu-item {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--panel-bg);
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-align: center;
+    line-height: 1.1;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
+    transition: all 0.2s ease;
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: scale(0.5);
+    animation: orbPop 0.25s ease forwards;
+  }
+
+  @keyframes orbPop {
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .touch-menu-item:hover,
+  .touch-menu-item.active {
     background: var(--neon-cyan);
     color: #000;
-    box-shadow: 0 0 15px var(--neon-cyan), inset 0 0 15px rgba(0,0,0,0.5);
+    box-shadow: 0 0 16px var(--neon-cyan);
   }
+
+  .touch-menu-item.small { font-size: 14px; }
 
   /* VIEW CONTAINER */
   .workspace {
@@ -95,21 +190,19 @@
     flex: 1;
     display: flex;
     width: 100%;
-    height: 100vh;
+    height: 100%;
     overflow: hidden;
   }
 
   .pane {
     flex: 1;
     height: 100%;
-    transition: all 0.4s ease-in-out;
+    transition: flex 0.4s ease-in-out;
     position: relative;
     border-right: 1px solid rgba(0, 240, 255, 0.2);
   }
 
-  .pane:last-child {
-    border-right: none;
-  }
+  .pane:last-child { border-right: none; }
 
   iframe {
     width: 100%;
@@ -118,9 +211,25 @@
     background: #ffffff;
   }
 
+  .pane-label {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    font-family: 'Courier New', Courier, monospace;
+    color: var(--neon-cyan);
+    background: rgba(5, 8, 15, 0.85);
+    border: 1px solid var(--border-color);
+    padding: 3px 7px;
+    border-radius: 2px;
+    z-index: 15;
+    pointer-events: none;
+  }
+
   /* ANIMATED CYBER WORLD MAP PANE */
   #mapPane {
-    background: #03060c;
+    background: radial-gradient(ellipse at center, #0a1220 0%, #03060c 75%);
     position: relative;
     overflow: hidden;
   }
@@ -131,28 +240,499 @@
     left: 0;
     width: 100%;
     height: 100%;
+    cursor: grab;
   }
+
+  #cyberMapCanvas.panning { cursor: grabbing; }
 
   .map-hud-overlay {
     position: absolute;
     bottom: 20px;
     left: 20px;
-    background: rgba(5, 10, 20, 0.8);
-    border: 1px solid rgba(0, 240, 255, 0.3);
+    background: rgba(5, 10, 20, 0.85);
+    border: 1px solid var(--border-color);
     padding: 10px 15px;
     border-radius: 4px;
-    font-family: monospace;
-    font-size: 12px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
     color: var(--neon-cyan);
     pointer-events: none;
     box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
     z-index: 10;
+    line-height: 1.6;
   }
 
+  .map-hud-overlay .dim { color: var(--text-dim); }
+
+  .map-node-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(5, 10, 20, 0.9);
+    border: 1px solid var(--border-color);
+    padding: 10px 14px;
+    border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    color: var(--text-main);
+    z-index: 10;
+    min-width: 190px;
+    display: none;
+    line-height: 1.5;
+  }
+
+  .map-node-panel .title {
+    color: var(--neon-magenta);
+    font-weight: bold;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+
+  .map-hint {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(5, 10, 20, 0.75);
+    border: 1px dashed var(--border-color);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    z-index: 10;
+    pointer-events: none;
+    max-width: 210px;
+    line-height: 1.5;
+  }
+
+  /* TACTICAL GEOGRAPHIC MAP PANE (Leaflet + free tile providers) */
+  #tacticalPane {
+    background: #03060c;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #tacticalMap {
+    width: 100%;
+    height: 100%;
+    background: #03060c;
+  }
+
+  /* Cyber-tint the Leaflet basemap so it matches the theme */
+  #tacticalMap .leaflet-tile-pane {
+    filter: saturate(1.15) brightness(0.95) hue-rotate(-4deg);
+  }
+
+  #tacticalMap .leaflet-control-attribution {
+    background: rgba(5, 8, 15, 0.75) !important;
+    color: var(--text-dim) !important;
+    font-size: 9px !important;
+  }
+  #tacticalMap .leaflet-control-attribution a { color: var(--neon-cyan) !important; }
+
+  #tacticalMap .leaflet-control-zoom a {
+    background: var(--panel-bg) !important;
+    color: var(--neon-cyan) !important;
+    border-color: var(--border-color) !important;
+  }
+  #tacticalMap .leaflet-control-zoom a:hover { background: var(--neon-cyan) !important; color: #000 !important; }
+
+  #tacticalMap .leaflet-control-scale-line {
+    background: rgba(5, 8, 15, 0.75) !important;
+    color: var(--neon-cyan) !important;
+    border-color: var(--neon-cyan) !important;
+  }
+
+  .cyber-marker {
+    width: 16px;
+    height: 16px;
+    position: relative;
+  }
+  .cyber-marker .dot {
+    position: absolute;
+    top: 5px; left: 5px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    box-shadow: 0 0 8px var(--neon-cyan);
+  }
+  .cyber-marker.core .dot { background: var(--neon-magenta); box-shadow: 0 0 10px var(--neon-magenta); }
+  .cyber-marker .ring {
+    position: absolute;
+    top: 0; left: 0;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid var(--neon-cyan);
+    opacity: 0.8;
+    animation: markerPulse 1.8s ease-out infinite;
+  }
+  .cyber-marker.core .ring { border-color: var(--neon-magenta); }
+
+  @keyframes markerPulse {
+    0% { transform: scale(0.4); opacity: 0.9; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+
+  #tacticalMap .leaflet-popup-content-wrapper {
+    background: rgba(6, 10, 18, 0.95);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.25);
+  }
+  #tacticalMap .leaflet-popup-content { margin: 10px 12px; line-height: 1.5; }
+  #tacticalMap .leaflet-popup-tip { background: rgba(6, 10, 18, 0.95); }
+  #tacticalMap .leaflet-popup-content b { color: var(--neon-cyan); }
+
+  .tactical-layer-switch {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 400;
+    display: flex;
+    gap: 6px;
+    background: rgba(5, 8, 15, 0.85);
+    border: 1px solid var(--border-color);
+    padding: 6px;
+    border-radius: 6px;
+  }
+
+  .tactical-layer-btn {
+    background: rgba(0, 240, 255, 0.06);
+    border: 1px solid var(--border-color);
+    color: var(--text-dim);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    padding: 5px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .tactical-layer-btn.active {
+    background: var(--neon-cyan);
+    color: #000;
+    border-color: var(--neon-cyan);
+  }
+
+  .tactical-locate-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 400;
+    background: rgba(5, 8, 15, 0.9);
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+  }
+  .tactical-locate-btn:hover { background: var(--neon-cyan); color: #000; }
+
+  /* CYBER SIGNAL WORLD MONITOR SIDEBAR */
+  .signal-sidebar {
+    width: 320px;
+    min-width: 320px;
+    background: rgba(6, 9, 16, 0.95);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    font-family: 'Courier New', Courier, monospace;
+    z-index: 10;
+  }
+
+  .signal-header {
+    padding: 10px 12px;
+    font-size: 11px;
+    color: var(--neon-cyan);
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(0, 240, 255, 0.05);
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .signal-live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #00ff88;
+    box-shadow: 0 0 8px #00ff88;
+    display: inline-block;
+    margin-right: 5px;
+    animation: blink 1.6s infinite ease-in-out;
+  }
+
+  .signal-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .stat-box {
+    background: rgba(0, 240, 255, 0.04);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: 3px;
+    padding: 6px 8px;
+  }
+
+  .stat-box .label {
+    font-size: 8px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  .stat-box .value {
+    font-size: 13px;
+    color: var(--neon-cyan);
+    font-weight: bold;
+    margin-top: 2px;
+  }
+
+  .threat-block {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .threat-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+  }
+
+  .threat-bar-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(0,240,255,0.15);
+  }
+
+  .threat-bar-fill {
+    height: 100%;
+    width: 30%;
+    background: linear-gradient(90deg, #00ff88, #ffcc00, #ff3b3b);
+    transition: width 0.6s ease;
+  }
+
+  .signal-feed {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .signal-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(0, 240, 255, 0.12);
+    border-left: 3px solid var(--neon-cyan);
+    padding: 8px 10px;
+    font-size: 10px;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .signal-card.warn { border-left-color: #ffcc00; }
+  .signal-card.alert { border-left-color: #ff3b3b; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .signal-tag {
+    color: var(--neon-blue);
+    font-weight: bold;
+    margin-bottom: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  .signal-card.warn .signal-tag { color: #ffcc00; }
+  .signal-card.alert .signal-tag { color: #ff3b3b; }
+
+  .signal-text {
+    color: var(--text-main);
+    line-height: 1.4;
+  }
+
+  .signal-time {
+    color: var(--text-dim);
+    font-size: 8px;
+    margin-top: 3px;
+  }
+
+  /* ALERT BANNER */
+  .alert-banner {
+    position: fixed;
+    top: 44px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(20, 4, 4, 0.92);
+    border: 1px solid rgba(255, 59, 59, 0.6);
+    color: #ff6b6b;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    z-index: 500;
+    box-shadow: 0 0 20px rgba(255, 59, 59, 0.35);
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  /* OSINT QUICK-ACCESS OVERLAY */
+  .osint-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 950;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 4, 8, 0.78);
+    backdrop-filter: blur(3px);
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .osint-overlay.open { display: flex; }
+
+  .osint-panel {
+    width: min(760px, 92vw);
+    max-height: 82vh;
+    overflow-y: auto;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(0, 240, 255, 0.25);
+    animation: fadeIn 0.25s ease;
+  }
+
+  .osint-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(0, 240, 255, 0.05);
+    position: sticky;
+    top: 0;
+  }
+
+  .osint-panel-header .title {
+    color: var(--neon-cyan);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+
+  .osint-panel-header .close-btn {
+    color: var(--text-dim);
+    border: 1px solid var(--border-color);
+    background: transparent;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+  }
+  .osint-panel-header .close-btn:hover { color: #000; background: var(--neon-cyan); }
+
+  .osint-panel-body { padding: 14px 16px 18px; }
+
+  .osint-search-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .osint-search-row input {
+    flex: 1;
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    outline: none;
+  }
+  .osint-search-row input::placeholder { color: var(--text-dim); }
+
+  .osint-search-row button {
+    background: rgba(0, 240, 255, 0.1);
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+  .osint-search-row button:hover { background: var(--neon-cyan); color: #000; }
+
+  .osint-category { margin-bottom: 16px; }
+
+  .osint-category-title {
+    color: var(--neon-magenta);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 4px;
+  }
+
+  .osint-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+  }
+
+  .osint-tool {
+    display: block;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-left: 3px solid var(--neon-cyan);
+    padding: 8px 10px;
+    text-decoration: none;
+    color: var(--text-main);
+    font-size: 10.5px;
+    border-radius: 3px;
+    transition: all 0.15s ease;
+  }
+  .osint-tool:hover {
+    border-left-color: var(--neon-magenta);
+    background: rgba(0, 240, 255, 0.06);
+    transform: translateX(2px);
+  }
+  .osint-tool .name { color: var(--neon-cyan); font-weight: bold; display: block; margin-bottom: 2px; }
+  .osint-tool:hover .name { color: var(--neon-magenta); }
+  .osint-tool .desc { color: var(--text-dim); font-size: 9px; line-height: 1.35; }
+
   @media(max-width: 900px) {
-    .workspace {
-      flex-direction: column;
-    }
+    .workspace { flex-direction: column; }
+    .map-hint { display: none; }
+    .signal-sidebar { display: none; }
+    .osint-panel { max-height: 88vh; }
   }
 </style>
 </head>
@@ -161,29 +741,153 @@
   <!-- CYBER PARTICLES BACKGROUND ENGINE -->
   <canvas id="particleCanvas"></canvas>
 
-  <!-- MOVABLE FLOATING CONTROLS PANEL -->
-  <div class="floating-controls" id="floatingControls">
-    <span class="drag-handle">⠿</span>
-    <button class="cyber-btn" onclick="toggleView('split')">Split</button>
-    <button class="cyber-btn" onclick="toggleView('form')">Form</button>
-    <button class="cyber-btn" onclick="toggleView('map')">Map</button>
-    <button class="cyber-btn" onclick="toggleFullScreen()">Full Screen</button>
+  <!-- TOP STATUS / IDENTITY BAR -->
+  <div class="top-bar">
+    <div class="brand"><span class="dot"></span> OPERATIVE PROFILE // CYBER MATRIX</div>
+    <div class="telemetry">
+      <div>LINK: <b>STABLE</b></div>
+      <div>GRID: <b>ACTIVE</b></div>
+      <div>THREAT: <b id="threatLevelTopbar">LOW</b></div>
+      <div id="utcClock">00:00:00 UTC</div>
+    </div>
   </div>
+
+  <!-- ASSISTIVE-TOUCH STYLE FLOATING ORB + RADIAL MENU (always overlays everything) -->
+  <div class="touch-orb" id="touchOrb">
+    <div class="touch-orb-icon">
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+  <div class="touch-menu" id="touchMenu">
+    <div class="touch-menu-item" data-mode="global" onclick="toggleView('global')">Global<br>App</div>
+    <div class="touch-menu-item" data-mode="split" onclick="toggleView('split')">Split</div>
+    <div class="touch-menu-item" data-mode="form" onclick="toggleView('form')">Profile</div>
+    <div class="touch-menu-item" data-mode="map" onclick="toggleView('map')">Map</div>
+    <div class="touch-menu-item" data-mode="tactical" onclick="toggleView('tactical')">Tactical<br>Map</div>
+    <div class="touch-menu-item" data-mode="signal" onclick="toggleView('signal')">Signal</div>
+    <div class="touch-menu-item" onclick="openOsint()" title="OSINT quick-access">OSINT</div>
+    <div class="touch-menu-item small" onclick="zoomBy(1.25)" title="Zoom in">+</div>
+    <div class="touch-menu-item small" onclick="zoomBy(0.8)" title="Zoom out">−</div>
+    <div class="touch-menu-item small" onclick="resetView()" title="Reset view">⟳</div>
+    <div class="touch-menu-item small" onclick="toggleFullScreen()" title="Fullscreen">⛶</div>
+  </div>
+
+  <!-- OSINT QUICK-ACCESS OVERLAY -->
+  <div class="osint-overlay" id="osintOverlay">
+    <div class="osint-panel">
+      <div class="osint-panel-header">
+        <span class="title">◎ OSINT QUICK-ACCESS TOOLKIT</span>
+        <button class="close-btn" onclick="closeOsint()">✕</button>
+      </div>
+      <div class="osint-panel-body">
+        <div class="osint-search-row">
+          <input id="osintQuery" type="text" placeholder="Type a username / domain / IP / phrase, then pick a tool below…">
+          <button onclick="document.getElementById('osintQuery').focus()">Focus</button>
+        </div>
+
+        <div class="osint-category">
+          <div class="osint-category-title">Search & Frameworks</div>
+          <div class="osint-grid" id="osint-general"></div>
+        </div>
+
+        <div class="osint-category">
+          <div class="osint-category-title">Username / Social</div>
+          <div class="osint-grid" id="osint-username"></div>
+        </div>
+
+        <div class="osint-category">
+          <div class="osint-category-title">Domain / IP / Network</div>
+          <div class="osint-grid" id="osint-network"></div>
+        </div>
+
+        <div class="osint-category">
+          <div class="osint-category-title">Breach / Leak Check</div>
+          <div class="osint-grid" id="osint-breach"></div>
+        </div>
+
+        <div class="osint-category">
+          <div class="osint-category-title">Images / Geolocation</div>
+          <div class="osint-grid" id="osint-image"></div>
+        </div>
+
+        <div class="osint-category">
+          <div class="osint-category-title">Archives / Documents</div>
+          <div class="osint-grid" id="osint-archive"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GLOBAL ALERT BANNER -->
+  <div class="alert-banner" id="alertBanner"></div>
 
   <!-- WORKSPACE PANELS -->
   <div class="workspace" id="workspace">
+    <!-- CYBER SIGNAL WORLD MONITOR SIDEBAR -->
+    <div class="signal-sidebar" id="signalSidebar" style="display:none;">
+      <div class="signal-header">
+        <span><span class="signal-live-dot"></span>CYBER SIGNAL MONITOR</span>
+        <span style="color:#00ff88;">LIVE</span>
+      </div>
+      <div class="signal-stats">
+        <div class="stat-box">
+          <div class="label">ACTIVE NODES</div>
+          <div class="value" id="statNodes">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">CORE LINKS</div>
+          <div class="value" id="statLinks">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">AVG LOAD</div>
+          <div class="value" id="statLoad">0%</div>
+        </div>
+        <div class="stat-box">
+          <div class="label">SIGNALS/MIN</div>
+          <div class="value" id="statRate">0</div>
+        </div>
+      </div>
+      <div class="threat-block">
+        <div class="threat-label-row"><span>GLOBAL THREAT LEVEL</span><span id="threatPct">30%</span></div>
+        <div class="threat-bar-track"><div class="threat-bar-fill" id="threatBar"></div></div>
+      </div>
+      <div class="signal-feed" id="signalFeed"></div>
+    </div>
+
     <!-- FORM PANE -->
     <div class="pane" id="formPane">
+      <div class="pane-label">PROFILE FORM</div>
       <iframe src="https://script.google.com/macros/s/AKfycbw5wBPimm2ulyNWfh-eZCCQzH4T7gabIPuKTSBbkdiVnbIKfMp5T_QVnRHaZJe-8lAJ/exec" allowfullscreen></iframe>
     </div>
-    
-    <!-- ANIMATED CYBER MAP PANE -->
+
+    <!-- ANIMATED, PANNABLE / ZOOMABLE CYBER MAP PANE -->
     <div class="pane" id="mapPane">
+      <div class="pane-label">GLOBAL NODE MAP // LIVE TRACE</div>
       <canvas id="cyberMapCanvas"></canvas>
       <div class="map-hud-overlay">
-        GLOBAL GRID: ACTIVE<br>
-        SECURE NODE LINK: STABLE
+        GLOBAL GRID: <span id="hudStatus">ACTIVE</span><br>
+        SECURE NODE LINK: STABLE<br>
+        <span class="dim">ZOOM: <span id="zoomReadout">1.00x</span> · NODES: <span id="nodeCount">0</span></span>
       </div>
+      <div class="map-node-panel" id="nodePanel">
+        <div class="title" id="nodePanelTitle">NODE</div>
+        <div id="nodePanelBody"></div>
+      </div>
+      <div class="map-hint">DRAG to pan · SCROLL/PINCH to zoom · CLICK a node to fly in and trace its data flow</div>
+    </div>
+
+    <!-- TACTICAL GEOGRAPHIC MAP PANE (real-world, Leaflet + free tiles) -->
+    <div class="pane" id="tacticalPane" style="display:none;">
+      <div class="pane-label">TACTICAL MAP // REAL-WORLD GRID</div>
+      <div id="tacticalMap"></div>
+      <div class="tactical-layer-switch">
+        <div class="tactical-layer-btn active" data-layer="dark" onclick="setTacticalLayer('dark')">Dark</div>
+        <div class="tactical-layer-btn" data-layer="sat" onclick="setTacticalLayer('sat')">Satellite</div>
+        <div class="tactical-layer-btn" data-layer="terrain" onclick="setTacticalLayer('terrain')">Terrain</div>
+      </div>
+      <div class="tactical-locate-btn" onclick="locateMe()" title="Locate me">◎</div>
     </div>
   </div>
 
@@ -214,10 +918,8 @@
     update() {
       this.x += this.speedX;
       this.y += this.speedY;
-
       if (this.x > canvas.width) this.x = 0;
       else if (this.x < 0) this.x = canvas.width;
-
       if (this.y > canvas.height) this.y = 0;
       else if (this.y < 0) this.y = canvas.height;
     }
@@ -234,9 +936,7 @@
 
   function initParticles() {
     particlesArray = [];
-    for (let i = 0; i < numberOfParticles; i++) {
-      particlesArray.push(new Particle());
-    }
+    for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
   }
 
   function connectParticles() {
@@ -245,7 +945,6 @@
         let dx = particlesArray[a].x - particlesArray[b].x;
         let dy = particlesArray[a].y - particlesArray[b].y;
         let distance = Math.sqrt(dx * dx + dy * dy);
-
         if (distance < 120) {
           ctx.strokeStyle = `rgba(0, 240, 255, ${0.15 * (1 - distance / 120)})`;
           ctx.lineWidth = 0.6;
@@ -271,166 +970,797 @@
   initParticles();
   animateParticles();
 
-  /* --- ANIMATED CYBER WORLD MAP ENGINE --- */
+  /* --- UTC CLOCK --- */
+  setInterval(() => {
+    const now = new Date();
+    document.getElementById('utcClock').innerText = now.toUTCString().slice(17, 25) + " UTC";
+  }, 1000);
+
+  /* =====================================================================
+     ANIMATED, FREE-NAVIGATION (PAN + ZOOM) CYBER WORLD MAP
+     ===================================================================== */
   const mapCanvas = document.getElementById('cyberMapCanvas');
   const mapCtx = mapCanvas.getContext('2d');
+  const mapPane = document.getElementById('mapPane');
+  const nodePanel = document.getElementById('nodePanel');
+  const nodePanelTitle = document.getElementById('nodePanelTitle');
+  const nodePanelBody = document.getElementById('nodePanelBody');
+  const zoomReadout = document.getElementById('zoomReadout');
+  const nodeCountEl = document.getElementById('nodeCount');
 
   function resizeMapCanvas() {
-    const pane = document.getElementById('mapPane');
-    mapCanvas.width = pane.clientWidth;
-    mapCanvas.height = pane.clientHeight;
+    mapCanvas.width = mapPane.clientWidth;
+    mapCanvas.height = mapPane.clientHeight;
   }
   window.addEventListener('resize', resizeMapCanvas);
   resizeMapCanvas();
 
-  // Abstract simulated globe nodes and active communication data streams
+  // World nodes laid out on a normalized 0..1 "world" plane (roughly
+  // continent-shaped clusters) so pan/zoom feels like navigating a globe.
   const mapNodes = [
-    {x: 0.2, y: 0.3, label: "NA-01"},
-    {x: 0.28, y: 0.45, label: "SA-02"},
-    {x: 0.48, y: 0.28, label: "EU-01"},
-    {x: 0.55, y: 0.4, label: "AF-01"},
-    {x: 0.72, y: 0.32, label: "AS-01"},
-    {x: 0.85, y: 0.6, label: "OC-01"},
-    {x: 0.38, y: 0.35, label: "AT-CORE"}
+    { x: 0.16, y: 0.28, label: "NA-01", region: "North America", status: "SECURE", load: 42, city: "New York",     lat: 40.71,  lng: -74.01 },
+    { x: 0.22, y: 0.22, label: "NA-02", region: "North America", status: "SECURE", load: 37, city: "San Francisco",lat: 37.77,  lng: -122.42 },
+    { x: 0.24, y: 0.52, label: "SA-01", region: "South America", status: "SECURE", load: 29, city: "São Paulo",    lat: -23.55, lng: -46.63 },
+    { x: 0.30, y: 0.62, label: "SA-02", region: "South America", status: "NOMINAL", load: 18, city: "Buenos Aires",lat: -34.60, lng: -58.38 },
+    { x: 0.46, y: 0.20, label: "EU-01", region: "Europe", status: "SECURE", load: 61, city: "London",     lat: 51.51, lng: -0.13 },
+    { x: 0.50, y: 0.24, label: "EU-02", region: "Europe", status: "SECURE", load: 55, city: "Frankfurt",  lat: 50.11, lng: 8.68 },
+    { x: 0.44, y: 0.46, label: "AF-01", region: "Africa", status: "NOMINAL", load: 23, city: "Lagos",     lat: 6.52,  lng: 3.38 },
+    { x: 0.50, y: 0.58, label: "AF-02", region: "Africa", status: "NOMINAL", load: 19, city: "Nairobi",   lat: -1.29, lng: 36.82 },
+    { x: 0.62, y: 0.30, label: "AS-01", region: "Asia", status: "SECURE", load: 74, city: "Tokyo",       lat: 35.68, lng: 139.69 },
+    { x: 0.70, y: 0.24, label: "AS-02", region: "Asia", status: "SECURE", load: 68, city: "Singapore",   lat: 1.35,  lng: 103.82 },
+    { x: 0.68, y: 0.44, label: "AS-03", region: "Asia", status: "NOMINAL", load: 51, city: "Mumbai",      lat: 19.08, lng: 72.88 },
+    { x: 0.84, y: 0.58, label: "OC-01", region: "Oceania", status: "SECURE", load: 33, city: "Sydney",   lat: -33.87, lng: 151.21 },
+    { x: 0.40, y: 0.34, label: "AT-CORE", region: "Atlantic Core", status: "CORE", load: 88, city: "Reykjavík (Atlantic hub)", lat: 64.15, lng: -21.94 },
+    { x: 0.60, y: 0.40, label: "IN-CORE", region: "Indian Core", status: "CORE", load: 81, city: "Malé (Indian hub)", lat: 4.17, lng: 73.51 }
   ];
+  nodeCountEl.textContent = mapNodes.length;
 
+  // Pan/zoom camera state
+  let camera = { x: 0, y: 0, scale: 1 };
+  let targetScale = 1;
+  let isPanning = false;
+  let panStart = { x: 0, y: 0 };
+  let camStart = { x: 0, y: 0 };
+  let hoveredNode = null;
+  let selectedNode = null;
   let pulseAngle = 0;
+  let flyTarget = null; // {x, y, scale} — camera eases toward this when a node is selected
 
+  function clearFlyTarget() { flyTarget = null; }
+
+  function worldToScreen(nx, ny) {
+    // node coords (0..1) mapped to a base "world" size, then camera-transformed
+    const worldX = nx * mapCanvas.width;
+    const worldY = ny * mapCanvas.height;
+    return {
+      x: worldX * camera.scale + camera.x,
+      y: worldY * camera.scale + camera.y
+    };
+  }
+
+  function screenToWorldNorm(sx, sy) {
+    const worldX = (sx - camera.x) / camera.scale;
+    const worldY = (sy - camera.y) / camera.scale;
+    return { x: worldX / mapCanvas.width, y: worldY / mapCanvas.height };
+  }
+
+  function centerCamera() {
+    // start centered with a comfortable default zoom
+    camera.scale = 1;
+    targetScale = 1;
+    camera.x = 0;
+    camera.y = 0;
+  }
+  centerCamera();
+
+  function resetView() {
+    clearFlyTarget();
+    centerCamera();
+    selectedNode = null;
+    nodePanel.style.display = 'none';
+  }
+
+  function zoomBy(factor) {
+    const cx = mapCanvas.width / 2;
+    const cy = mapCanvas.height / 2;
+    applyZoom(factor, cx, cy);
+  }
+
+  function applyZoom(factor, pivotX, pivotY) {
+    const newScale = Math.min(6, Math.max(0.4, camera.scale * factor));
+    // keep the point under the pivot fixed while zooming
+    const worldX = (pivotX - camera.x) / camera.scale;
+    const worldY = (pivotY - camera.y) / camera.scale;
+    camera.scale = newScale;
+    targetScale = newScale;
+    camera.x = pivotX - worldX * camera.scale;
+    camera.y = pivotY - worldY * camera.scale;
+  }
+
+  /* ---- Mouse / touch: free pan + zoom navigation ---- */
+  mapCanvas.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    clearFlyTarget();
+    const rect = mapCanvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const factor = e.deltaY < 0 ? 1.12 : 0.89;
+    applyZoom(factor, mx, my);
+  }, { passive: false });
+
+  mapCanvas.addEventListener('mousedown', (e) => {
+    clearFlyTarget();
+    isPanning = true;
+    mapCanvas.classList.add('panning');
+    panStart = { x: e.clientX, y: e.clientY };
+    camStart = { x: camera.x, y: camera.y };
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (isPanning) {
+      const dx = e.clientX - panStart.x;
+      const dy = e.clientY - panStart.y;
+      camera.x = camStart.x + dx;
+      camera.y = camStart.y + dy;
+      return;
+    }
+    // hover detection
+    const rect = mapCanvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    hoveredNode = null;
+    for (const n of mapNodes) {
+      const p = worldToScreen(n.x, n.y);
+      if (Math.hypot(p.x - mx, p.y - my) < 12) { hoveredNode = n; break; }
+    }
+    mapCanvas.style.cursor = hoveredNode ? 'pointer' : 'grab';
+  });
+
+  window.addEventListener('mouseup', () => {
+    isPanning = false;
+    mapCanvas.classList.remove('panning');
+  });
+
+  mapCanvas.addEventListener('click', (e) => {
+    if (hoveredNode) {
+      selectedNode = (selectedNode === hoveredNode) ? null : hoveredNode;
+      if (selectedNode) {
+        nodePanel.style.display = 'block';
+        nodePanelTitle.textContent = selectedNode.label;
+        nodePanelBody.innerHTML =
+          'REGION: ' + selectedNode.region + '<br>' +
+          'STATUS: ' + selectedNode.status + '<br>' +
+          'LOAD: ' + selectedNode.load + '%';
+        // Smoothly fly the camera to frame this node
+        const flyScale = Math.max(camera.scale, 2.1);
+        flyTarget = {
+          scale: flyScale,
+          x: mapCanvas.width / 2 - selectedNode.x * mapCanvas.width * flyScale,
+          y: mapCanvas.height / 2 - selectedNode.y * mapCanvas.height * flyScale
+        };
+      } else {
+        nodePanel.style.display = 'none';
+      }
+    }
+  });
+
+  // Touch support for pan + pinch-ish (single-touch pan, two-finger zoom)
+  let lastTouchDist = null;
+  mapCanvas.addEventListener('touchstart', (e) => {
+    clearFlyTarget();
+    if (e.touches.length === 1) {
+      isPanning = true;
+      panStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      camStart = { x: camera.x, y: camera.y };
+    } else if (e.touches.length === 2) {
+      isPanning = false;
+      lastTouchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+    }
+  }, { passive: true });
+
+  mapCanvas.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1 && isPanning) {
+      const dx = e.touches[0].clientX - panStart.x;
+      const dy = e.touches[0].clientY - panStart.y;
+      camera.x = camStart.x + dx;
+      camera.y = camStart.y + dy;
+    } else if (e.touches.length === 2 && lastTouchDist) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const rect = mapCanvas.getBoundingClientRect();
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+      applyZoom(dist / lastTouchDist, midX, midY);
+      lastTouchDist = dist;
+    }
+  }, { passive: true });
+
+  mapCanvas.addEventListener('touchend', () => {
+    isPanning = false;
+    lastTouchDist = null;
+  });
+
+  /* ---- Render loop: grid, links, animated data flow, nodes ---- */
   function animateCyberMap() {
-    mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
-    
-    // Draw radar/grid scanning overlay lines
-    mapCtx.strokeStyle = 'rgba(0, 240, 255, 0.05)';
-    mapCtx.lineWidth = 1;
-    let step = 40;
-    for (let x = 0; x < mapCanvas.width; x += step) {
-      mapCtx.beginPath(); mapCtx.moveTo(x, 0); mapCtx.lineTo(x, mapCanvas.height); mapCtx.stroke();
-    }
-    for (let y = 0; y < mapCanvas.height; y += step) {
-      mapCtx.beginPath(); mapCtx.moveTo(0, y); mapCtx.lineTo(mapCanvas.width, y); mapCtx.stroke();
-    }
-
-    // Convert relative node coordinates to absolute pixels
-    const absNodes = mapNodes.map(n => ({
-      x: n.x * mapCanvas.width,
-      y: n.y * mapCanvas.height,
-      label: n.label
-    }));
-
-    // Draw connecting data streams
-    for (let i = 0; i < absNodes.length; i++) {
-      for (let j = i + 1; j < absNodes.length; j++) {
-        let dist = Math.hypot(absNodes[i].x - absNodes[j].x, absNodes[i].y - absNodes[j].y);
-        if (dist < mapCanvas.width * 0.4) {
-          mapCtx.strokeStyle = 'rgba(0, 119, 255, 0.2)';
-          mapCtx.lineWidth = 1;
-          mapCtx.beginPath();
-          mapCtx.moveTo(absNodes[i].x, absNodes[i].y);
-          mapCtx.lineTo(absNodes[j].x, absNodes[j].y);
-          mapCtx.stroke();
-        }
+    // Ease camera toward a fly-to target (from clicking a node), if any
+    if (flyTarget) {
+      camera.x += (flyTarget.x - camera.x) * 0.1;
+      camera.y += (flyTarget.y - camera.y) * 0.1;
+      camera.scale += (flyTarget.scale - camera.scale) * 0.1;
+      if (Math.abs(flyTarget.scale - camera.scale) < 0.01 &&
+          Math.hypot(flyTarget.x - camera.x, flyTarget.y - camera.y) < 0.5) {
+        flyTarget = null;
       }
     }
 
-    // Draw active animated data pulses traveling across pathways
-    pulseAngle += 0.03;
-    let currentPulse = (Math.sin(pulseAngle) + 1) / 2; // oscillates 0 to 1
+    mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
 
+    // Background scanning grid (fixed to camera so it feels like a real map)
+    mapCtx.strokeStyle = 'rgba(0, 240, 255, 0.05)';
+    mapCtx.lineWidth = 1;
+    const step = 40 * camera.scale;
+    const offX = camera.x % step;
+    const offY = camera.y % step;
+    for (let x = offX; x < mapCanvas.width; x += step) {
+      mapCtx.beginPath(); mapCtx.moveTo(x, 0); mapCtx.lineTo(x, mapCanvas.height); mapCtx.stroke();
+    }
+    for (let y = offY; y < mapCanvas.height; y += step) {
+      mapCtx.beginPath(); mapCtx.moveTo(0, y); mapCtx.lineTo(mapCanvas.width, y); mapCtx.stroke();
+    }
+
+    const absNodes = mapNodes.map(n => ({ ...n, ...worldToScreen(n.x, n.y) }));
+
+    // Build the visible link list once so lines + flow particles agree
+    const visibleLinks = [];
+    for (let i = 0; i < absNodes.length; i++) {
+      for (let j = i + 1; j < absNodes.length; j++) {
+        const dist = Math.hypot(absNodes[i].x - absNodes[j].x, absNodes[i].y - absNodes[j].y);
+        if (dist < mapCanvas.width * 0.42) visibleLinks.push([absNodes[i], absNodes[j]]);
+      }
+    }
+
+    // Connecting data-link lines (dimmer normally, bright when tied to selection/hover)
+    visibleLinks.forEach(([a, b]) => {
+      const involved = selectedNode && (a.label === selectedNode.label || b.label === selectedNode.label);
+      mapCtx.strokeStyle = involved ? 'rgba(255, 0, 200, 0.55)' : 'rgba(0, 119, 255, 0.18)';
+      mapCtx.lineWidth = involved ? 1.6 : 1;
+      mapCtx.beginPath();
+      mapCtx.moveTo(a.x, a.y);
+      mapCtx.lineTo(b.x, b.y);
+      mapCtx.stroke();
+    });
+
+    // Directional data-flow particles — each link carries 1-2 packets of
+    // "world data flow" moving from the higher-load node to the lower-load
+    // one, at a speed proportional to that node's load (busier = faster).
+    pulseAngle += 0.018;
+    visibleLinks.forEach(([a, b], li) => {
+      const from = a.load >= b.load ? a : b;
+      const to = a.load >= b.load ? b : a;
+      const speed = 0.15 + (from.load / 100) * 0.35;
+      const involved = selectedNode && (a.label === selectedNode.label || b.label === selectedNode.label);
+      const packets = involved ? 3 : 1;
+      for (let p = 0; p < packets; p++) {
+        const phase = ((pulseAngle * speed) + (li * 0.37) + (p / packets)) % 1;
+        const px = from.x + (to.x - from.x) * phase;
+        const py = from.y + (to.y - from.y) * phase;
+        mapCtx.fillStyle = involved ? '#ff00c8' : '#00f0ff';
+        mapCtx.shadowBlur = 9;
+        mapCtx.shadowColor = mapCtx.fillStyle;
+        mapCtx.beginPath();
+        mapCtx.arc(px, py, 2 * Math.min(1.5, camera.scale), 0, Math.PI * 2);
+        mapCtx.fill();
+        mapCtx.shadowBlur = 0;
+      }
+    });
+
+    // Node markers, pulse rings, labels
     absNodes.forEach((node, idx) => {
-      let targetNode = absNodes[(idx + 2) % absNodes.length];
-      let px = node.x + (targetNode.x - node.x) * currentPulse;
-      let py = node.y + (targetNode.y - node.y) * currentPulse;
+      const isHot = (hoveredNode && hoveredNode.label === node.label) ||
+                    (selectedNode && selectedNode.label === node.label);
+      const baseColor = node.status === 'CORE' ? '#ff00c8' : '#ffffff';
 
-      mapCtx.fillStyle = '#00f0ff';
-      mapCtx.shadowBlur = 10;
-      mapCtx.shadowColor = '#00f0ff';
+      mapCtx.fillStyle = isHot ? '#00f0ff' : baseColor;
       mapCtx.beginPath();
-      mapCtx.arc(px, py, 2.5, 0, Math.PI * 2);
-      mapCtx.fill();
-      mapCtx.shadowBlur = 0;
-
-      // Draw Node markers
-      mapCtx.fillStyle = '#ffffff';
-      mapCtx.beginPath();
-      mapCtx.arc(node.x, node.y, 4, 0, Math.PI * 2);
+      mapCtx.arc(node.x, node.y, (node.status === 'CORE' ? 5 : 4) * Math.min(1.6, camera.scale), 0, Math.PI * 2);
       mapCtx.fill();
 
-      // Node Pulse Effect
-      mapCtx.strokeStyle = 'rgba(0, 240, 255, 0.6)';
+      mapCtx.strokeStyle = isHot ? 'rgba(0, 240, 255, 0.9)' : 'rgba(0, 240, 255, 0.5)';
       mapCtx.lineWidth = 1.5;
       mapCtx.beginPath();
-      let ringRadius = 6 + Math.sin(pulseAngle * 2 + idx) * 4;
+      const ringRadius = (6 + Math.sin(pulseAngle * 2 + idx) * 4) * Math.min(1.6, camera.scale);
       mapCtx.arc(node.x, node.y, Math.abs(ringRadius), 0, Math.PI * 2);
       mapCtx.stroke();
 
-      // Node label
-      mapCtx.fillStyle = '#00f0ff';
-      mapCtx.font = '10px monospace';
-      mapCtx.fillText(node.label, node.x + 10, node.y + 4);
+      if (camera.scale > 0.55) {
+        mapCtx.fillStyle = isHot ? '#00f0ff' : 'rgba(0, 240, 255, 0.85)';
+        mapCtx.font = (10 * Math.min(1.3, camera.scale)) + 'px monospace';
+        mapCtx.fillText(node.label, node.x + 10, node.y + 4);
+      }
     });
 
+    zoomReadout.textContent = camera.scale.toFixed(2) + 'x';
     requestAnimationFrame(animateCyberMap);
   }
   animateCyberMap();
 
+  /* =====================================================================
+     TACTICAL MAP — real-world geography via Leaflet + free tile providers
+     (CartoDB Dark Matter / Esri World Imagery / OpenTopoMap — all free,
+     no API key required). Uses the same node dataset as the abstract
+     animated map above, plotted at real lat/lng coordinates.
+     ===================================================================== */
+  let tacticalMap = null;
+  let tacticalMarkers = [];
+  let tacticalLinks = [];
+  let tacticalLinkDashOffset = 0;
+  let currentTileLayer = null;
 
-  /* --- MOVABLE FLOATING PANEL LOGIC (DRAG & DROP) --- */
-  const floatingControls = document.getElementById('floatingControls');
-  let isDragging = false;
-  let startX, startY, initialLeft, initialTop;
+  const tileLayers = {
+    dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      subdomains: 'abcd', maxZoom: 19
+    }),
+    sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics', maxZoom: 19
+    }),
+    terrain: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data: &copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap',
+      subdomains: 'abc', maxZoom: 17
+    })
+  };
 
-  floatingControls.addEventListener('pointerdown', (e) => {
-    isDragging = true;
-    floatingControls.setPointerCapture(e.pointerId);
-    startX = e.clientX;
-    startY = e.clientY;
-    
-    const rect = floatingControls.getBoundingClientRect();
-    initialLeft = rect.left;
-    initialTop = rect.top;
-    
-    // Switch from absolute/right positioning to fixed pixel placement tracking
-    floatingControls.style.right = 'auto';
-    floatingControls.style.left = initialLeft + 'px';
-    floatingControls.style.top = initialTop + 'px';
+  function initTacticalMap() {
+    if (tacticalMap) return;
+    tacticalMap = L.map('tacticalMap', {
+      center: [20, 10],
+      zoom: 2,
+      minZoom: 2,
+      worldCopyJump: true,
+      zoomControl: true
+    });
+    window.tacticalLeafletMap = tacticalMap;
+
+    currentTileLayer = tileLayers.dark.addTo(tacticalMap);
+    L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(tacticalMap);
+
+    // Node markers (pulsing cyber dots) with info popups
+    mapNodes.forEach(n => {
+      const isCore = n.status === 'CORE';
+      const icon = L.divIcon({
+        className: '',
+        html: `<div class="cyber-marker${isCore ? ' core' : ''}"><div class="ring"></div><div class="dot"></div></div>`,
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
+      });
+      const marker = L.marker([n.lat, n.lng], { icon }).addTo(tacticalMap);
+      marker.bindPopup(
+        `<b>${n.label}</b><br>${n.city}<br>REGION: ${n.region}<br>STATUS: ${n.status}<br>LOAD: ${n.load}%`
+      );
+      tacticalMarkers.push(marker);
+    });
+
+    // Data-link lines between nearby / related nodes, same spirit as the
+    // abstract map's link graph, drawn as animated dashed geodesic-ish lines
+    for (let i = 0; i < mapNodes.length; i++) {
+      for (let j = i + 1; j < mapNodes.length; j++) {
+        const a = mapNodes[i], b = mapNodes[j];
+        const dist = Math.hypot(a.x - b.x, a.y - b.y);
+        if (dist < 0.42) {
+          const involved = a.status === 'CORE' || b.status === 'CORE';
+          const line = L.polyline([[a.lat, a.lng], [b.lat, b.lng]], {
+            color: involved ? '#ff00c8' : '#0077ff',
+            weight: involved ? 1.6 : 1,
+            opacity: involved ? 0.55 : 0.28,
+            dashArray: '4 6'
+          }).addTo(tacticalMap);
+          tacticalLinks.push(line);
+        }
+      }
+    }
+
+    // Animate the dashed lines to feel like flowing tactical data links
+    setInterval(() => {
+      tacticalLinkDashOffset = (tacticalLinkDashOffset + 1) % 10;
+      tacticalLinks.forEach(line => {
+        const el = line.getElement && line.getElement();
+        if (el) el.style.strokeDashoffset = -tacticalLinkDashOffset;
+      });
+    }, 90);
+  }
+
+  function setTacticalLayer(key) {
+    if (!tacticalMap) return;
+    if (currentTileLayer) tacticalMap.removeLayer(currentTileLayer);
+    currentTileLayer = tileLayers[key].addTo(tacticalMap);
+    document.querySelectorAll('.tactical-layer-btn').forEach(btn =>
+      btn.classList.toggle('active', btn.dataset.layer === key)
+    );
+  }
+
+  let userLocationMarker = null;
+  function locateMe() {
+    if (!tacticalMap) return;
+    if (!navigator.geolocation) {
+      alert('Geolocation is not available in this browser.');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const { latitude, longitude } = pos.coords;
+      if (userLocationMarker) tacticalMap.removeLayer(userLocationMarker);
+      userLocationMarker = L.circleMarker([latitude, longitude], {
+        radius: 8, color: '#00ff88', fillColor: '#00ff88', fillOpacity: 0.4, weight: 2
+      }).addTo(tacticalMap).bindPopup('<b>YOUR LOCATION</b>').openPopup();
+      tacticalMap.flyTo([latitude, longitude], 8, { duration: 1.2 });
+    }, () => {
+      alert('Location access denied or unavailable.');
+    });
+  }
+
+  // Initialize once Leaflet + DOM are ready
+  window.addEventListener('DOMContentLoaded', initTacticalMap);
+  if (document.readyState !== 'loading') initTacticalMap();
+
+  /* =====================================================================
+     CYBER SIGNAL WORLD MONITOR ENGINE
+     Simulated (client-side) live signal feed, stats and threat level,
+     driven off the same node data that powers the map above. No external
+     services are contacted — everything here is generated locally.
+     ===================================================================== */
+  const signalFeedEl = document.getElementById('signalFeed');
+  const statNodes = document.getElementById('statNodes');
+  const statLinks = document.getElementById('statLinks');
+  const statLoad = document.getElementById('statLoad');
+  const statRate = document.getElementById('statRate');
+  const threatBar = document.getElementById('threatBar');
+  const threatPct = document.getElementById('threatPct');
+  const threatLevelTopbar = document.getElementById('threatLevelTopbar');
+  const alertBanner = document.getElementById('alertBanner');
+
+  const signalTemplates = [
+    { tag: "[NODE SYNC]", kind: "info", text: (n) => `${n.label} (${n.region}) completed handshake — link nominal.` },
+    { tag: "[LOAD REPORT]", kind: "info", text: (n) => `${n.label} reporting ${n.load}% throughput, within normal bounds.` },
+    { tag: "[TRACE]", kind: "info", text: (n) => `Route trace across ${n.region} corridor resolved in optimal time.` },
+    { tag: "[LATENCY]", kind: "warn", text: (n) => `Elevated latency detected on ${n.label} uplink — monitoring.` },
+    { tag: "[ANOMALY]", kind: "warn", text: (n) => `Irregular packet pattern flagged near ${n.label}, low confidence.` },
+    { tag: "[INTRUSION ATTEMPT]", kind: "alert", text: (n) => `Blocked unauthorized probe against ${n.label} perimeter.` },
+    { tag: "[CORE STATUS]", kind: "info", text: (n) => `${n.label} core relay holding steady sync with all peers.` },
+  ];
+
+  let signalsThisMinute = 0;
+  let lastRateReset = Date.now();
+
+  function pushSignalCard() {
+    const node = mapNodes[Math.floor(Math.random() * mapNodes.length)];
+    // Weighted pick: mostly info, occasional warn, rare alert
+    const roll = Math.random();
+    let pool = signalTemplates.filter(t => t.kind === 'info');
+    if (roll > 0.82) pool = signalTemplates.filter(t => t.kind === 'alert');
+    else if (roll > 0.6) pool = signalTemplates.filter(t => t.kind === 'warn');
+    const tpl = pool[Math.floor(Math.random() * pool.length)];
+
+    const card = document.createElement('div');
+    card.className = 'signal-card' + (tpl.kind === 'warn' ? ' warn' : tpl.kind === 'alert' ? ' alert' : '');
+    const now = new Date();
+    card.innerHTML =
+      `<div class="signal-tag">${tpl.tag}</div>` +
+      `<div class="signal-text">${tpl.text(node)}</div>` +
+      `<div class="signal-time">${now.toUTCString().slice(17, 25)} UTC</div>`;
+    signalFeedEl.prepend(card);
+    while (signalFeedEl.children.length > 30) signalFeedEl.removeChild(signalFeedEl.lastChild);
+
+    signalsThisMinute++;
+
+    if (tpl.kind === 'alert') {
+      showAlertBanner(`⚠ ${tpl.tag} ${tpl.text(node)}`);
+      bumpThreat(8);
+    } else if (tpl.kind === 'warn') {
+      bumpThreat(3);
+    } else {
+      bumpThreat(-1);
+    }
+  }
+
+  function showAlertBanner(msg) {
+    alertBanner.textContent = msg;
+    alertBanner.style.display = 'block';
+    clearTimeout(showAlertBanner._t);
+    showAlertBanner._t = setTimeout(() => { alertBanner.style.display = 'none'; }, 4000);
+  }
+
+  let threatValue = 30;
+  function bumpThreat(delta) {
+    threatValue = Math.min(95, Math.max(8, threatValue + delta));
+    renderThreat();
+  }
+
+  function renderThreat() {
+    threatBar.style.width = threatValue + '%';
+    threatPct.textContent = Math.round(threatValue) + '%';
+    let label = 'LOW', color = '#00ff88';
+    if (threatValue > 70) { label = 'CRITICAL'; color = '#ff3b3b'; }
+    else if (threatValue > 45) { label = 'ELEVATED'; color = '#ffcc00'; }
+    else if (threatValue > 25) { label = 'GUARDED'; color = '#00e0ff'; }
+    threatLevelTopbar.textContent = label;
+    threatLevelTopbar.style.color = color;
+  }
+
+  function updateStats() {
+    statNodes.textContent = mapNodes.length;
+    const coreLinks = mapNodes.filter(n => n.status === 'CORE').length;
+    statLinks.textContent = coreLinks * 3; // illustrative derived metric
+    const avgLoad = Math.round(mapNodes.reduce((s, n) => s + n.load, 0) / mapNodes.length);
+    statLoad.textContent = avgLoad + '%';
+
+    const now = Date.now();
+    if (now - lastRateReset >= 60000) {
+      statRate.textContent = signalsThisMinute;
+      signalsThisMinute = 0;
+      lastRateReset = now;
+    } else {
+      // live-ish estimate before the first full minute completes
+      const elapsedMin = Math.max(1 / 60, (now - lastRateReset) / 60000);
+      statRate.textContent = Math.round(signalsThisMinute / elapsedMin);
+    }
+  }
+
+  // Seed initial feed cards immediately, then keep streaming
+  for (let i = 0; i < 5; i++) pushSignalCard();
+  renderThreat();
+  updateStats();
+  setInterval(pushSignalCard, 3200);
+  setInterval(updateStats, 1000);
+  // Threat naturally cools down over time if nothing new happens
+  setInterval(() => bumpThreat(-1), 5000);
+
+  /* =====================================================================
+     OSINT QUICK-ACCESS TOOLKIT
+     A curated set of well-known, publicly available OSINT resources.
+     Clicking a tile opens that service in a new tab, pre-filled with
+     whatever the person typed into the query box (when the tool supports
+     a URL query parameter). Nothing here is scraped or automated —
+     it's just a fast, organized set of bookmarks with your active query
+     carried along.
+     ===================================================================== */
+  const osintTools = {
+    general: [
+      { name: "OSINT Framework", desc: "Categorized directory of OSINT resources", url: () => "https://osintframework.com/" },
+      { name: "Google Dorking", desc: "Advanced search operators", url: (q) => `https://www.google.com/search?q=${encodeURIComponent(q || '')}` },
+      { name: "DuckDuckGo", desc: "Privacy-respecting search", url: (q) => `https://duckduckgo.com/?q=${encodeURIComponent(q || '')}` },
+      { name: "IntelTechniques", desc: "Search tool directory by Michael Bazzell", url: () => "https://inteltechniques.com/tools/" },
+    ],
+    username: [
+      { name: "WhatsMyName", desc: "Username enumeration across sites", url: (q) => `https://whatsmyname.app/?q=${encodeURIComponent(q || '')}` },
+      { name: "Namechk", desc: "Check username availability across platforms", url: (q) => `https://namechk.com/${encodeURIComponent(q || '')}` },
+      { name: "Social Searcher", desc: "Search public social mentions", url: (q) => `https://www.social-searcher.com/search-users/?q=${encodeURIComponent(q || '')}` },
+      { name: "LinkedIn Search", desc: "Public profile search", url: (q) => `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(q || '')}` },
+    ],
+    network: [
+      { name: "Shodan", desc: "Search engine for internet-connected devices", url: (q) => q ? `https://www.shodan.io/search?query=${encodeURIComponent(q)}` : "https://www.shodan.io/" },
+      { name: "Censys", desc: "Internet-wide host & certificate search", url: (q) => q ? `https://search.censys.io/search?resource=hosts&q=${encodeURIComponent(q)}` : "https://search.censys.io/" },
+      { name: "WHOIS Lookup", desc: "Domain registration lookup", url: (q) => `https://who.is/whois/${encodeURIComponent(q || '')}` },
+      { name: "crt.sh", desc: "Certificate transparency log search", url: (q) => `https://crt.sh/?q=${encodeURIComponent(q || '')}` },
+      { name: "VirusTotal", desc: "Domain / IP / file reputation lookup", url: (q) => q ? `https://www.virustotal.com/gui/search/${encodeURIComponent(q)}` : "https://www.virustotal.com/" },
+      { name: "DNSDumpster", desc: "Passive DNS reconnaissance", url: () => "https://dnsdumpster.com/" },
+    ],
+    breach: [
+      { name: "Have I Been Pwned", desc: "Check accounts against known breaches", url: (q) => `https://haveibeenpwned.com/account/${encodeURIComponent(q || '')}` },
+      { name: "DeHashed", desc: "Breach & leak data search", url: (q) => q ? `https://dehashed.com/search?query=${encodeURIComponent(q)}` : "https://dehashed.com/" },
+      { name: "Firefox Monitor", desc: "Mozilla breach monitoring", url: () => "https://monitor.firefox.com/" },
+    ],
+    image: [
+      { name: "Google Images", desc: "Reverse image search", url: () => "https://images.google.com/" },
+      { name: "TinEye", desc: "Reverse image search engine", url: () => "https://tineye.com/" },
+      { name: "Yandex Images", desc: "Often strongest for face matches", url: () => "https://yandex.com/images/" },
+      { name: "EXIF Data Viewer", desc: "Inspect image metadata/EXIF", url: () => "http://exif.regex.info/exif.cgi" },
+    ],
+    archive: [
+      { name: "Wayback Machine", desc: "Historical snapshots of web pages", url: (q) => `https://web.archive.org/web/*/${encodeURIComponent(q || '')}` },
+      { name: "Archive.today", desc: "On-demand page archiving/lookup", url: () => "https://archive.ph/" },
+      { name: "Google Cache Viewer", desc: "Cached page lookup", url: (q) => `https://cachedview.nl/` },
+    ],
+  };
+
+  function renderOsintTools() {
+    Object.entries(osintTools).forEach(([cat, tools]) => {
+      const el = document.getElementById('osint-' + cat);
+      if (!el) return;
+      el.innerHTML = tools.map(t =>
+        `<a class="osint-tool" href="#" data-cat="${cat}" data-name="${t.name}">
+          <span class="name">${t.name}</span>
+          <span class="desc">${t.desc}</span>
+        </a>`
+      ).join('');
+    });
+
+    document.querySelectorAll('.osint-tool').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const cat = a.dataset.cat;
+        const name = a.dataset.name;
+        const tool = osintTools[cat].find(t => t.name === name);
+        const q = document.getElementById('osintQuery').value.trim();
+        window.open(tool.url(q), '_blank', 'noopener');
+      });
+    });
+  }
+  renderOsintTools();
+
+  function openOsint() {
+    document.getElementById('osintOverlay').classList.add('open');
+    // close the radial orb menu when the overlay opens
+    touchMenu.classList.remove('open');
+    touchOrb.classList.remove('open');
+    setTimeout(() => document.getElementById('osintQuery').focus(), 50);
+  }
+
+  function closeOsint() {
+    document.getElementById('osintOverlay').classList.remove('open');
+  }
+
+  document.getElementById('osintOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'osintOverlay') closeOsint();
   });
 
-  floatingControls.addEventListener('pointermove', (e) => {
-    if (!isDragging) return;
-    const dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    
-    floatingControls.style.left = (initialLeft + dx) + 'px';
-    floatingControls.style.top = (initialTop + dy) + 'px';
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeOsint();
   });
 
-  floatingControls.addEventListener('pointerup', (e) => {
-    isDragging = false;
-    floatingControls.releasePointerCapture(e.pointerId);
+  /* =====================================================================
+     ASSISTIVE-TOUCH STYLE FLOATING ORB
+     Drag it anywhere on screen (mouse or touch). A single tap (no drag)
+     opens a radial stack of action buttons anchored to wherever the orb
+     currently sits, auto-flipping above/below/left/right to stay on-screen.
+     The orb + menu sit at a very high z-index so they always overlay every
+     other pane, panel, or overlay in the app (except the OSINT modal,
+     which intentionally sits on top while open).
+     ===================================================================== */
+  const touchOrb = document.getElementById('touchOrb');
+  const touchMenu = document.getElementById('touchMenu');
+
+  function placeOrb(x, y) {
+    const margin = 8;
+    const w = window.innerWidth, h = window.innerHeight;
+    x = Math.min(w - 56 - margin, Math.max(margin, x));
+    y = Math.min(h - 56 - margin, Math.max(margin, y));
+    touchOrb.style.left = x + 'px';
+    touchOrb.style.top = y + 'px';
+  }
+  // Default position: bottom-right, thumb-reachable
+  placeOrb(window.innerWidth - 76, window.innerHeight - 96);
+  window.addEventListener('resize', () => {
+    const rect = touchOrb.getBoundingClientRect();
+    placeOrb(rect.left, rect.top);
+    if (touchMenu.classList.contains('open')) positionMenu();
   });
 
+  let orbDragging = false;
+  let orbMoved = false;
+  let orbPointerStart = { x: 0, y: 0 };
+  let orbStart = { x: 0, y: 0 };
 
-  /* --- INTERACTIVE CONTROLS --- */
+  touchOrb.addEventListener('pointerdown', (e) => {
+    orbDragging = true;
+    orbMoved = false;
+    touchOrb.setPointerCapture(e.pointerId);
+    orbPointerStart = { x: e.clientX, y: e.clientY };
+    const rect = touchOrb.getBoundingClientRect();
+    orbStart = { x: rect.left, y: rect.top };
+  });
+
+  touchOrb.addEventListener('pointermove', (e) => {
+    if (!orbDragging) return;
+    const dx = e.clientX - orbPointerStart.x;
+    const dy = e.clientY - orbPointerStart.y;
+    if (Math.hypot(dx, dy) > 5) orbMoved = true;
+    if (orbMoved) {
+      placeOrb(orbStart.x + dx, orbStart.y + dy);
+      if (touchMenu.classList.contains('open')) positionMenu();
+    }
+  });
+
+  touchOrb.addEventListener('pointerup', (e) => {
+    orbDragging = false;
+    try { touchOrb.releasePointerCapture(e.pointerId); } catch (err) {}
+    if (!orbMoved) toggleTouchMenu();
+  });
+
+  function positionMenu() {
+    const rect = touchOrb.getBoundingClientRect();
+    const items = touchMenu.querySelectorAll('.touch-menu-item').length;
+    const itemH = 54; // 46px + gap
+    const menuH = items * itemH + 16;
+    const w = window.innerWidth, h = window.innerHeight;
+
+    // Prefer opening upward if there's room, otherwise downward.
+    let openUp = (rect.top - menuH) > 10;
+    let top = openUp ? Math.max(10, rect.top - menuH) : Math.min(h - menuH - 10, rect.bottom + 8);
+    // Keep menu horizontally aligned with the orb, flipped to stay on-screen.
+    let left = rect.left - 4;
+    if (left + 56 > w - 10) left = w - 66;
+    if (left < 10) left = 10;
+
+    // Clamp so the menu never spills above the viewport top when there
+    // isn't room either way (very small screens).
+    top = Math.max(6, Math.min(top, h - 60));
+
+    touchMenu.style.top = top + 'px';
+    touchMenu.style.left = left + 'px';
+  }
+
+  function toggleTouchMenu() {
+    const willOpen = !touchMenu.classList.contains('open');
+    if (willOpen) {
+      positionMenu();
+      touchMenu.classList.add('open');
+      touchOrb.classList.add('open');
+      // restart the pop-in animation each time it opens
+      touchMenu.querySelectorAll('.touch-menu-item').forEach((el, i) => {
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = `orbPop 0.22s ease forwards`;
+        el.style.animationDelay = (i * 0.03) + 's';
+      });
+    } else {
+      touchMenu.classList.remove('open');
+      touchOrb.classList.remove('open');
+    }
+  }
+
+  document.addEventListener('pointerdown', (e) => {
+    if (touchMenu.classList.contains('open') &&
+        !touchMenu.contains(e.target) && !touchOrb.contains(e.target)) {
+      touchMenu.classList.remove('open');
+      touchOrb.classList.remove('open');
+    }
+  });
+
+  /* --- VIEW TOGGLES --- */
+  const viewButtons = document.querySelectorAll('.touch-menu-item[data-mode]');
+  function setActiveButton(mode) {
+    viewButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+  }
+
   function toggleView(mode) {
     const formPane = document.getElementById('formPane');
-    const mapPane = document.getElementById('mapPane');
+    const mapPaneEl = document.getElementById('mapPane');
+    const tacticalPaneEl = document.getElementById('tacticalPane');
+    const signalSidebar = document.getElementById('signalSidebar');
+
+    // reset
+    formPane.style.display = 'none'; formPane.style.flex = '';
+    mapPaneEl.style.display = 'none'; mapPaneEl.style.flex = '';
+    tacticalPaneEl.style.display = 'none'; tacticalPaneEl.style.flex = '';
+    signalSidebar.style.display = 'none';
 
     if (mode === 'split') {
-      formPane.style.display = 'block';
-      formPane.style.flex = '1';
-      mapPane.style.display = 'block';
-      mapPane.style.flex = '1';
-      resizeMapCanvas();
+      formPane.style.display = 'block'; formPane.style.flex = '1';
+      mapPaneEl.style.display = 'block'; mapPaneEl.style.flex = '1';
     } else if (mode === 'form') {
-      formPane.style.display = 'block';
-      formPane.style.flex = '1';
-      mapPane.style.display = 'none';
+      formPane.style.display = 'block'; formPane.style.flex = '1';
     } else if (mode === 'map') {
-      formPane.style.display = 'none';
-      mapPane.style.display = 'block';
-      mapPane.style.flex = '1';
-      resizeMapCanvas();
+      mapPaneEl.style.display = 'block'; mapPaneEl.style.flex = '1';
+    } else if (mode === 'tactical') {
+      tacticalPaneEl.style.display = 'block'; tacticalPaneEl.style.flex = '1';
+    } else if (mode === 'signal') {
+      signalSidebar.style.display = 'flex';
+      mapPaneEl.style.display = 'block'; mapPaneEl.style.flex = '1';
+    } else if (mode === 'global') {
+      signalSidebar.style.display = 'flex';
+      tacticalPaneEl.style.display = 'block'; tacticalPaneEl.style.flex = '1';
+      formPane.style.display = 'block'; formPane.style.flex = '1';
     }
+
+    resizeMapCanvas();
+    if (tacticalPaneEl.style.display !== 'none' && window.tacticalLeafletMap) {
+      setTimeout(() => window.tacticalLeafletMap.invalidateSize(), 60);
+    }
+    setActiveButton(mode);
   }
 
   function toggleFullScreen() {
@@ -438,12 +1768,13 @@
       document.documentElement.requestFullscreen().catch(err => {
         alert(`Error attempting to enable full-screen mode: ${err.message}`);
       });
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
     }
   }
+
+  // Default: global app view (signal monitor + map + form)
+  toggleView('global');
 </script>
 </body>
 </html>
