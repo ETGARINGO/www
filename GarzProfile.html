@@ -8,11 +8,9 @@
 <style>
   :root {
     --bg-dark: #0a0e17;
-    --panel-bg: rgba(13, 20, 33, 0.75);
     --neon-cyan: #00f0ff;
     --neon-blue: #0077ff;
     --text-main: #e2e8f0;
-    --border-glow: rgba(0, 240, 255, 0.4);
   }
 
   body {
@@ -37,47 +35,21 @@
     pointer-events: none;
   }
 
-  /* HEADER */
-  .header {
+  /* FLOATING CYBER CONTROLS (Replaces Header) */
+  .floating-controls {
+    position: absolute;
+    top: 15px;
+    right: 15px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    background: var(--panel-bg);
+    gap: 10px;
+    z-index: 100;
+    background: rgba(13, 20, 33, 0.85);
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-glow);
-    padding: 10px 20px;
-    box-shadow: 0 4px 20px rgba(0, 240, 255, 0.15);
-    z-index: 10;
-    min-height: 50px;
-  }
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-
-  .logo {
-    height: 45px;
-    filter: drop-shadow(0 0 8px var(--neon-cyan));
-    transition: transform 0.3s ease;
-  }
-  .logo:hover {
-    transform: scale(1.05);
-  }
-
-  .title {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: #fff;
-    text-shadow: 0 0 10px var(--neon-cyan);
-  }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    padding: 8px 12px;
+    border: 1px solid rgba(0, 240, 255, 0.4);
+    border-radius: 6px;
+    box-shadow: 0 4px 20px rgba(0, 240, 255, 0.2);
   }
 
   /* UI BUTTONS */
@@ -85,18 +57,15 @@
     background: rgba(0, 240, 255, 0.1);
     border: 1px solid var(--neon-cyan);
     color: var(--neon-cyan);
-    padding: 8px 16px;
+    padding: 6px 12px;
     font-weight: bold;
-    font-size: 13px;
+    font-size: 11px;
     letter-spacing: 1px;
     cursor: pointer;
     border-radius: 4px;
     transition: all 0.3s ease;
     box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.2);
     text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 6px;
   }
 
   .cyber-btn:hover {
@@ -105,13 +74,13 @@
     box-shadow: 0 0 15px var(--neon-cyan), inset 0 0 15px rgba(0,0,0,0.5);
   }
 
-  /* VIEW CONTAINER (SPLIT OR TOGGLE VIEW) */
+  /* VIEW CONTAINER */
   .workspace {
     position: relative;
     flex: 1;
     display: flex;
     width: 100%;
-    height: calc(100vh - 71px);
+    height: 100vh;
     overflow: hidden;
   }
 
@@ -134,7 +103,7 @@
     background: #ffffff;
   }
 
-  /* WORLD MAP OVERLAY/PANE STYLING */
+  /* WORLD MAP PANE */
   #mapPane {
     background: #05080f;
   }
@@ -145,13 +114,9 @@
     position: relative;
   }
 
-  /* Responsive layout adjustments for smaller screens */
   @media(max-width: 900px) {
     .workspace {
       flex-direction: column;
-    }
-    .title {
-      font-size: 14px;
     }
   }
 </style>
@@ -161,18 +126,12 @@
   <!-- CYBER PARTICLES BACKGROUND ENGINE -->
   <canvas id="particleCanvas"></canvas>
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="header-left">
-      <a href="#"><img src="profile.gif" class="logo" alt="Logo"></a>
-      <div class="title">SINGLE | CDLB | AFFIDAVIT OF CONFIRMATION (AOC) | FREE FILL-IN FORM</div>
-    </div>
-    <div class="header-right">
-      <button class="cyber-btn" onclick="toggleView('split')">Split View</button>
-      <button class="cyber-btn" onclick="toggleView('form')">Form Only</button>
-      <button class="cyber-btn" onclick="toggleView('map')">Cyber Map</button>
-      <button class="cyber-btn" onclick="toggleFullScreen()">Full Screen</button>
-    </div>
+  <!-- FLOATING CONTROLS PANEL -->
+  <div class="floating-controls">
+    <button class="cyber-btn" onclick="toggleView('split')">Split</button>
+    <button class="cyber-btn" onclick="toggleView('form')">Form</button>
+    <button class="cyber-btn" onclick="toggleView('map')">Map</button>
+    <button class="cyber-btn" onclick="toggleFullScreen()">Full Screen</button>
   </div>
 
   <!-- WORKSPACE PANELS -->
@@ -182,7 +141,7 @@
       <iframe src="https://script.google.com/macros/s/AKfycbw5wBPimm2ulyNWfh-eZCCQzH4T7gabIPuKTSBbkdiVnbIKfMp5T_QVnRHaZJe-8lAJ/exec" allowfullscreen></iframe>
     </div>
     
-    <!-- WORLD MAP PANE (OpenStreetMap embedded with dark/cyber aesthetic context) -->
+    <!-- WORLD MAP PANE -->
     <div class="pane" id="mapPane">
       <div class="map-overlay-container">
         <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-180,-90,180,90&amp;layer=mapnik" style="width:100%; height:100%; filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(110%);" allowfullscreen></iframe>
@@ -231,7 +190,7 @@
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
       ctx.fill();
-      ctx.shadowBlur = 0; // reset shadow performance optimization
+      ctx.shadowBlur = 0;
     }
   }
 
@@ -298,7 +257,7 @@
   function toggleFullScreen() {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(err => {
-        alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+        alert(`Error attempting to enable full-screen mode: ${err.message}`);
       });
     } else {
       if (document.exitFullscreen) {
