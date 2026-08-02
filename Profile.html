@@ -1,580 +1,364 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- Cyber Profile Title -->
-<title>My Cyber Profile | Cybersecurity • ICT • Security Management</title>
-
-<!-- Cyber Profile GIF Icon Suite -->
-<link rel="icon" type="image/gif" href="profile.gif">
-<link rel="shortcut icon" type="image/gif" href="profile.gif">
-<link rel="apple-touch-icon" href="profile.gif">
-
-
-<style>
-
-:root {
-
-    --bg-color:#050914;
-    --primary:#00d9ff;
-    --secondary:#2563eb;
-    --accent:#00ff99;
-
-    --text-main:#ffffff;
-    --text-muted:#9ca9bd;
-
-    --glow:rgba(0,217,255,.20);
-}
-
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-
-html,body{
-
-    width:100%;
-    height:100%;
-    overflow:hidden;
-
-    background:
-    radial-gradient(circle at top left,
-    rgba(0,217,255,.15),
-    transparent 40%),
-
-    radial-gradient(circle at bottom right,
-    rgba(37,99,235,.15),
-    transparent 45%),
-
-    var(--bg-color);
-
-
-    font-family:
-    "Segoe UI",
-    Arial,
-    Helvetica,
-    sans-serif;
-
-    -webkit-font-smoothing:antialiased;
-
-}
-
-
-
-/* Cyber Background Animation */
-
-.bg-glow{
-
-    position:absolute;
-
-    width:600px;
-    height:600px;
-
-    background:
-    radial-gradient(
-        circle,
-        var(--glow),
-        transparent 70%
-    );
-
-
-    top:-200px;
-    left:-200px;
-
-    animation:
-    cyberFloat 12s infinite alternate ease-in-out;
-
-    pointer-events:none;
-
-}
-
-
-
-/* Loader */
-
-#loader{
-
-    position:fixed;
-
-    inset:0;
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:center;
-
-
-    background:#050914;
-
-    z-index:9999;
-
-
-    transition:
-    opacity .7s ease,
-    visibility .7s ease;
-
-}
-
-
-
-
-/* Logo */
-
-.logo-wrapper{
-
-
-    width:120px;
-    height:120px;
-
-
-    display:flex;
-
-    justify-content:center;
-    align-items:center;
-
-
-    border-radius:50%;
-
-
-    background:
-    rgba(255,255,255,.03);
-
-
-    border:
-
-    1px solid
-    rgba(0,217,255,.35);
-
-
-    box-shadow:
-
-    0 0 35px rgba(0,217,255,.45),
-
-    inset 0 0 25px rgba(0,217,255,.15);
-
-
-    animation:
-
-    logoPulse 3s infinite ease-in-out;
-
-}
-
-
-
-.logo-wrapper img{
-
-
-    width:85px;
-
-    height:85px;
-
-    object-fit:contain;
-
-
-    filter:
-
-    drop-shadow(
-    0 0 20px
-    rgba(0,217,255,.8)
-    );
-
-}
-
-
-
-
-/* Text */
-
-
-.entrance-text{
-
-
-    margin-top:30px;
-
-
-    color:var(--text-main);
-
-
-    font-size:32px;
-
-
-    font-weight:700;
-
-
-    letter-spacing:.5px;
-
-
-    text-align:center;
-
-}
-
-
-
-.subtitle-text{
-
-
-    margin-top:12px;
-
-
-    color:var(--text-muted);
-
-
-    font-size:14px;
-
-
-    letter-spacing:3px;
-
-
-    text-transform:uppercase;
-
-
-    text-align:center;
-
-}
-
-
-
-/* Loading Bar */
-
-
-.progress-container{
-
-
-    width:280px;
-
-    height:5px;
-
-
-    margin-top:40px;
-
-
-    overflow:hidden;
-
-
-    border-radius:20px;
-
-
-    background:
-    rgba(255,255,255,.08);
-
-}
-
-
-
-.progress-bar{
-
-
-    width:100%;
-
-    height:100%;
-
-
-    background:
-
-    linear-gradient(
-        90deg,
-        #00d9ff,
-        #2563eb,
-        #00ff99
-    );
-
-
-    box-shadow:
-
-    0 0 20px #00d9ff;
-
-
-    animation:
-
-    loading 2.5s infinite;
-
-}
-
-
-
-/* Application Frame */
-
-
-iframe{
-
-
-    width:100%;
-
-    height:100%;
-
-
-    border:none;
-
-
-    display:block;
-
-
-    opacity:0;
-
-
-    transform:
-
-    scale(1.02);
-
-
-    filter:blur(5px);
-
-
-    transition:
-
-    all .8s ease;
-
-}
-
-
-
-iframe.loaded{
-
-
-    opacity:1;
-
-
-    transform:
-
-    scale(1);
-
-
-    filter:none;
-
-}
-
-
-
-
-.fade-out{
-
-
-    opacity:0!important;
-
-
-    visibility:hidden!important;
-
-
-}
-
-
-
-/* Animations */
-
-
-@keyframes loading{
-
-
-    0%{
-        transform:translateX(-100%);
-    }
-
-
-    50%{
-        transform:translateX(-20%);
-    }
-
-
-    100%{
-        transform:translateX(100%);
-    }
-
-}
-
-
-
-@keyframes cyberFloat{
-
-
-    from{
-
-        transform:
-        translate(0,0)
-        scale(1);
-
-    }
-
-
-    to{
-
-        transform:
-        translate(50px,40px)
-        scale(1.2);
-
-    }
-
-}
-
-
-
-@keyframes logoPulse{
-
-
-    0%,100%{
-
-        transform:
-        scale(1);
-
-    }
-
-
-    50%{
-
-        transform:
-        scale(1.08);
-
-    }
-
-}
-
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary Page Metadata -->
+    <title>My Cyber Profile | Cybersecurity • ICT • Security Management</title>
+    <meta name="description" content="Cybersecurity, Information & Communication Technology, and Security Management Profile.">
+    <meta name="theme-color" content="#00d9ff">
+
+    <!-- Favicon Suite -->
+    <link rel="icon" type="image/gif" href="profile.gif">
+    <link rel="shortcut icon" type="image/gif" href="profile.gif">
+    <link rel="apple-touch-icon" href="profile.gif">
+
+    <!-- Open Graph (Link Preview Cards for Social Media) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="My Cyber Profile | Cybersecurity • ICT">
+    <meta property="og:description" content="Cybersecurity • Information & Communication Technology • Security Management Profile Interface.">
+    <meta property="og:image" content="profile.gif">
+    <meta property="og:image:type" content="image/gif">
+    <meta property="og:image:width" content="500">
+    <meta property="og:image:height" content="500">
+
+    <!-- Twitter Card Data -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="My Cyber Profile | Cybersecurity • ICT">
+    <meta name="twitter:description" content="Cybersecurity • Information & Communication Technology • Security Management Profile Interface.">
+    <meta name="twitter:image" content="profile.gif">
+
+    <style>
+        :root {
+            --bg-color: #030712;
+            --primary: #00d9ff;
+            --secondary: #2563eb;
+            --accent: #00ff99;
+            --text-main: #ffffff;
+            --text-muted: #9ca9bd;
+            --glow: rgba(0, 217, 255, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-color);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Interactive Particle & Grid Background Canvas */
+        #cyber-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Cyber Background Ambient Glow */
+        .bg-glow {
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, var(--glow), transparent 70%);
+            top: -250px;
+            left: -250px;
+            animation: cyberFloat 14s infinite alternate ease-in-out;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Futuristic Scanline Effect */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0.6;
+            animation: scanAnim 6s linear infinite;
+            z-index: 9998;
+            pointer-events: none;
+        }
+
+        /* Loader Overlay */
+        #loader {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(3, 7, 18, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+        }
+
+        /* Dynamic Holographic Logo Container */
+        .logo-wrapper {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            background: rgba(0, 217, 255, 0.03);
+            border: 1px solid rgba(0, 217, 255, 0.4);
+            box-shadow: 0 0 45px rgba(0, 217, 255, 0.3), inset 0 0 25px rgba(0, 217, 255, 0.15);
+            animation: logoPulse 3s infinite ease-in-out;
+        }
+
+        /* Animated Ring Around Logo */
+        .logo-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 2px dashed rgba(0, 255, 153, 0.5);
+            animation: rotateRing 12s linear infinite;
+        }
+
+        .logo-wrapper img {
+            width: 85px;
+            height: 85px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 15px rgba(0, 217, 255, 0.9));
+        }
+
+        /* Entrance Typography */
+        .entrance-text {
+            margin-top: 35px;
+            color: var(--text-main);
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+        }
+
+        .subtitle-text {
+            margin-top: 10px;
+            color: var(--accent);
+            font-size: 13px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-align: center;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        /* Cyber Loading Progress Bar */
+        .progress-container {
+            position: relative;
+            width: 300px;
+            height: 6px;
+            margin-top: 40px;
+            overflow: hidden;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(0, 217, 255, 0.2);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            box-shadow: 0 0 15px var(--primary);
+            animation: loading 2.2s infinite ease-in-out;
+        }
+
+        /* Application iFrame Styling */
+        iframe {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            opacity: 0;
+            transform: scale(1.02);
+            filter: blur(10px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        iframe.loaded {
+            opacity: 1;
+            transform: scale(1);
+            filter: none;
+        }
+
+        .fade-out {
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+
+        /* Keyframe Animations */
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(-10%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes cyberFloat {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(60px, 50px) scale(1.2); }
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 35px rgba(0, 217, 255, 0.3); }
+            50% { transform: scale(1.06); box-shadow: 0 0 55px rgba(0, 217, 255, 0.6); }
+        }
+
+        @keyframes rotateRing {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes scanAnim {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+    </style>
 </head>
-
-
 <body>
 
+    <!-- Cyber Background Visual Overlay -->
+    <canvas id="cyber-canvas"></canvas>
+    <div class="bg-glow"></div>
+    <div class="scanline"></div>
 
-<!-- Cyber Background -->
-<div class="bg-glow"></div>
+    <!-- Cyber Loader Screen -->
+    <div id="loader">
+        <div class="logo-wrapper">
+            <img src="profile.gif" alt="Cyber Profile Logo">
+        </div>
+        <h1 class="entrance-text">My Cyber Profile</h1>
+        <p class="subtitle-text">Cybersecurity • ICT • Security Management</p>
 
-
-
-<!-- Cyber Profile Loader -->
-
-<div id="loader">
-
-
-    <div class="logo-wrapper">
-
-
-        <img
-        src="profile.gif"
-        alt="Cyber Profile Logo">
-
-
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
     </div>
 
-
-
-    <h1 class="entrance-text">
-
-        My Cyber Profile
-
-    </h1>
-
-
-
-    <p class="subtitle-text">
-
-        Cybersecurity • ICT • Security Management
-
-    </p>
-
-
-
-
-    <div class="progress-container">
-
-        <div class="progress-bar"></div>
-
-    </div>
-
-
-</div>
-
-
-
-
-<!-- Main Cyber Profile Application -->
-
-<iframe
-
-id="app-frame"
-
-
-src="https://script.google.com/macros/s/AKfycbw5wBPimm2ulyNWfh-eZCCQzH4T7gabIPuKTSBbkdiVnbIKfMp5T_QVnRHaZJe-8lAJ/exec"
-
-
-allow="camera; microphone; geolocation; clipboard-write"
-
-
-sandbox="allow-downloads allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
-
-</iframe>
-
-
-
-
-<script>
-
-
-const iframe =
-document.getElementById("app-frame");
-
-
-const loader =
-document.getElementById("loader");
-
-
-
-let appLoaded=false;
-
-
-
-function initializeApp(){
-
-
-    if(appLoaded)
-    return;
-
-
-
-    appLoaded=true;
-
-
-    iframe.classList.add("loaded");
-
-
-    loader.classList.add("fade-out");
-
-
-}
-
-
-
-
-// Normal Load
-
-iframe.addEventListener(
-"load",
-initializeApp
-);
-
-
-
-// Backup Loading Timeout
-
-setTimeout(
-initializeApp,
-3500
-);
-
-
-
-</script>
-
-
-
+    <!-- Main Web Application -->
+    <iframe
+        id="app-frame"
+        src="https://script.google.com/macros/s/AKfycbw5wBPimm2ulyNWfh-eZCCQzH4T7gabIPuKTSBbkdiVnbIKfMp5T_QVnRHaZJe-8lAJ/exec"
+        allow="camera; microphone; geolocation; clipboard-write"
+        sandbox="allow-downloads allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
+    </iframe>
+
+    <script>
+        // Smooth Loader Initialization Logic
+        const iframe = document.getElementById("app-frame");
+        const loader = document.getElementById("loader");
+        let appLoaded = false;
+
+        function initializeApp() {
+            if (appLoaded) return;
+            appLoaded = true;
+
+            iframe.classList.add("loaded");
+            loader.classList.add("fade-out");
+        }
+
+        iframe.addEventListener("load", initializeApp);
+        setTimeout(initializeApp, 3500); // Fallback initialization
+
+        // --- Interactive Cyber Particle System ---
+        const canvas = document.getElementById('cyber-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const particles = [];
+        const particleCount = 45;
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.8;
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.size = Math.random() * 2 + 1;
+                this.color = Math.random() > 0.5 ? '#00d9ff' : '#00ff99';
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(0, 217, 255, ${1 - dist / 120})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            drawConnections();
+            requestAnimationFrame(animateCanvas);
+        }
+
+        animateCanvas();
+    </script>
 </body>
 </html>
