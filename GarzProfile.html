@@ -97,7 +97,7 @@
     border-radius: 50%;
     left: 0;
     top: 0;
-    z-index: 900;
+    z-index: 99999;
     background: radial-gradient(circle at 35% 30%, rgba(0,240,255,0.35), rgba(6,10,18,0.95) 70%);
     border: 1.5px solid var(--neon-cyan);
     box-shadow: 0 0 18px rgba(0, 240, 255, 0.45), inset 0 0 12px rgba(0,240,255,0.2);
@@ -137,7 +137,7 @@
   /* Radial / stacked action menu that appears around the orb */
   .touch-menu {
     position: fixed;
-    z-index: 899;
+    z-index: 99998;
     display: none;
     flex-direction: column;
     gap: 8px;
@@ -602,7 +602,7 @@
   .osint-overlay {
     position: fixed;
     inset: 0;
-    z-index: 950;
+    z-index: 9990;
     display: none;
     align-items: center;
     justify-content: center;
@@ -752,28 +752,6 @@
     </div>
   </div>
 
-  <!-- ASSISTIVE-TOUCH STYLE FLOATING ORB + RADIAL MENU (always overlays everything) -->
-  <div class="touch-orb" id="touchOrb">
-    <div class="touch-orb-icon">
-      <span></span><span></span><span></span>
-      <span></span><span></span><span></span>
-      <span></span><span></span><span></span>
-    </div>
-  </div>
-  <div class="touch-menu" id="touchMenu">
-    <div class="touch-menu-item" data-mode="global" onclick="toggleView('global')">Global<br>App</div>
-    <div class="touch-menu-item" data-mode="split" onclick="toggleView('split')">Split</div>
-    <div class="touch-menu-item" data-mode="form" onclick="toggleView('form')">Profile</div>
-    <div class="touch-menu-item" data-mode="map" onclick="toggleView('map')">Map</div>
-    <div class="touch-menu-item" data-mode="tactical" onclick="toggleView('tactical')">Tactical<br>Map</div>
-    <div class="touch-menu-item" data-mode="signal" onclick="toggleView('signal')">Signal</div>
-    <div class="touch-menu-item" onclick="openOsint()" title="OSINT quick-access">OSINT</div>
-    <div class="touch-menu-item small" onclick="zoomBy(1.25)" title="Zoom in">+</div>
-    <div class="touch-menu-item small" onclick="zoomBy(0.8)" title="Zoom out">−</div>
-    <div class="touch-menu-item small" onclick="resetView()" title="Reset view">⟳</div>
-    <div class="touch-menu-item small" onclick="toggleFullScreen()" title="Fullscreen">⛶</div>
-  </div>
-
   <!-- OSINT QUICK-ACCESS OVERLAY -->
   <div class="osint-overlay" id="osintOverlay">
     <div class="osint-panel">
@@ -889,6 +867,34 @@
       </div>
       <div class="tactical-locate-btn" onclick="locateMe()" title="Locate me">◎</div>
     </div>
+  </div>
+
+  <!-- ASSISTIVE-TOUCH STYLE FLOATING ORB + RADIAL MENU
+       Placed last in the DOM and pinned to the highest z-index in the app
+       (99999 / 99998) so it always floats above every pane, iframe, map
+       layer, or overlay — including whatever page loads inside the
+       Profile Form iframe, no matter where that iframe navigates. It lives
+       entirely in this parent page, outside any iframe's document, so an
+       iframe's own content can never draw over it. -->
+  <div class="touch-orb" id="touchOrb">
+    <div class="touch-orb-icon">
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+  <div class="touch-menu" id="touchMenu">
+    <div class="touch-menu-item" data-mode="global" onclick="toggleView('global')">Global<br>App</div>
+    <div class="touch-menu-item" data-mode="split" onclick="toggleView('split')">Split</div>
+    <div class="touch-menu-item" data-mode="form" onclick="toggleView('form')">Profile</div>
+    <div class="touch-menu-item" data-mode="map" onclick="toggleView('map')">Map</div>
+    <div class="touch-menu-item" data-mode="tactical" onclick="toggleView('tactical')">Tactical<br>Map</div>
+    <div class="touch-menu-item" data-mode="signal" onclick="toggleView('signal')">Signal</div>
+    <div class="touch-menu-item" onclick="openOsint()" title="OSINT quick-access">OSINT</div>
+    <div class="touch-menu-item small" onclick="zoomBy(1.25)" title="Zoom in">+</div>
+    <div class="touch-menu-item small" onclick="zoomBy(0.8)" title="Zoom out">−</div>
+    <div class="touch-menu-item small" onclick="resetView()" title="Reset view">⟳</div>
+    <div class="touch-menu-item small" onclick="toggleFullScreen()" title="Fullscreen">⛶</div>
   </div>
 
 <script>
