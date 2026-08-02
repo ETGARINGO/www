@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Primary Page Metadata -->
+    <!-- Primary Metadata -->
     <title>My Cyber Profile | Cybersecurity • ICT • Security Management</title>
-    <meta name="description" content="Cybersecurity, Information & Communication Technology, and Security Management Profile.">
+    <meta name="description" content="Cybersecurity, ICT, Systems Engineering & Security Management Portal.">
     <meta name="theme-color" content="#00d9ff">
 
     <!-- Favicon Suite -->
@@ -14,19 +14,20 @@
     <link rel="shortcut icon" type="image/gif" href="profile.gif">
     <link rel="apple-touch-icon" href="profile.gif">
 
-    <!-- Open Graph (Link Preview Cards for Social Media) -->
+    <!-- Open Graph (Link Preview Cards for WhatsApp, Messenger, Telegram, Discord, LinkedIn) -->
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Cyber Profile Node">
     <meta property="og:title" content="My Cyber Profile | Cybersecurity • ICT">
-    <meta property="og:description" content="Cybersecurity • Information & Communication Technology • Security Management Profile Interface.">
+    <meta property="og:description" content="Cybersecurity • Information & Communication Technology • Tactical Systems Management.">
     <meta property="og:image" content="profile.gif">
     <meta property="og:image:type" content="image/gif">
-    <meta property="og:image:width" content="500">
-    <meta property="og:image:height" content="500">
+    <meta property="og:image:width" content="600">
+    <meta property="og:image:height" content="600">
 
-    <!-- Twitter Card Data -->
+    <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="My Cyber Profile | Cybersecurity • ICT">
-    <meta name="twitter:description" content="Cybersecurity • Information & Communication Technology • Security Management Profile Interface.">
+    <meta name="twitter:description" content="Cybersecurity • Information & Communication Technology • Tactical Systems Management.">
     <meta name="twitter:image" content="profile.gif">
 
     <style>
@@ -35,9 +36,10 @@
             --primary: #00d9ff;
             --secondary: #2563eb;
             --accent: #00ff99;
+            --danger: #ff0055;
             --text-main: #ffffff;
-            --text-muted: #9ca9bd;
-            --glow: rgba(0, 217, 255, 0.25);
+            --text-muted: #8b9bb4;
+            --glow: rgba(0, 217, 255, 0.3);
         }
 
         * {
@@ -51,11 +53,11 @@
             height: 100%;
             overflow: hidden;
             background: var(--bg-color);
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, monospace, sans-serif;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Interactive Particle & World Grid Canvas */
+        /* Interactive Particle & Neural World Grid Canvas */
         #cyber-canvas {
             position: absolute;
             top: 0;
@@ -66,34 +68,47 @@
             pointer-events: none;
         }
 
-        /* Cyber Background Ambient Glow */
-        .bg-glow {
+        /* Ambient Pulsing Glow Filters */
+        .bg-glow-left {
             position: absolute;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, var(--glow), transparent 70%);
-            top: -300px;
-            left: -300px;
-            animation: cyberFloat 14s infinite alternate ease-in-out;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(0,217,255,0.18), transparent 70%);
+            top: -250px;
+            left: -250px;
+            animation: cyberFloat 12s infinite alternate ease-in-out;
             pointer-events: none;
             z-index: 2;
         }
 
-        /* Futuristic Laser Scanline */
+        .bg-glow-right {
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(0,255,153,0.12), transparent 70%);
+            bottom: -250px;
+            right: -250px;
+            animation: cyberFloat 15s infinite alternate-reverse ease-in-out;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Tactical Holographic Overlay Screen Lines */
         .scanline {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 4px;
+            height: 3px;
             background: linear-gradient(90deg, transparent, var(--primary), var(--accent), transparent);
-            opacity: 0.75;
+            box-shadow: 0 0 15px var(--primary);
+            opacity: 0.8;
             animation: scanAnim 4s linear infinite;
             z-index: 9998;
             pointer-events: none;
         }
 
-        /* Loader Overlay */
+        /* Preloader Glass Container */
         #loader {
             position: fixed;
             inset: 0;
@@ -102,68 +117,69 @@
             justify-content: center;
             align-items: center;
             background: rgba(3, 7, 18, 0.96);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
             z-index: 9999;
-            transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.9s;
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), visibility 1s;
         }
 
-        /* World Radar & Dynamic Holographic Logo Container */
-        .logo-container {
+        /* Dual-Rotating HUD Radar Array */
+        .radar-box {
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .world-radar {
+        .outer-radar {
             position: absolute;
-            width: 220px;
-            height: 220px;
+            width: 210px;
+            height: 210px;
             border-radius: 50%;
-            border: 1px dashed rgba(0, 217, 255, 0.3);
-            animation: radarRotate 10s linear infinite;
+            border: 1.5px dashed rgba(0, 217, 255, 0.35);
+            animation: radarSpin 12s linear infinite;
         }
 
-        .world-radar::after {
-            content: '';
+        .inner-radar {
             position: absolute;
-            inset: 15px;
+            width: 170px;
+            height: 170px;
             border-radius: 50%;
-            border: 1px dotted rgba(0, 255, 153, 0.4);
-            animation: radarRotateReverse 6s linear infinite;
+            border: 1px dotted rgba(0, 255, 153, 0.5);
+            animation: radarSpinReverse 7s linear infinite;
         }
 
+        /* Holographic Center Avatar Node */
         .logo-wrapper {
             position: relative;
-            width: 140px;
-            height: 140px;
+            width: 130px;
+            height: 130px;
             display: flex;
             justify-content: center;
             align-items: center;
             border-radius: 50%;
-            background: rgba(0, 217, 255, 0.04);
-            border: 1px solid rgba(0, 217, 255, 0.5);
-            box-shadow: 0 0 50px rgba(0, 217, 255, 0.35), inset 0 0 30px rgba(0, 217, 255, 0.2);
-            animation: logoPulse 3s infinite ease-in-out;
-            z-index: 2;
+            background: rgba(0, 217, 255, 0.05);
+            border: 1px solid rgba(0, 217, 255, 0.6);
+            box-shadow: 0 0 45px rgba(0, 217, 255, 0.4), inset 0 0 25px rgba(0, 217, 255, 0.2);
+            animation: logoPulse 2.8s infinite ease-in-out;
+            z-index: 3;
         }
 
         .logo-wrapper img {
-            width: 90px;
-            height: 90px;
+            width: 85px;
+            height: 85px;
             object-fit: contain;
-            filter: drop-shadow(0 0 18px rgba(0, 217, 255, 0.95));
+            filter: drop-shadow(0 0 18px rgba(0, 217, 255, 0.9));
         }
 
-        /* Entrance Typography & Navigation Telemetry */
+        /* Telemetry Typography & System Indicators */
         .entrance-text {
             margin-top: 35px;
             color: var(--text-main);
             font-size: 30px;
-            font-weight: 700;
-            letter-spacing: 2px;
+            font-weight: 800;
+            letter-spacing: 3px;
             text-align: center;
-            text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.7);
             font-family: monospace, sans-serif;
         }
 
@@ -171,49 +187,48 @@
             margin-top: 8px;
             color: var(--accent);
             font-size: 12px;
-            letter-spacing: 4px;
+            letter-spacing: 5px;
             text-transform: uppercase;
             text-align: center;
-            font-weight: 600;
+            font-weight: 700;
             opacity: 0.95;
         }
 
-        /* Live Navigating Status Log */
         .nav-telemetry {
             margin-top: 18px;
             font-family: monospace;
             font-size: 11px;
             color: var(--primary);
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             text-transform: uppercase;
             background: rgba(0, 217, 255, 0.08);
-            padding: 4px 14px;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 217, 255, 0.25);
-            animation: telemetryBlink 1.5s infinite alternate;
+            padding: 6px 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 217, 255, 0.3);
+            animation: telemetryPulse 1.4s infinite alternate;
         }
 
-        /* Cyber Progress Bar */
+        /* Futuristic Progress Indicator */
         .progress-container {
             position: relative;
             width: 320px;
-            height: 6px;
+            height: 5px;
             margin-top: 25px;
             overflow: hidden;
             border-radius: 20px;
             background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(0, 217, 255, 0.3);
+            border: 1px solid rgba(0, 217, 255, 0.25);
         }
 
         .progress-bar {
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
-            box-shadow: 0 0 18px var(--primary);
+            box-shadow: 0 0 20px var(--primary);
             animation: loading 2.2s infinite ease-in-out;
         }
 
-        /* Full Screen Application Frame */
+        /* Fullscreen Web Application Frame */
         iframe {
             position: relative;
             z-index: 10;
@@ -222,7 +237,7 @@
             border: none;
             display: block;
             opacity: 0;
-            transform: scale(1.04);
+            transform: scale(1.05);
             filter: blur(12px);
             transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -238,29 +253,29 @@
             visibility: hidden !important;
         }
 
-        /* Animations */
+        /* Animation Keyframes */
         @keyframes loading {
             0% { transform: translateX(-100%); }
-            50% { transform: translateX(-10%); }
+            50% { transform: translateX(-15%); }
             100% { transform: translateX(100%); }
         }
 
         @keyframes cyberFloat {
             from { transform: translate(0, 0) scale(1); }
-            to { transform: translate(60px, 50px) scale(1.2); }
+            to { transform: translate(50px, 40px) scale(1.18); }
         }
 
         @keyframes logoPulse {
             0%, 100% { transform: scale(1); box-shadow: 0 0 35px rgba(0, 217, 255, 0.3); }
-            50% { transform: scale(1.07); box-shadow: 0 0 60px rgba(0, 217, 255, 0.7); }
+            50% { transform: scale(1.06); box-shadow: 0 0 65px rgba(0, 217, 255, 0.7); }
         }
 
-        @keyframes radarRotate {
+        @keyframes radarSpin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
-        @keyframes radarRotateReverse {
+        @keyframes radarSpinReverse {
             from { transform: rotate(360deg); }
             to { transform: rotate(0deg); }
         }
@@ -270,23 +285,25 @@
             100% { top: 100%; }
         }
 
-        @keyframes telemetryBlink {
-            0% { opacity: 0.6; }
-            100% { opacity: 1; box-shadow: 0 0 10px rgba(0, 217, 255, 0.4); }
+        @keyframes telemetryPulse {
+            0% { opacity: 0.7; box-shadow: 0 0 5px rgba(0, 217, 255, 0.2); }
+            100% { opacity: 1; box-shadow: 0 0 15px rgba(0, 217, 255, 0.5); }
         }
     </style>
 </head>
 <body>
 
-    <!-- Cyber Background Visual Overlay -->
+    <!-- Cyber Background Overlay Canvas & Glow Elements -->
     <canvas id="cyber-canvas"></canvas>
-    <div class="bg-glow"></div>
+    <div class="bg-glow-left"></div>
+    <div class="bg-glow-right"></div>
     <div class="scanline"></div>
 
-    <!-- Cyber Loader Screen with World Map Telemetry -->
+    <!-- Cyber Loader Overlay Screen -->
     <div id="loader">
-        <div class="logo-container">
-            <div class="world-radar"></div>
+        <div class="radar-box">
+            <div class="outer-radar"></div>
+            <div class="inner-radar"></div>
             <div class="logo-wrapper">
                 <img src="profile.gif" alt="Cyber Profile Logo">
             </div>
@@ -295,14 +312,14 @@
         <h1 class="entrance-text">MY CYBER PROFILE</h1>
         <p class="subtitle-text">Cybersecurity • ICT • Security Management</p>
 
-        <div class="nav-telemetry" id="telemetry-text">> NAVIGATING GLOBAL NET NODE...</div>
+        <div class="nav-telemetry" id="telemetry-log">> CONNECTING TO CYBER NET NODE...</div>
 
         <div class="progress-container">
             <div class="progress-bar"></div>
         </div>
     </div>
 
-    <!-- Main Web Application Frame (Full-Screen & Permissions Enabled) -->
+    <!-- Main Fullscreen Web Application Frame -->
     <iframe
         id="app-frame"
         src="https://script.google.com/macros/s/AKfycbw5wBPimm2ulyNWfh-eZCCQzH4T7gabIPuKTSBbkdiVnbIKfMp5T_QVnRHaZJe-8lAJ/exec"
@@ -314,34 +331,31 @@
     </iframe>
 
     <script>
-        // Smooth Loader & Navigation Status Sequence
+        // Smooth Initialization & Dynamic Telemetry Log Loop
         const iframe = document.getElementById("app-frame");
         const loader = document.getElementById("loader");
-        const telemetryText = document.getElementById("telemetry-text");
+        const telemetryLog = document.getElementById("telemetry-log");
         let appLoaded = false;
 
-        // Telemetry Text Sequence for "Navigating WWW & World Map"
         const navLogs = [
-            "> INITIALIZING GLOBAL NODE LINK...",
+            "> INITIALIZING SECURE PROXY LINK...",
             "> SYNCHRONIZING WORLD MAP GRID...",
-            "> ESTABLISHING ENCRYPTED TUNNEL...",
-            "> ACCESS GRANTED • LAUNCHING FRAME..."
+            "> AUTHENTICATING ENCRYPTED NODE...",
+            "> SYSTEM OK • LAUNCHING INTERFACE..."
         ];
         let logIndex = 0;
 
         const logInterval = setInterval(() => {
             logIndex = (logIndex + 1) % navLogs.length;
-            if (telemetryText) {
-                telemetryText.textContent = navLogs[logIndex];
-            }
-        }, 700);
+            if (telemetryLog) telemetryLog.textContent = navLogs[logIndex];
+        }, 650);
 
         function initializeApp() {
             if (appLoaded) return;
             appLoaded = true;
 
             clearInterval(logInterval);
-            if (telemetryText) telemetryText.textContent = "> SYSTEM ONLINE • FULL ACCESS ENABLED";
+            if (telemetryLog) telemetryLog.textContent = "> ONLINE • FULL ACCESS GRANTED";
 
             setTimeout(() => {
                 iframe.classList.add("loaded");
@@ -350,9 +364,9 @@
         }
 
         iframe.addEventListener("load", initializeApp);
-        setTimeout(initializeApp, 3500); // Fallback timeout
+        setTimeout(initializeApp, 3500); // Safety fallback timeout
 
-        // --- Cyber Particle & World Map Grid Background Canvas ---
+        // --- Interactive Cyber Particle Constellation & Perspective Grid Canvas ---
         const canvas = document.getElementById('cyber-canvas');
         const ctx = canvas.getContext('2d');
 
@@ -364,7 +378,7 @@
         window.addEventListener('resize', resizeCanvas);
 
         const particles = [];
-        const particleCount = 50;
+        const particleCount = 55;
 
         class Particle {
             constructor() {
@@ -374,8 +388,8 @@
             reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * 0.9;
-                this.vy = (Math.random() - 0.5) * 0.9;
+                this.vx = (Math.random() - 0.5) * 0.85;
+                this.vy = (Math.random() - 0.5) * 0.85;
                 this.size = Math.random() * 2 + 1;
                 this.color = Math.random() > 0.4 ? '#00d9ff' : '#00ff99';
             }
@@ -392,7 +406,7 @@
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
-                ctx.shadowBlur = 10;
+                ctx.shadowBlur = 12;
                 ctx.shadowColor = this.color;
                 ctx.fill();
             }
@@ -402,19 +416,19 @@
             particles.push(new Particle());
         }
 
-        // Draw World Mesh Connections
-        function drawConnections() {
+        // Draw Interactive Node-to-Node Mesh Connections
+        function drawMesh() {
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
                     const dx = particles[i].x - particles[j].x;
                     const dy = particles[i].y - particles[j].y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
 
-                    if (dist < 130) {
+                    if (dist < 125) {
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(0, 217, 255, ${1 - dist / 130})`;
+                        ctx.strokeStyle = `rgba(0, 217, 255, ${1 - dist / 125})`;
                         ctx.lineWidth = 0.5;
                         ctx.stroke();
                     }
@@ -422,20 +436,20 @@
             }
         }
 
-        // Render Perspective Net Topology Grid
-        function drawPerspectiveGrid() {
-            ctx.strokeStyle = "rgba(0, 217, 255, 0.05)";
+        // Draw Tactical Background Perspective Grid Lines
+        function drawTacticalGrid() {
+            ctx.strokeStyle = "rgba(0, 217, 255, 0.04)";
             ctx.lineWidth = 1;
-            const gridSpacing = 60;
+            const step = 65;
 
-            for (let x = 0; x < canvas.width; x += gridSpacing) {
+            for (let x = 0; x < canvas.width; x += step) {
                 ctx.beginPath();
                 ctx.moveTo(x, 0);
                 ctx.lineTo(x, canvas.height);
                 ctx.stroke();
             }
 
-            for (let y = 0; y < canvas.height; y += gridSpacing) {
+            for (let y = 0; y < canvas.height; y += step) {
                 ctx.beginPath();
                 ctx.moveTo(0, y);
                 ctx.lineTo(canvas.width, y);
@@ -445,12 +459,12 @@
 
         function animateCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawPerspectiveGrid();
+            drawTacticalGrid();
             particles.forEach(p => {
                 p.update();
                 p.draw();
             });
-            drawConnections();
+            drawMesh();
             requestAnimationFrame(animateCanvas);
         }
 
