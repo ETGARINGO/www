@@ -1,26 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>My Cyber Profile | Security • Technology • Innovation</title>
+<!-- Cyber Profile Title -->
+<title>My Cyber Profile | Cybersecurity • ICT • Security Management</title>
 
-<link rel="icon" type="image/png" href="cyber.png">
-<link rel="shortcut icon" href="cyber.png">
-<link rel="apple-touch-icon" href="cyber.png">
+<!-- Cyber Profile GIF Icon Suite -->
+<link rel="icon" type="image/gif" href="Cyber-Profile.gif">
+<link rel="shortcut icon" type="image/gif" href="Cyber-Profile.gif">
+<link rel="apple-touch-icon" href="Cyber-Profile.gif">
+
 
 <style>
-:root{
-    --bg:#05080d;
-    --surface:#0b1220;
-    --primary:#00d4ff;
+
+:root {
+
+    --bg-color:#050914;
+    --primary:#00d9ff;
     --secondary:#2563eb;
-    --accent:#00ff9d;
-    --text:#ffffff;
-    --muted:#9caec9;
-    --glow:rgba(0,212,255,.18);
+    --accent:#00ff99;
+
+    --text-main:#ffffff;
+    --text-muted:#9ca9bd;
+
+    --glow:rgba(0,217,255,.20);
 }
+
 
 *{
     margin:0;
@@ -28,210 +36,545 @@
     box-sizing:border-box;
 }
 
+
 html,body{
+
     width:100%;
     height:100%;
     overflow:hidden;
-    background:var(--bg);
-    color:var(--text);
-    font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;
-    -webkit-font-smoothing:antialiased;
-}
 
-/* Background */
-
-body{
     background:
-        radial-gradient(circle at top left, rgba(0,212,255,.12), transparent 40%),
-        radial-gradient(circle at bottom right, rgba(37,99,235,.10), transparent 45%),
-        linear-gradient(135deg,#04070c,#07121d,#04070c);
+    radial-gradient(circle at top left,
+    rgba(0,217,255,.15),
+    transparent 40%),
+
+    radial-gradient(circle at bottom right,
+    rgba(37,99,235,.15),
+    transparent 45%),
+
+    var(--bg-color);
+
+
+    font-family:
+    "Segoe UI",
+    Arial,
+    Helvetica,
+    sans-serif;
+
+    -webkit-font-smoothing:antialiased;
+
 }
+
+
+
+/* Cyber Background Animation */
 
 .bg-glow{
+
     position:absolute;
-    width:650px;
-    height:650px;
-    background:radial-gradient(circle,var(--glow) 0%,transparent 70%);
-    top:-180px;
-    left:-180px;
-    animation:floatGlow 12s ease-in-out infinite alternate;
+
+    width:600px;
+    height:600px;
+
+    background:
+    radial-gradient(
+        circle,
+        var(--glow),
+        transparent 70%
+    );
+
+
+    top:-200px;
+    left:-200px;
+
+    animation:
+    cyberFloat 12s infinite alternate ease-in-out;
+
+    pointer-events:none;
+
 }
+
+
 
 /* Loader */
 
 #loader{
+
     position:fixed;
+
     inset:0;
+
     display:flex;
+
     flex-direction:column;
+
     justify-content:center;
+
     align-items:center;
-    background:var(--bg);
+
+
+    background:#050914;
+
     z-index:9999;
-    transition:.7s;
+
+
+    transition:
+    opacity .7s ease,
+    visibility .7s ease;
+
 }
+
+
+
+
+/* Logo */
 
 .logo-wrapper{
-    width:110px;
-    height:110px;
-    border-radius:50%;
+
+
+    width:120px;
+    height:120px;
+
+
     display:flex;
+
     justify-content:center;
     align-items:center;
-    background:rgba(255,255,255,.03);
-    border:1px solid rgba(0,212,255,.3);
+
+
+    border-radius:50%;
+
+
+    background:
+    rgba(255,255,255,.03);
+
+
+    border:
+
+    1px solid
+    rgba(0,217,255,.35);
+
+
     box-shadow:
-        0 0 20px rgba(0,212,255,.25),
-        inset 0 0 20px rgba(0,212,255,.08);
-    animation:logoFloat 2.5s ease-in-out infinite;
+
+    0 0 35px rgba(0,217,255,.45),
+
+    inset 0 0 25px rgba(0,217,255,.15);
+
+
+    animation:
+
+    logoPulse 3s infinite ease-in-out;
+
 }
+
+
 
 .logo-wrapper img{
-    width:75px;
-    filter:drop-shadow(0 0 18px rgba(0,212,255,.6));
+
+
+    width:85px;
+
+    height:85px;
+
+    object-fit:contain;
+
+
+    filter:
+
+    drop-shadow(
+    0 0 20px
+    rgba(0,217,255,.8)
+    );
+
 }
+
+
+
+
+/* Text */
+
 
 .entrance-text{
-    margin-top:28px;
-    font-size:34px;
+
+
+    margin-top:30px;
+
+
+    color:var(--text-main);
+
+
+    font-size:32px;
+
+
     font-weight:700;
+
+
     letter-spacing:.5px;
+
+
+    text-align:center;
+
 }
+
+
 
 .subtitle-text{
-    margin-top:10px;
-    color:var(--muted);
+
+
+    margin-top:12px;
+
+
+    color:var(--text-muted);
+
+
     font-size:14px;
+
+
     letter-spacing:3px;
+
+
     text-transform:uppercase;
+
+
+    text-align:center;
+
 }
 
-/* Progress */
+
+
+/* Loading Bar */
+
 
 .progress-container{
-    width:260px;
+
+
+    width:280px;
+
     height:5px;
-    background:rgba(255,255,255,.06);
-    border-radius:30px;
-    overflow:hidden;
+
+
     margin-top:40px;
+
+
+    overflow:hidden;
+
+
+    border-radius:20px;
+
+
+    background:
+    rgba(255,255,255,.08);
+
 }
+
+
 
 .progress-bar{
-    height:100%;
+
+
     width:100%;
-    background:linear-gradient(
+
+    height:100%;
+
+
+    background:
+
+    linear-gradient(
         90deg,
-        #00d4ff,
+        #00d9ff,
         #2563eb,
-        #00ff9d
+        #00ff99
     );
-    box-shadow:0 0 18px #00d4ff;
-    animation:loading 2.4s infinite;
+
+
+    box-shadow:
+
+    0 0 20px #00d9ff;
+
+
+    animation:
+
+    loading 2.5s infinite;
+
 }
 
-/* Frame */
+
+
+/* Application Frame */
+
 
 iframe{
+
+
     width:100%;
+
     height:100%;
+
+
     border:none;
+
+
+    display:block;
+
+
     opacity:0;
-    transform:scale(1.02);
-    filter:blur(6px);
-    transition:.8s;
+
+
+    transform:
+
+    scale(1.02);
+
+
+    filter:blur(5px);
+
+
+    transition:
+
+    all .8s ease;
+
 }
+
+
 
 iframe.loaded{
+
+
     opacity:1;
-    transform:scale(1);
+
+
+    transform:
+
+    scale(1);
+
+
     filter:none;
+
 }
 
+
+
+
 .fade-out{
+
+
     opacity:0!important;
+
+
     visibility:hidden!important;
+
+
 }
+
+
 
 /* Animations */
 
+
 @keyframes loading{
-    0%{transform:translateX(-100%);}
-    50%{transform:translateX(-15%);}
-    100%{transform:translateX(100%);}
-}
 
-@keyframes floatGlow{
-    from{
-        transform:translate(0,0) scale(1);
-    }
-    to{
-        transform:translate(40px,35px) scale(1.15);
-    }
-}
 
-@keyframes logoFloat{
-    0%,100%{
-        transform:translateY(0);
+    0%{
+        transform:translateX(-100%);
     }
+
+
     50%{
-        transform:translateY(-8px);
+        transform:translateX(-20%);
     }
+
+
+    100%{
+        transform:translateX(100%);
+    }
+
 }
+
+
+
+@keyframes cyberFloat{
+
+
+    from{
+
+        transform:
+        translate(0,0)
+        scale(1);
+
+    }
+
+
+    to{
+
+        transform:
+        translate(50px,40px)
+        scale(1.2);
+
+    }
+
+}
+
+
+
+@keyframes logoPulse{
+
+
+    0%,100%{
+
+        transform:
+        scale(1);
+
+    }
+
+
+    50%{
+
+        transform:
+        scale(1.08);
+
+    }
+
+}
+
+
 </style>
+
 </head>
+
 
 <body>
 
+
+<!-- Cyber Background -->
 <div class="bg-glow"></div>
+
+
+
+<!-- Cyber Profile Loader -->
 
 <div id="loader">
 
+
     <div class="logo-wrapper">
-        <img src="cyber.png" alt="My Cyber Profile">
+
+
+        <img
+        src="Cyber-Profile.gif"
+        alt="Cyber Profile Logo">
+
+
     </div>
+
+
 
     <h1 class="entrance-text">
+
         My Cyber Profile
+
     </h1>
 
+
+
     <p class="subtitle-text">
-        Security • Technology • Innovation
+
+        Cybersecurity • ICT • Security Management
+
     </p>
 
+
+
+
     <div class="progress-container">
+
         <div class="progress-bar"></div>
+
     </div>
+
 
 </div>
 
+
+
+
+<!-- Main Cyber Profile Application -->
+
 <iframe
+
 id="app-frame"
+
+
 src="https://script.google.com/macros/s/AKfycbw5wBPimm2ulyNWfh-eZCCQzH4T7gabIPuKTSBbkdiVnbIKfMp5T_QVnRHaZJe-8lAJ/exec"
+
+
 allow="camera; microphone; geolocation; clipboard-write"
+
+
 sandbox="allow-downloads allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
+
 </iframe>
 
-<script>
-const iframe=document.getElementById("app-frame");
-const loader=document.getElementById("loader");
 
-let initialized=false;
+
+
+<script>
+
+
+const iframe =
+document.getElementById("app-frame");
+
+
+const loader =
+document.getElementById("loader");
+
+
+
+let appLoaded=false;
+
+
 
 function initializeApp(){
 
-    if(initialized) return;
 
-    initialized=true;
+    if(appLoaded)
+    return;
+
+
+
+    appLoaded=true;
+
 
     iframe.classList.add("loaded");
+
+
     loader.classList.add("fade-out");
+
+
 }
 
-iframe.addEventListener("load",initializeApp);
 
-setTimeout(initializeApp,3000);
+
+
+// Normal Load
+
+iframe.addEventListener(
+"load",
+initializeApp
+);
+
+
+
+// Backup Loading Timeout
+
+setTimeout(
+initializeApp,
+3500
+);
+
+
+
 </script>
+
+
 
 </body>
 </html>
