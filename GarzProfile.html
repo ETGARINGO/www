@@ -794,6 +794,11 @@
           <div class="osint-category-title">Archives / Documents</div>
           <div class="osint-grid" id="osint-archive"></div>
         </div>
+
+        <div class="osint-category">
+          <div class="osint-category-title">Document & Paper Search (Open Access)</div>
+          <div class="osint-grid" id="osint-docs"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1532,6 +1537,13 @@
      a URL query parameter). Nothing here is scraped or automated —
      it's just a fast, organized set of bookmarks with your active query
      carried along.
+
+     Note: this list intentionally sticks to legitimate search / lookup /
+     open-access resources. It does not include paywall-bypass or
+     document-"unlocker" tools (e.g. Scribd/Course Hero/Academia.edu
+     downloaders, Sci-Hub, Library Genesis), since those exist to strip
+     paid or gated access without authorization rather than to search
+     open, public information.
      ===================================================================== */
   const osintTools = {
     general: [
@@ -1553,14 +1565,20 @@
       { name: "crt.sh", desc: "Certificate transparency log search", url: (q) => `https://crt.sh/?q=${encodeURIComponent(q || '')}` },
       { name: "VirusTotal", desc: "Domain / IP / file reputation lookup", url: (q) => q ? `https://www.virustotal.com/gui/search/${encodeURIComponent(q)}` : "https://www.virustotal.com/" },
       { name: "DNSDumpster", desc: "Passive DNS reconnaissance", url: () => "https://dnsdumpster.com/" },
+      { name: "SecurityTrails", desc: "Historical DNS & domain intelligence", url: (q) => q ? `https://securitytrails.com/list/apex_domain/${encodeURIComponent(q)}` : "https://securitytrails.com/" },
+      { name: "urlscan.io", desc: "Sandboxed URL/website scan & screenshot", url: (q) => q ? `https://urlscan.io/search/#${encodeURIComponent(q)}` : "https://urlscan.io/" },
+      { name: "GreyNoise", desc: "Internet background-noise / scanner IP lookup", url: (q) => q ? `https://viz.greynoise.io/ip/${encodeURIComponent(q)}` : "https://viz.greynoise.io/" },
     ],
     breach: [
       { name: "Have I Been Pwned", desc: "Check accounts against known breaches", url: (q) => `https://haveibeenpwned.com/account/${encodeURIComponent(q || '')}` },
       { name: "DeHashed", desc: "Breach & leak data search", url: (q) => q ? `https://dehashed.com/search?query=${encodeURIComponent(q)}` : "https://dehashed.com/" },
       { name: "Firefox Monitor", desc: "Mozilla breach monitoring", url: () => "https://monitor.firefox.com/" },
+      { name: "Intelligence X", desc: "Search engine for leaks, breaches & darknet indexes", url: (q) => q ? `https://intelx.io/?s=${encodeURIComponent(q)}` : "https://intelx.io/" },
+      { name: "LeakCheck", desc: "Data breach lookup by email/username/domain", url: (q) => q ? `https://leakcheck.io/search?query=${encodeURIComponent(q)}` : "https://leakcheck.io/" },
     ],
     image: [
       { name: "Google Images", desc: "Reverse image search", url: () => "https://images.google.com/" },
+      { name: "Google Lens", desc: "Visual search & object/landmark ID", url: () => "https://lens.google.com/" },
       { name: "TinEye", desc: "Reverse image search engine", url: () => "https://tineye.com/" },
       { name: "Yandex Images", desc: "Often strongest for face matches", url: () => "https://yandex.com/images/" },
       { name: "EXIF Data Viewer", desc: "Inspect image metadata/EXIF", url: () => "http://exif.regex.info/exif.cgi" },
@@ -1569,6 +1587,13 @@
       { name: "Wayback Machine", desc: "Historical snapshots of web pages", url: (q) => `https://web.archive.org/web/*/${encodeURIComponent(q || '')}` },
       { name: "Archive.today", desc: "On-demand page archiving/lookup", url: () => "https://archive.ph/" },
       { name: "Google Cache Viewer", desc: "Cached page lookup", url: (q) => `https://cachedview.nl/` },
+    ],
+    docs: [
+      { name: "CORE", desc: "Aggregator of open-access research papers", url: (q) => `https://core.ac.uk/search?q=${encodeURIComponent(q || '')}` },
+      { name: "Semantic Scholar", desc: "AI-powered academic paper search", url: (q) => `https://www.semanticscholar.org/search?q=${encodeURIComponent(q || '')}` },
+      { name: "BASE Search", desc: "Bielefeld academic search engine, open access", url: (q) => `https://www.base-search.net/Search/Results?lookfor=${encodeURIComponent(q || '')}` },
+      { name: "DOAJ", desc: "Directory of Open Access Journals", url: (q) => `https://doaj.org/search/articles?source=${encodeURIComponent('{"query":{"query_string":{"query":"' + (q || '') + '"}}}')}` },
+      { name: "Google Scholar", desc: "Scholarly literature search", url: (q) => `https://scholar.google.com/scholar?q=${encodeURIComponent(q || '')}` },
     ],
   };
 
