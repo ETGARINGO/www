@@ -142,6 +142,8 @@
     flex-direction: column;
     gap: 8px;
     padding: 8px;
+    max-height: 92vh;
+    overflow-y: auto;
   }
 
   .touch-menu.open { display: flex; }
@@ -169,6 +171,7 @@
     opacity: 0;
     transform: scale(0.5);
     animation: orbPop 0.25s ease forwards;
+    flex-shrink: 0;
   }
 
   @keyframes orbPop {
@@ -226,6 +229,27 @@
     z-index: 15;
     pointer-events: none;
   }
+
+  /* landing pane label + close button */
+  .pane-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 20;
+    background: rgba(5, 8, 15, 0.85);
+    border: 1px solid var(--border-color);
+    color: var(--neon-cyan);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  .pane-close-btn:hover { background: var(--neon-cyan); color: #000; }
 
   /* ANIMATED CYBER WORLD MAP PANE */
   #mapPane {
@@ -438,6 +462,70 @@
   }
   .tactical-locate-btn:hover { background: var(--neon-cyan); color: #000; }
 
+  /* LANDING PAGE PANE (Office quick-launch grid) */
+  #landingPane {
+    background: radial-gradient(ellipse at center, #0a1220 0%, #03060c 75%);
+    position: relative;
+    overflow-y: auto;
+    padding: 46px 22px 22px;
+  }
+
+  .landing-intro {
+    font-family: 'Courier New', Courier, monospace;
+    color: var(--text-dim);
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    max-width: 720px;
+    margin: 0 auto 18px;
+    line-height: 1.6;
+  }
+
+  .landing-grid-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .landing-section-title {
+    color: var(--neon-magenta);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 22px 0 10px;
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 5px;
+  }
+  .landing-section-title:first-child { margin-top: 0; }
+
+  .landing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+
+  .landing-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-left: 3px solid var(--neon-cyan);
+    padding: 10px 12px;
+    text-decoration: none;
+    color: var(--text-main);
+    border-radius: 3px;
+    font-family: 'Courier New', Courier, monospace;
+    transition: all 0.15s ease;
+  }
+  .landing-tile:hover {
+    border-left-color: var(--neon-magenta);
+    background: rgba(0, 240, 255, 0.06);
+    transform: translateX(2px);
+  }
+  .landing-tile .name { color: var(--neon-cyan); font-weight: bold; font-size: 11px; }
+  .landing-tile:hover .name { color: var(--neon-magenta); }
+  .landing-tile .desc { color: var(--text-dim); font-size: 9px; line-height: 1.35; }
+
   /* CYBER SIGNAL WORLD MONITOR SIDEBAR */
   .signal-sidebar {
     width: 320px;
@@ -598,7 +686,7 @@
     animation: fadeIn 0.3s ease;
   }
 
-  /* OSINT QUICK-ACCESS OVERLAY */
+  /* OSINT / TOOLKIT QUICK-ACCESS OVERLAY */
   .osint-overlay {
     position: fixed;
     inset: 0;
@@ -614,8 +702,8 @@
   .osint-overlay.open { display: flex; }
 
   .osint-panel {
-    width: min(760px, 92vw);
-    max-height: 82vh;
+    width: min(820px, 92vw);
+    max-height: 86vh;
     overflow-y: auto;
     background: var(--panel-bg);
     border: 1px solid var(--border-color);
@@ -633,6 +721,7 @@
     background: rgba(0, 240, 255, 0.05);
     position: sticky;
     top: 0;
+    z-index: 2;
   }
 
   .osint-panel-header .title {
@@ -653,6 +742,35 @@
     line-height: 1;
   }
   .osint-panel-header .close-btn:hover { color: #000; background: var(--neon-cyan); }
+
+  .osint-panel-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 10px 16px 0;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 49px;
+    background: var(--panel-bg);
+    z-index: 1;
+  }
+
+  .osint-tab-btn {
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-dim);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.5px;
+    padding: 6px 10px;
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+  .osint-tab-btn.active {
+    background: var(--neon-cyan);
+    color: #000;
+    border-color: var(--neon-cyan);
+  }
 
   .osint-panel-body { padding: 14px 16px 18px; }
 
@@ -690,6 +808,7 @@
   .osint-search-row button:hover { background: var(--neon-cyan); color: #000; }
 
   .osint-category { margin-bottom: 16px; }
+  .osint-category[data-hidden="true"] { display: none; }
 
   .osint-category-title {
     color: var(--neon-magenta);
@@ -727,6 +846,7 @@
   .osint-tool .name { color: var(--neon-cyan); font-weight: bold; display: block; margin-bottom: 2px; }
   .osint-tool:hover .name { color: var(--neon-magenta); }
   .osint-tool .desc { color: var(--text-dim); font-size: 9px; line-height: 1.35; }
+  .osint-tool .keys { color: #ffcc00; font-size: 9.5px; display: block; margin-top: 3px; letter-spacing: 0.5px; }
 
   @media(max-width: 900px) {
     .workspace { flex-direction: column; }
@@ -752,51 +872,87 @@
     </div>
   </div>
 
-  <!-- OSINT QUICK-ACCESS OVERLAY -->
+  <!-- TOOLKIT QUICK-ACCESS OVERLAY (OSINT + Office + PDF + Shortcuts) -->
   <div class="osint-overlay" id="osintOverlay">
     <div class="osint-panel">
       <div class="osint-panel-header">
-        <span class="title">◎ OSINT QUICK-ACCESS TOOLKIT</span>
+        <span class="title">◎ QUICK-ACCESS TOOLKIT</span>
         <button class="close-btn" onclick="closeOsint()">✕</button>
       </div>
+      <div class="osint-panel-tabs" id="osintTabs"></div>
       <div class="osint-panel-body">
         <div class="osint-search-row">
           <input id="osintQuery" type="text" placeholder="Type a username / domain / IP / phrase, then pick a tool below…">
           <button onclick="document.getElementById('osintQuery').focus()">Focus</button>
         </div>
 
-        <div class="osint-category">
+        <div class="osint-category" data-group="office">
+          <div class="osint-category-title">Office Suites (Docs / Sheets / Slides)</div>
+          <div class="osint-grid" id="osint-office"></div>
+        </div>
+
+        <div class="osint-category" data-group="office">
+          <div class="osint-category-title">Email, Calendar & Meetings</div>
+          <div class="osint-grid" id="osint-comms"></div>
+        </div>
+
+        <div class="osint-category" data-group="office">
+          <div class="osint-category-title">Cloud Storage & File Sync</div>
+          <div class="osint-grid" id="osint-storage"></div>
+        </div>
+
+        <div class="osint-category" data-group="office">
+          <div class="osint-category-title">Project & Task Management</div>
+          <div class="osint-grid" id="osint-pm"></div>
+        </div>
+
+        <div class="osint-category" data-group="office">
+          <div class="osint-category-title">PDF & File Conversion</div>
+          <div class="osint-grid" id="osint-pdftools"></div>
+        </div>
+
+        <div class="osint-category" data-group="office">
+          <div class="osint-category-title">Design & Diagramming</div>
+          <div class="osint-grid" id="osint-design"></div>
+        </div>
+
+        <div class="osint-category" data-group="shortcuts">
+          <div class="osint-category-title">Keyboard Shortcut Cheatsheets</div>
+          <div class="osint-grid" id="osint-shortcuts"></div>
+        </div>
+
+        <div class="osint-category" data-group="osint">
           <div class="osint-category-title">Search & Frameworks</div>
           <div class="osint-grid" id="osint-general"></div>
         </div>
 
-        <div class="osint-category">
+        <div class="osint-category" data-group="osint">
           <div class="osint-category-title">Username / Social</div>
           <div class="osint-grid" id="osint-username"></div>
         </div>
 
-        <div class="osint-category">
+        <div class="osint-category" data-group="osint">
           <div class="osint-category-title">Domain / IP / Network</div>
           <div class="osint-grid" id="osint-network"></div>
         </div>
 
-        <div class="osint-category">
+        <div class="osint-category" data-group="osint">
           <div class="osint-category-title">Breach / Leak Check</div>
           <div class="osint-grid" id="osint-breach"></div>
         </div>
 
-        <div class="osint-category">
+        <div class="osint-category" data-group="osint">
           <div class="osint-category-title">Images / Geolocation</div>
           <div class="osint-grid" id="osint-image"></div>
         </div>
 
-        <div class="osint-category">
-          <div class="osint-category-title">Archives / Documents</div>
+        <div class="osint-category" data-group="osint">
+          <div class="osint-category-title">Web Archives</div>
           <div class="osint-grid" id="osint-archive"></div>
         </div>
 
-        <div class="osint-category">
-          <div class="osint-category-title">Document & Paper Search (Open Access)</div>
+        <div class="osint-category" data-group="docs">
+          <div class="osint-category-title">Open-Access Books, Papers & Documents</div>
           <div class="osint-grid" id="osint-docs"></div>
         </div>
       </div>
@@ -872,6 +1028,17 @@
       </div>
       <div class="tactical-locate-btn" onclick="locateMe()" title="Locate me">◎</div>
     </div>
+
+    <!-- LANDING PAGE PANE: Office & productivity quick-launch grid -->
+    <div class="pane" id="landingPane" style="display:none;">
+      <div class="pane-label">LANDING // OFFICE QUICK-LAUNCH</div>
+      <div class="pane-close-btn" onclick="toggleView('global')" title="Back">✕</div>
+      <div class="landing-intro">
+        Quick-launch pad for the office & productivity apps you use daily, plus one-click keyboard shortcut references.
+        Everything here opens the real, official site in a new tab — nothing is embedded or proxied.
+      </div>
+      <div class="landing-grid-wrap" id="landingGridWrap"></div>
+    </div>
   </div>
 
   <!-- ASSISTIVE-TOUCH STYLE FLOATING ORB + RADIAL MENU
@@ -895,7 +1062,9 @@
     <div class="touch-menu-item" data-mode="map" onclick="toggleView('map')">Map</div>
     <div class="touch-menu-item" data-mode="tactical" onclick="toggleView('tactical')">Tactical<br>Map</div>
     <div class="touch-menu-item" data-mode="signal" onclick="toggleView('signal')">Signal</div>
-    <div class="touch-menu-item" onclick="openOsint()" title="OSINT quick-access">OSINT</div>
+    <div class="touch-menu-item" data-mode="landing" onclick="toggleView('landing')">Office<br>Hub</div>
+    <div class="touch-menu-item" onclick="openOsint('office')" title="Office & productivity tools">Office<br>Tools</div>
+    <div class="touch-menu-item" onclick="openOsint('osint')" title="OSINT quick-access">OSINT</div>
     <div class="touch-menu-item small" onclick="zoomBy(1.25)" title="Zoom in">+</div>
     <div class="touch-menu-item small" onclick="zoomBy(0.8)" title="Zoom out">−</div>
     <div class="touch-menu-item small" onclick="resetView()" title="Reset view">⟳</div>
@@ -1530,22 +1699,95 @@
   setInterval(() => bumpThreat(-1), 5000);
 
   /* =====================================================================
-     OSINT QUICK-ACCESS TOOLKIT
-     A curated set of well-known, publicly available OSINT resources.
+     QUICK-ACCESS TOOLKIT DATA
+     A curated set of well-known, publicly available resources, grouped
+     into: Office & Productivity, PDF/File tools, Design, Keyboard
+     Shortcuts, OSINT search/lookup tools, and Open-Access documents.
+
      Clicking a tile opens that service in a new tab, pre-filled with
      whatever the person typed into the query box (when the tool supports
      a URL query parameter). Nothing here is scraped or automated —
      it's just a fast, organized set of bookmarks with your active query
      carried along.
 
-     Note: this list intentionally sticks to legitimate search / lookup /
-     open-access resources. It does not include paywall-bypass or
-     document-"unlocker" tools (e.g. Scribd/Course Hero/Academia.edu
-     downloaders, Sci-Hub, Library Genesis), since those exist to strip
-     paid or gated access without authorization rather than to search
-     open, public information.
+     Note: this intentionally sticks to legitimate, official, or open-access
+     resources. It does not include paywall-bypass or document-"unlocker"
+     tools (e.g. Scribd/Course Hero downloaders, Sci-Hub, Library Genesis,
+     PDF Drive and similar shadow-library sites), since those exist to
+     strip paid or gated access without authorization rather than to
+     search or use open, public, or licensed resources.
      ===================================================================== */
   const osintTools = {
+    // ---------------- OFFICE & PRODUCTIVITY ----------------
+    office: [
+      { name: "Google Docs", desc: "Free online word processor", url: () => "https://docs.google.com/document/u/0/" },
+      { name: "Google Sheets", desc: "Free online spreadsheets", url: () => "https://docs.google.com/spreadsheets/u/0/" },
+      { name: "Google Slides", desc: "Free online presentations", url: () => "https://docs.google.com/presentation/u/0/" },
+      { name: "Google Forms", desc: "Free online forms & surveys", url: () => "https://docs.google.com/forms/u/0/" },
+      { name: "Microsoft Word Online", desc: "Free web version of Word", url: () => "https://www.microsoft365.com/launch/word" },
+      { name: "Microsoft Excel Online", desc: "Free web version of Excel", url: () => "https://www.microsoft365.com/launch/excel" },
+      { name: "Microsoft PowerPoint Online", desc: "Free web version of PowerPoint", url: () => "https://www.microsoft365.com/launch/powerpoint" },
+      { name: "Office.com", desc: "Microsoft 365 web app launcher", url: () => "https://www.office.com/" },
+      { name: "LibreOffice", desc: "Free open-source office suite (download)", url: () => "https://www.libreoffice.org/download/download-libreoffice/" },
+      { name: "OnlyOffice", desc: "Free online/desktop office suite", url: () => "https://www.onlyoffice.com/" },
+      { name: "Zoho Writer", desc: "Free online document editor", url: () => "https://www.zoho.com/writer/" },
+      { name: "Zoho Sheet", desc: "Free online spreadsheet editor", url: () => "https://www.zoho.com/sheet/" },
+    ],
+    comms: [
+      { name: "Gmail", desc: "Email", url: () => "https://mail.google.com/" },
+      { name: "Outlook", desc: "Microsoft email & calendar", url: () => "https://outlook.office.com/mail/" },
+      { name: "Google Calendar", desc: "Scheduling & events", url: () => "https://calendar.google.com/" },
+      { name: "Zoom", desc: "Video meetings", url: () => "https://zoom.us/join" },
+      { name: "Google Meet", desc: "Video meetings", url: () => "https://meet.google.com/" },
+      { name: "Microsoft Teams", desc: "Chat & video meetings", url: () => "https://teams.microsoft.com/" },
+      { name: "Slack", desc: "Team messaging", url: () => "https://slack.com/signin" },
+    ],
+    storage: [
+      { name: "Google Drive", desc: "Cloud file storage", url: () => "https://drive.google.com/" },
+      { name: "Microsoft OneDrive", desc: "Cloud file storage", url: () => "https://onedrive.live.com/" },
+      { name: "Dropbox", desc: "Cloud file storage & sync", url: () => "https://www.dropbox.com/home" },
+      { name: "Box", desc: "Cloud content management", url: () => "https://app.box.com/" },
+    ],
+    pm: [
+      { name: "Notion", desc: "Notes, docs & workspace wiki", url: () => "https://www.notion.so/" },
+      { name: "Trello", desc: "Kanban task boards", url: () => "https://trello.com/" },
+      { name: "Asana", desc: "Project & task management", url: () => "https://app.asana.com/" },
+      { name: "Monday.com", desc: "Work OS / project tracking", url: () => "https://monday.com/" },
+      { name: "ClickUp", desc: "All-in-one productivity platform", url: () => "https://clickup.com/" },
+      { name: "Jira", desc: "Issue & agile project tracking", url: () => "https://www.atlassian.com/software/jira" },
+    ],
+    pdftools: [
+      { name: "iLovePDF", desc: "Merge, split, compress, convert PDFs", url: () => "https://www.ilovepdf.com/" },
+      { name: "Smallpdf", desc: "PDF editing & conversion toolkit", url: () => "https://smallpdf.com/" },
+      { name: "PDF24 Tools", desc: "Free PDF tools, no signup", url: () => "https://tools.pdf24.org/en/" },
+      { name: "Adobe Acrobat Online", desc: "Official Adobe PDF tools", url: () => "https://www.adobe.com/acrobat/online.html" },
+      { name: "CloudConvert", desc: "Convert between 200+ file formats", url: () => "https://cloudconvert.com/" },
+      { name: "Xodo", desc: "Free PDF reader, editor & annotator", url: () => "https://xodo.com/" },
+      { name: "TinyPNG", desc: "Compress PNG/JPG images", url: () => "https://tinypng.com/" },
+    ],
+    design: [
+      { name: "Canva", desc: "Graphic design & templates", url: () => "https://www.canva.com/" },
+      { name: "Figma", desc: "UI/UX & collaborative design", url: () => "https://www.figma.com/" },
+      { name: "diagrams.net (draw.io)", desc: "Free flowcharts & diagrams", url: () => "https://app.diagrams.net/" },
+      { name: "Lucidchart", desc: "Diagramming & flowcharts", url: () => "https://www.lucidchart.com/" },
+      { name: "Miro", desc: "Online collaborative whiteboard", url: () => "https://miro.com/" },
+    ],
+    // ---------------- KEYBOARD SHORTCUTS ----------------
+    shortcuts: [
+      { name: "Windows Shortcuts", desc: "Official Microsoft keyboard shortcuts", url: () => "https://support.microsoft.com/en-us/windows/keyboard-shortcuts-in-windows-dcc61a57-8ff0-cffe-9796-cb9706c75eec" },
+      { name: "macOS Shortcuts", desc: "Official Apple keyboard shortcuts", url: () => "https://support.apple.com/en-us/102650" },
+      { name: "Chrome Shortcuts", desc: "Official Chrome browser shortcuts", url: () => "https://support.google.com/chrome/answer/157179" },
+      { name: "Google Docs Shortcuts", desc: "Official Docs keyboard shortcuts", url: () => "https://support.google.com/docs/answer/179738" },
+      { name: "Google Sheets Shortcuts", desc: "Official Sheets keyboard shortcuts", url: () => "https://support.google.com/docs/answer/181110" },
+      { name: "Excel Shortcuts", desc: "Official Excel keyboard shortcuts", url: () => "https://support.microsoft.com/en-us/office/keyboard-shortcuts-in-excel-1798d9d5-842a-42b8-9c99-9b7213f0040f" },
+      { name: "Word Shortcuts", desc: "Official Word keyboard shortcuts", url: () => "https://support.microsoft.com/en-us/office/keyboard-shortcuts-in-word-95ef89dd-7142-4b50-afb2-f762f663ceb2" },
+      { name: "Gmail Shortcuts", desc: "Official Gmail keyboard shortcuts", url: () => "https://support.google.com/mail/answer/6594" },
+      { name: "Slack Shortcuts", desc: "Official Slack keyboard shortcuts", url: () => "https://slack.com/help/articles/201374536-Slack-keyboard-shortcuts" },
+      { name: "VS Code Shortcuts", desc: "Official VS Code keyboard reference", url: () => "https://code.visualstudio.com/docs/getstarted/keybindings" },
+      { name: "Photoshop Shortcuts", desc: "Official Photoshop keyboard shortcuts", url: () => "https://helpx.adobe.com/photoshop/using/default-keyboard-shortcuts.html" },
+      { name: "Figma Shortcuts", desc: "Official Figma keyboard shortcuts", url: () => "https://help.figma.com/hc/en-us/articles/360040328653" },
+    ],
+    // ---------------- OSINT ----------------
     general: [
       { name: "OSINT Framework", desc: "Categorized directory of OSINT resources", url: () => "https://osintframework.com/" },
       { name: "Google Dorking", desc: "Advanced search operators", url: (q) => `https://www.google.com/search?q=${encodeURIComponent(q || '')}` },
@@ -1586,14 +1828,23 @@
     archive: [
       { name: "Wayback Machine", desc: "Historical snapshots of web pages", url: (q) => `https://web.archive.org/web/*/${encodeURIComponent(q || '')}` },
       { name: "Archive.today", desc: "On-demand page archiving/lookup", url: () => "https://archive.ph/" },
-      { name: "Google Cache Viewer", desc: "Cached page lookup", url: (q) => `https://cachedview.nl/` },
+      { name: "Google Cache Viewer", desc: "Cached page lookup", url: () => `https://cachedview.nl/` },
     ],
+    // ---------------- OPEN-ACCESS DOCUMENTS ----------------
     docs: [
+      { name: "Internet Archive", desc: "Books, texts & media — free lending library", url: (q) => `https://archive.org/search?query=${encodeURIComponent(q || '')}` },
+      { name: "Open Library", desc: "Catalog & free borrowing of scanned books", url: (q) => `https://openlibrary.org/search?q=${encodeURIComponent(q || '')}` },
+      { name: "Project Gutenberg", desc: "70,000+ free public-domain ebooks", url: (q) => `https://www.gutenberg.org/ebooks/search/?query=${encodeURIComponent(q || '')}` },
+      { name: "Google Books", desc: "Search & preview books, many free", url: (q) => `https://www.google.com/books/edition/_/search?q=${encodeURIComponent(q || '')}` },
+      { name: "HathiTrust", desc: "Digital library of scanned books", url: (q) => `https://catalog.hathitrust.org/Search/Home?lookfor=${encodeURIComponent(q || '')}&type=all` },
+      { name: "Unpaywall / oadoi", desc: "Finds legal free versions of paywalled papers", url: (q) => q ? `https://api.unpaywall.org/v2/${encodeURIComponent(q)}?email=unpaywall@impactstory.org` : "https://unpaywall.org/" },
       { name: "CORE", desc: "Aggregator of open-access research papers", url: (q) => `https://core.ac.uk/search?q=${encodeURIComponent(q || '')}` },
       { name: "Semantic Scholar", desc: "AI-powered academic paper search", url: (q) => `https://www.semanticscholar.org/search?q=${encodeURIComponent(q || '')}` },
       { name: "BASE Search", desc: "Bielefeld academic search engine, open access", url: (q) => `https://www.base-search.net/Search/Results?lookfor=${encodeURIComponent(q || '')}` },
       { name: "DOAJ", desc: "Directory of Open Access Journals", url: (q) => `https://doaj.org/search/articles?source=${encodeURIComponent('{"query":{"query_string":{"query":"' + (q || '') + '"}}}')}` },
       { name: "Google Scholar", desc: "Scholarly literature search", url: (q) => `https://scholar.google.com/scholar?q=${encodeURIComponent(q || '')}` },
+      { name: "PubMed Central", desc: "Free full-text biomedical & life sciences papers", url: (q) => `https://www.ncbi.nlm.nih.gov/pmc/?term=${encodeURIComponent(q || '')}` },
+      { name: "arXiv", desc: "Free preprints: physics, math, CS & more", url: (q) => `https://arxiv.org/abs/${encodeURIComponent(q || '')}`.includes('undefined') ? "https://arxiv.org/" : `https://arxiv.org/search/?query=${encodeURIComponent(q || '')}&searchtype=all` },
     ],
   };
 
@@ -1622,8 +1873,40 @@
   }
   renderOsintTools();
 
-  function openOsint() {
+  /* ---- Toolkit overlay: tabs to filter by group ---- */
+  const osintTabDefs = [
+    { key: 'all', label: 'All' },
+    { key: 'office', label: 'Office & Productivity' },
+    { key: 'shortcuts', label: 'Shortcuts' },
+    { key: 'osint', label: 'OSINT' },
+    { key: 'docs', label: 'Open-Access Docs' },
+  ];
+
+  function renderOsintTabs() {
+    const wrap = document.getElementById('osintTabs');
+    wrap.innerHTML = osintTabDefs.map(t =>
+      `<div class="osint-tab-btn" data-tab="${t.key}">${t.label}</div>`
+    ).join('');
+    wrap.querySelectorAll('.osint-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => filterOsintTab(btn.dataset.tab));
+    });
+  }
+  renderOsintTabs();
+
+  function filterOsintTab(tab) {
+    document.querySelectorAll('.osint-tab-btn').forEach(btn =>
+      btn.classList.toggle('active', btn.dataset.tab === tab)
+    );
+    document.querySelectorAll('.osint-category').forEach(cat => {
+      const group = cat.dataset.group;
+      const show = tab === 'all' || group === tab;
+      cat.setAttribute('data-hidden', show ? 'false' : 'true');
+    });
+  }
+
+  function openOsint(tab) {
     document.getElementById('osintOverlay').classList.add('open');
+    filterOsintTab(tab || 'all');
     // close the radial orb menu when the overlay opens
     touchMenu.classList.remove('open');
     touchOrb.classList.remove('open');
@@ -1643,12 +1926,43 @@
   });
 
   /* =====================================================================
+     LANDING PANE — Office & productivity quick-launch grid
+     Renders the same "office"-group data as a full-page landing view
+     (an alternative to opening the toolkit overlay), for when the person
+     wants a dedicated "Office Hub" pane instead of a popup.
+     ===================================================================== */
+  const landingSections = [
+    { key: 'office', title: 'Office Suites' },
+    { key: 'comms', title: 'Email, Calendar & Meetings' },
+    { key: 'storage', title: 'Cloud Storage' },
+    { key: 'pm', title: 'Project & Task Management' },
+    { key: 'pdftools', title: 'PDF & File Tools' },
+    { key: 'design', title: 'Design & Diagramming' },
+    { key: 'shortcuts', title: 'Keyboard Shortcuts' },
+  ];
+
+  function renderLandingGrid() {
+    const wrap = document.getElementById('landingGridWrap');
+    wrap.innerHTML = landingSections.map(sec => {
+      const tools = osintTools[sec.key] || [];
+      const tiles = tools.map(t =>
+        `<a class="landing-tile" href="${t.url()}" target="_blank" rel="noopener">
+          <span class="name">${t.name}</span>
+          <span class="desc">${t.desc}</span>
+        </a>`
+      ).join('');
+      return `<div class="landing-section-title">${sec.title}</div><div class="landing-grid">${tiles}</div>`;
+    }).join('');
+  }
+  renderLandingGrid();
+
+  /* =====================================================================
      ASSISTIVE-TOUCH STYLE FLOATING ORB
      Drag it anywhere on screen (mouse or touch). A single tap (no drag)
      opens a radial stack of action buttons anchored to wherever the orb
      currently sits, auto-flipping above/below/left/right to stay on-screen.
      The orb + menu sit at a very high z-index so they always overlay every
-     other pane, panel, or overlay in the app (except the OSINT modal,
+     other pane, panel, or overlay in the app (except the toolkit modal,
      which intentionally sits on top while open).
      ===================================================================== */
   const touchOrb = document.getElementById('touchOrb');
@@ -1705,7 +2019,7 @@
     const rect = touchOrb.getBoundingClientRect();
     const items = touchMenu.querySelectorAll('.touch-menu-item').length;
     const itemH = 54; // 46px + gap
-    const menuH = items * itemH + 16;
+    const menuH = Math.min(items * itemH + 16, window.innerHeight - 20);
     const w = window.innerWidth, h = window.innerHeight;
 
     // Prefer opening upward if there's room, otherwise downward.
@@ -1722,6 +2036,7 @@
 
     touchMenu.style.top = top + 'px';
     touchMenu.style.left = left + 'px';
+    touchMenu.style.maxHeight = (h - top - 10) + 'px';
   }
 
   function toggleTouchMenu() {
@@ -1761,12 +2076,14 @@
     const formPane = document.getElementById('formPane');
     const mapPaneEl = document.getElementById('mapPane');
     const tacticalPaneEl = document.getElementById('tacticalPane');
+    const landingPaneEl = document.getElementById('landingPane');
     const signalSidebar = document.getElementById('signalSidebar');
 
     // reset
     formPane.style.display = 'none'; formPane.style.flex = '';
     mapPaneEl.style.display = 'none'; mapPaneEl.style.flex = '';
     tacticalPaneEl.style.display = 'none'; tacticalPaneEl.style.flex = '';
+    landingPaneEl.style.display = 'none'; landingPaneEl.style.flex = '';
     signalSidebar.style.display = 'none';
 
     if (mode === 'split') {
@@ -1781,6 +2098,8 @@
     } else if (mode === 'signal') {
       signalSidebar.style.display = 'flex';
       mapPaneEl.style.display = 'block'; mapPaneEl.style.flex = '1';
+    } else if (mode === 'landing') {
+      landingPaneEl.style.display = 'block'; landingPaneEl.style.flex = '1';
     } else if (mode === 'global') {
       signalSidebar.style.display = 'flex';
       tacticalPaneEl.style.display = 'block'; tacticalPaneEl.style.flex = '1';
