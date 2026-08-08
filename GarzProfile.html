@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>MY CYBER PROFILE // GLOBAL SIGNAL MONITOR</title>
-<link rel="icon" type="image/png" href="profile.gif">
+<title>OPS DASHBOARD // Office & Network Toolkit</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -14,13 +13,14 @@
     --neon-cyan: #00f0ff;
     --neon-blue: #0077ff;
     --neon-magenta: #ff00c8;
+    --neon-green: #00ff88;
+    --neon-amber: #ffcc00;
+    --neon-red: #ff3b3b;
     --text-main: #e2e8f0;
     --text-dim: #7d8ba1;
     --border-color: rgba(0, 240, 255, 0.28);
   }
-
   * { box-sizing: border-box; }
-
   body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -32,2099 +32,1467 @@
     flex-direction: column;
     user-select: none;
   }
+  #particleCanvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 
-  /* CYBER PARTICLES BACKGROUND */
-  #particleCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -1;
-    pointer-events: none;
-  }
-
-  /* TOP STATUS / IDENTITY BAR */
+  /* ---------- TOP BAR ---------- */
   .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--panel-bg);
-    border-bottom: 1px solid var(--border-color);
-    padding: 10px 18px;
-    font-size: 11px;
-    letter-spacing: 1px;
-    z-index: 100;
-    font-family: 'Courier New', Courier, monospace;
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--panel-bg); border-bottom: 1px solid var(--border-color);
+    padding: 10px 18px; font-size: 11px; letter-spacing: 1px; z-index: 100;
+    font-family: 'Courier New', monospace; flex-wrap: wrap; gap: 8px;
   }
-
-  .brand {
-    color: var(--neon-cyan);
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
+  .brand { color: var(--neon-cyan); font-weight: bold; display: flex; align-items: center; gap: 8px; }
   .brand span.dot {
-    width: 8px;
-    height: 8px;
-    background: #00ff88;
-    box-shadow: 0 0 8px #00ff88;
-    border-radius: 50%;
-    display: inline-block;
-    animation: blink 2s infinite ease-in-out;
+    width: 8px; height: 8px; background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green);
+    border-radius: 50%; display: inline-block; animation: blink 2s infinite ease-in-out;
   }
-
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.35; }
-  }
-
-  .telemetry {
-    display: flex;
-    gap: 20px;
-    color: var(--text-dim);
-  }
-
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+  .telemetry { display: flex; gap: 16px; color: var(--text-dim); flex-wrap: wrap; }
   .telemetry b { color: var(--neon-cyan); }
 
-  /* ASSISTIVE-TOUCH STYLE FLOATING ORB */
+  /* ---------- GLOBAL SEARCH BAR ---------- */
+  .global-search-wrap {
+    position: fixed; top: 44px; left: 50%; transform: translateX(-50%);
+    z-index: 400; width: min(560px, 92vw); display: none;
+  }
+  .global-search-wrap.open { display: block; }
+  .global-search-box {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(6, 9, 16, 0.96); border: 1px solid var(--neon-cyan);
+    border-radius: 8px; padding: 10px 12px; box-shadow: 0 0 24px rgba(0,240,255,0.25);
+    font-family: 'Courier New', monospace;
+  }
+  .global-search-box input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--text-main); font-family: inherit; font-size: 13px;
+  }
+  .global-search-box input::placeholder { color: var(--text-dim); }
+  .global-search-box .gs-close {
+    cursor: pointer; color: var(--text-dim); border: 1px solid var(--border-color);
+    width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+  .global-search-box .gs-close:hover { background: var(--neon-cyan); color: #000; }
+  .global-search-results {
+    margin-top: 6px; max-height: 60vh; overflow-y: auto;
+    background: rgba(6, 9, 16, 0.96); border: 1px solid var(--border-color);
+    border-radius: 8px; display: none;
+  }
+  .global-search-results.show { display: block; }
+  .gsr-group-title {
+    font-size: 9px; color: var(--neon-magenta); letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 8px 12px 4px; font-family: 'Courier New', monospace;
+  }
+  .gsr-item {
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
+    padding: 8px 12px; cursor: pointer; font-family: 'Courier New', monospace; font-size: 11px;
+    border-top: 1px solid rgba(0,240,255,0.08);
+  }
+  .gsr-item:hover { background: rgba(0,240,255,0.08); }
+  .gsr-item .n { color: var(--text-main); }
+  .gsr-item .d { color: var(--text-dim); font-size: 9px; }
+  .gsr-item .pin-btn { color: var(--text-dim); border: none; background: transparent; cursor: pointer; font-size: 13px; }
+  .gsr-item .pin-btn.pinned { color: var(--neon-amber); }
+  .gsr-empty { padding: 14px 12px; color: var(--text-dim); font-size: 10px; font-family: 'Courier New', monospace; }
+
+  /* ---------- TOAST / TROUBLESHOOTING NOTICES ---------- */
+  .toast-stack {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    z-index: 9995; display: flex; flex-direction: column; gap: 8px; align-items: center;
+    pointer-events: none; width: min(480px, 92vw);
+  }
+  .toast {
+    pointer-events: auto; width: 100%;
+    background: rgba(8, 12, 20, 0.96); border: 1px solid var(--border-color);
+    border-left: 3px solid var(--neon-cyan); border-radius: 6px; padding: 10px 12px;
+    font-family: 'Courier New', monospace; font-size: 11px; color: var(--text-main);
+    box-shadow: 0 0 16px rgba(0,0,0,0.4); animation: toastIn 0.25s ease;
+    display: flex; justify-content: space-between; gap: 10px; align-items: flex-start;
+  }
+  .toast.warn { border-left-color: var(--neon-amber); }
+  .toast.error { border-left-color: var(--neon-red); }
+  .toast.ok { border-left-color: var(--neon-green); }
+  .toast .msg { line-height: 1.4; }
+  .toast .close { cursor: pointer; color: var(--text-dim); flex-shrink: 0; }
+  .toast .close:hover { color: var(--text-main); }
+  @keyframes toastIn { from{opacity:0; transform: translateY(6px);} to{opacity:1; transform: translateY(0);} }
+
+  /* ---------- FLOATING ORB ---------- */
   .touch-orb {
-    position: fixed;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    left: 0;
-    top: 0;
-    z-index: 99999;
+    position: fixed; width: 56px; height: 56px; border-radius: 50%; left: 0; top: 0; z-index: 99999;
     background: radial-gradient(circle at 35% 30%, rgba(0,240,255,0.35), rgba(6,10,18,0.95) 70%);
     border: 1.5px solid var(--neon-cyan);
-    box-shadow: 0 0 18px rgba(0, 240, 255, 0.45), inset 0 0 12px rgba(0,240,255,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: grab;
-    touch-action: none;
+    box-shadow: 0 0 18px rgba(0,240,255,0.45), inset 0 0 12px rgba(0,240,255,0.2);
+    display: flex; align-items: center; justify-content: center; cursor: grab; touch-action: none;
     transition: box-shadow 0.25s ease, transform 0.15s ease;
   }
-
   .touch-orb:active { cursor: grabbing; transform: scale(0.94); }
-
-  .touch-orb.open {
-    box-shadow: 0 0 26px rgba(0, 240, 255, 0.75), inset 0 0 14px rgba(0,240,255,0.3);
-  }
-
-  .touch-orb-icon {
-    width: 20px;
-    height: 20px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2.5px;
-    transition: transform 0.3s ease;
-  }
-
+  .touch-orb.open { box-shadow: 0 0 26px rgba(0,240,255,0.75), inset 0 0 14px rgba(0,240,255,0.3); }
+  .touch-orb-icon { width: 20px; height: 20px; display: grid; grid-template-columns: repeat(3,1fr); gap: 2.5px; transition: transform 0.3s ease; }
   .touch-orb.open .touch-orb-icon { transform: rotate(45deg); }
+  .touch-orb-icon span { width: 4px; height: 4px; border-radius: 50%; background: var(--neon-cyan); box-shadow: 0 0 4px var(--neon-cyan); }
 
-  .touch-orb-icon span {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--neon-cyan);
-    box-shadow: 0 0 4px var(--neon-cyan);
-  }
-
-  /* Radial / stacked action menu that appears around the orb */
   .touch-menu {
-    position: fixed;
-    z-index: 99998;
-    display: none;
-    flex-direction: column;
-    gap: 8px;
-    padding: 8px;
-    max-height: 92vh;
-    overflow-y: auto;
+    position: fixed; z-index: 99998; display: none; flex-direction: column; gap: 8px;
+    padding: 8px; max-height: 92vh; overflow-y: auto;
   }
-
   .touch-menu.open { display: flex; }
-
   .touch-menu-item {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    background: var(--panel-bg);
-    border: 1px solid var(--neon-cyan);
-    color: var(--neon-cyan);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 9px;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-    text-align: center;
-    line-height: 1.1;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
-    transition: all 0.2s ease;
-    font-family: 'Courier New', Courier, monospace;
-    text-transform: uppercase;
-    opacity: 0;
-    transform: scale(0.5);
-    animation: orbPop 0.25s ease forwards;
-    flex-shrink: 0;
+    width: 46px; height: 46px; border-radius: 50%; background: var(--panel-bg);
+    border: 1px solid var(--neon-cyan); color: var(--neon-cyan);
+    display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold;
+    letter-spacing: 0.5px; text-align: center; line-height: 1.1; cursor: pointer;
+    box-shadow: 0 0 10px rgba(0,240,255,0.25); transition: all 0.2s ease;
+    font-family: 'Courier New', monospace; text-transform: uppercase;
+    opacity: 0; transform: scale(0.5); animation: orbPop 0.25s ease forwards; flex-shrink: 0;
   }
-
-  @keyframes orbPop {
-    to { opacity: 1; transform: scale(1); }
-  }
-
-  .touch-menu-item:hover,
-  .touch-menu-item.active {
-    background: var(--neon-cyan);
-    color: #000;
-    box-shadow: 0 0 16px var(--neon-cyan);
-  }
-
+  @keyframes orbPop { to { opacity: 1; transform: scale(1); } }
+  .touch-menu-item:hover, .touch-menu-item.active { background: var(--neon-cyan); color: #000; box-shadow: 0 0 16px var(--neon-cyan); }
   .touch-menu-item.small { font-size: 14px; }
 
-  /* VIEW CONTAINER */
-  .workspace {
-    position: relative;
-    flex: 1;
-    display: flex;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .pane {
-    flex: 1;
-    height: 100%;
-    transition: flex 0.4s ease-in-out;
-    position: relative;
-    border-right: 1px solid rgba(0, 240, 255, 0.2);
-  }
-
+  /* ---------- WORKSPACE ---------- */
+  .workspace { position: relative; flex: 1; display: flex; width: 100%; height: 100%; overflow: hidden; }
+  .pane { flex: 1; height: 100%; transition: flex 0.4s ease-in-out; position: relative; border-right: 1px solid rgba(0,240,255,0.2); }
   .pane:last-child { border-right: none; }
-
-  iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    background: #ffffff;
-  }
-
+  iframe { width: 100%; height: 100%; border: none; background: #fff; }
   .pane-label {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    font-size: 9px;
-    letter-spacing: 1px;
-    font-family: 'Courier New', Courier, monospace;
-    color: var(--neon-cyan);
-    background: rgba(5, 8, 15, 0.85);
-    border: 1px solid var(--border-color);
-    padding: 3px 7px;
-    border-radius: 2px;
-    z-index: 15;
-    pointer-events: none;
+    position: absolute; top: 8px; left: 8px; font-size: 9px; letter-spacing: 1px;
+    font-family: 'Courier New', monospace; color: var(--neon-cyan);
+    background: rgba(5,8,15,0.85); border: 1px solid var(--border-color);
+    padding: 3px 7px; border-radius: 2px; z-index: 15; pointer-events: none;
   }
-
-  /* landing pane label + close button */
+  .pane-status-dot {
+    position: absolute; top: 9px; right: 40px; z-index: 20; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--text-dim);
+  }
+  .pane-status-dot.ok { background: var(--neon-green); box-shadow: 0 0 6px var(--neon-green); }
+  .pane-status-dot.warn { background: var(--neon-amber); box-shadow: 0 0 6px var(--neon-amber); animation: blink 1.2s infinite; }
   .pane-close-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    z-index: 20;
-    background: rgba(5, 8, 15, 0.85);
-    border: 1px solid var(--border-color);
-    color: var(--neon-cyan);
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    cursor: pointer;
-    font-family: 'Courier New', Courier, monospace;
+    position: absolute; top: 8px; right: 8px; z-index: 20; background: rgba(5,8,15,0.85);
+    border: 1px solid var(--border-color); color: var(--neon-cyan); width: 24px; height: 24px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; cursor: pointer; font-family: 'Courier New', monospace;
   }
   .pane-close-btn:hover { background: var(--neon-cyan); color: #000; }
 
-  /* ANIMATED CYBER WORLD MAP PANE */
-  #mapPane {
-    background: radial-gradient(ellipse at center, #0a1220 0%, #03060c 75%);
-    position: relative;
-    overflow: hidden;
+  .pane-fallback {
+    position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; background: #0a0f1a; color: var(--text-dim); font-family: 'Courier New', monospace;
+    text-align: center; padding: 24px; z-index: 5;
   }
-
-  #cyberMapCanvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    cursor: grab;
+  .pane-fallback.show { display: flex; }
+  .pane-fallback .t { color: var(--neon-amber); font-size: 12px; letter-spacing: 1px; }
+  .pane-fallback .d { font-size: 10.5px; max-width: 380px; line-height: 1.6; }
+  .pane-fallback button {
+    background: rgba(0,240,255,0.1); border: 1px solid var(--neon-cyan); color: var(--neon-cyan);
+    padding: 7px 14px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 10px;
+    letter-spacing: 1px; cursor: pointer; text-transform: uppercase; margin-top: 4px;
   }
+  .pane-fallback button:hover { background: var(--neon-cyan); color: #000; }
 
+  /* ---------- ANIMATED MAP PANE ---------- */
+  #mapPane { background: radial-gradient(ellipse at center, #0a1220 0%, #03060c 75%); position: relative; overflow: hidden; }
+  #cyberMapCanvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; }
   #cyberMapCanvas.panning { cursor: grabbing; }
-
   .map-hud-overlay {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    background: rgba(5, 10, 20, 0.85);
-    border: 1px solid var(--border-color);
-    padding: 10px 15px;
-    border-radius: 4px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 11px;
-    color: var(--neon-cyan);
-    pointer-events: none;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
-    z-index: 10;
-    line-height: 1.6;
+    position: absolute; bottom: 20px; left: 20px; background: rgba(5,10,20,0.85);
+    border: 1px solid var(--border-color); padding: 10px 15px; border-radius: 4px;
+    font-family: 'Courier New', monospace; font-size: 11px; color: var(--neon-cyan);
+    pointer-events: none; box-shadow: 0 0 15px rgba(0,240,255,0.15); z-index: 10; line-height: 1.6;
   }
-
   .map-hud-overlay .dim { color: var(--text-dim); }
-
   .map-node-panel {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background: rgba(5, 10, 20, 0.9);
-    border: 1px solid var(--border-color);
-    padding: 10px 14px;
-    border-radius: 4px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 11px;
-    color: var(--text-main);
-    z-index: 10;
-    min-width: 190px;
-    display: none;
-    line-height: 1.5;
+    position: absolute; top: 20px; left: 20px; background: rgba(5,10,20,0.9);
+    border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 4px;
+    font-family: 'Courier New', monospace; font-size: 11px; color: var(--text-main);
+    z-index: 10; min-width: 190px; display: none; line-height: 1.5;
   }
-
-  .map-node-panel .title {
-    color: var(--neon-magenta);
-    font-weight: bold;
-    margin-bottom: 4px;
-    letter-spacing: 1px;
-  }
-
+  .map-node-panel .title { color: var(--neon-magenta); font-weight: bold; margin-bottom: 4px; letter-spacing: 1px; }
   .map-hint {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(5, 10, 20, 0.75);
-    border: 1px dashed var(--border-color);
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 10px;
-    color: var(--text-dim);
-    z-index: 10;
-    pointer-events: none;
-    max-width: 210px;
-    line-height: 1.5;
+    position: absolute; top: 20px; right: 20px; background: rgba(5,10,20,0.75);
+    border: 1px dashed var(--border-color); padding: 8px 12px; border-radius: 4px;
+    font-family: 'Courier New', monospace; font-size: 10px; color: var(--text-dim);
+    z-index: 10; pointer-events: none; max-width: 210px; line-height: 1.5;
   }
 
-  /* TACTICAL GEOGRAPHIC MAP PANE (Leaflet + free tile providers) */
-  #tacticalPane {
-    background: #03060c;
-    position: relative;
-    overflow: hidden;
-  }
-
-  #tacticalMap {
-    width: 100%;
-    height: 100%;
-    background: #03060c;
-  }
-
-  /* Cyber-tint the Leaflet basemap so it matches the theme */
-  #tacticalMap .leaflet-tile-pane {
-    filter: saturate(1.15) brightness(0.95) hue-rotate(-4deg);
-  }
-
-  #tacticalMap .leaflet-control-attribution {
-    background: rgba(5, 8, 15, 0.75) !important;
-    color: var(--text-dim) !important;
-    font-size: 9px !important;
-  }
+  /* ---------- TACTICAL MAP ---------- */
+  #tacticalPane { background: #03060c; position: relative; overflow: hidden; }
+  #tacticalMap { width: 100%; height: 100%; background: #03060c; }
+  #tacticalMap .leaflet-tile-pane { filter: saturate(1.15) brightness(0.95) hue-rotate(-4deg); }
+  #tacticalMap .leaflet-control-attribution { background: rgba(5,8,15,0.75) !important; color: var(--text-dim) !important; font-size: 9px !important; }
   #tacticalMap .leaflet-control-attribution a { color: var(--neon-cyan) !important; }
-
-  #tacticalMap .leaflet-control-zoom a {
-    background: var(--panel-bg) !important;
-    color: var(--neon-cyan) !important;
-    border-color: var(--border-color) !important;
-  }
+  #tacticalMap .leaflet-control-zoom a { background: var(--panel-bg) !important; color: var(--neon-cyan) !important; border-color: var(--border-color) !important; }
   #tacticalMap .leaflet-control-zoom a:hover { background: var(--neon-cyan) !important; color: #000 !important; }
-
-  #tacticalMap .leaflet-control-scale-line {
-    background: rgba(5, 8, 15, 0.75) !important;
-    color: var(--neon-cyan) !important;
-    border-color: var(--neon-cyan) !important;
-  }
-
-  .cyber-marker {
-    width: 16px;
-    height: 16px;
-    position: relative;
-  }
-  .cyber-marker .dot {
-    position: absolute;
-    top: 5px; left: 5px;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--neon-cyan);
-    box-shadow: 0 0 8px var(--neon-cyan);
-  }
+  #tacticalMap .leaflet-control-scale-line { background: rgba(5,8,15,0.75) !important; color: var(--neon-cyan) !important; border-color: var(--neon-cyan) !important; }
+  .cyber-marker { width: 16px; height: 16px; position: relative; }
+  .cyber-marker .dot { position: absolute; top: 5px; left: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--neon-cyan); box-shadow: 0 0 8px var(--neon-cyan); }
   .cyber-marker.core .dot { background: var(--neon-magenta); box-shadow: 0 0 10px var(--neon-magenta); }
-  .cyber-marker .ring {
-    position: absolute;
-    top: 0; left: 0;
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    border: 1.5px solid var(--neon-cyan);
-    opacity: 0.8;
-    animation: markerPulse 1.8s ease-out infinite;
-  }
+  .cyber-marker .ring { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--neon-cyan); opacity: 0.8; animation: markerPulse 1.8s ease-out infinite; }
   .cyber-marker.core .ring { border-color: var(--neon-magenta); }
-
-  @keyframes markerPulse {
-    0% { transform: scale(0.4); opacity: 0.9; }
-    100% { transform: scale(2.2); opacity: 0; }
-  }
-
-  #tacticalMap .leaflet-popup-content-wrapper {
-    background: rgba(6, 10, 18, 0.95);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 11px;
-    box-shadow: 0 0 16px rgba(0, 240, 255, 0.25);
-  }
+  @keyframes markerPulse { 0%{transform:scale(0.4); opacity:0.9;} 100%{transform:scale(2.2); opacity:0;} }
+  #tacticalMap .leaflet-popup-content-wrapper { background: rgba(6,10,18,0.95); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 4px; font-family: 'Courier New', monospace; font-size: 11px; box-shadow: 0 0 16px rgba(0,240,255,0.25); }
   #tacticalMap .leaflet-popup-content { margin: 10px 12px; line-height: 1.5; }
-  #tacticalMap .leaflet-popup-tip { background: rgba(6, 10, 18, 0.95); }
+  #tacticalMap .leaflet-popup-tip { background: rgba(6,10,18,0.95); }
   #tacticalMap .leaflet-popup-content b { color: var(--neon-cyan); }
-
-  .tactical-layer-switch {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 400;
-    display: flex;
-    gap: 6px;
-    background: rgba(5, 8, 15, 0.85);
-    border: 1px solid var(--border-color);
-    padding: 6px;
-    border-radius: 6px;
-  }
-
-  .tactical-layer-btn {
-    background: rgba(0, 240, 255, 0.06);
-    border: 1px solid var(--border-color);
-    color: var(--text-dim);
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 9px;
-    letter-spacing: 0.5px;
-    padding: 5px 8px;
-    border-radius: 3px;
-    cursor: pointer;
-    text-transform: uppercase;
-  }
-
-  .tactical-layer-btn.active {
-    background: var(--neon-cyan);
-    color: #000;
-    border-color: var(--neon-cyan);
-  }
-
-  .tactical-locate-btn {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    z-index: 400;
-    background: rgba(5, 8, 15, 0.9);
-    border: 1px solid var(--neon-cyan);
-    color: var(--neon-cyan);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
-  }
+  .tactical-layer-switch { position: absolute; top: 20px; right: 20px; z-index: 400; display: flex; gap: 6px; background: rgba(5,8,15,0.85); border: 1px solid var(--border-color); padding: 6px; border-radius: 6px; }
+  .tactical-layer-btn { background: rgba(0,240,255,0.06); border: 1px solid var(--border-color); color: var(--text-dim); font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 0.5px; padding: 5px 8px; border-radius: 3px; cursor: pointer; text-transform: uppercase; }
+  .tactical-layer-btn.active { background: var(--neon-cyan); color: #000; border-color: var(--neon-cyan); }
+  .tactical-locate-btn { position: absolute; bottom: 20px; right: 20px; z-index: 400; background: rgba(5,8,15,0.9); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; box-shadow: 0 0 12px rgba(0,240,255,0.3); }
   .tactical-locate-btn:hover { background: var(--neon-cyan); color: #000; }
 
-  /* LANDING PAGE PANE (Office quick-launch grid) */
-  #landingPane {
-    background: radial-gradient(ellipse at center, #0a1220 0%, #03060c 75%);
-    position: relative;
-    overflow-y: auto;
-    padding: 46px 22px 22px;
+  /* ---------- LANDING / HUB PANE ---------- */
+  #landingPane { background: radial-gradient(ellipse at center, #0a1220 0%, #03060c 75%); position: relative; overflow-y: auto; padding: 46px 22px 22px; }
+  .landing-intro { font-family: 'Courier New', monospace; color: var(--text-dim); font-size: 11px; letter-spacing: 0.5px; max-width: 720px; margin: 0 auto 14px; line-height: 1.6; }
+  .landing-toolbar { max-width: 900px; margin: 0 auto 18px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .landing-filter-input {
+    flex: 1; min-width: 200px; background: rgba(0,240,255,0.05); border: 1px solid var(--border-color);
+    color: var(--text-main); padding: 8px 10px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 11px; outline: none;
   }
-
-  .landing-intro {
-    font-family: 'Courier New', Courier, monospace;
-    color: var(--text-dim);
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    max-width: 720px;
-    margin: 0 auto 18px;
-    line-height: 1.6;
+  .landing-filter-input::placeholder { color: var(--text-dim); }
+  .landing-chip {
+    background: rgba(0,240,255,0.05); border: 1px solid var(--border-color); color: var(--text-dim);
+    font-family: 'Courier New', monospace; font-size: 9.5px; letter-spacing: 0.5px; padding: 6px 10px;
+    border-radius: 14px; cursor: pointer; text-transform: uppercase; white-space: nowrap;
   }
-
-  .landing-grid-wrap {
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
+  .landing-chip.active { background: var(--neon-cyan); color: #000; border-color: var(--neon-cyan); }
+  .landing-grid-wrap { max-width: 900px; margin: 0 auto; }
   .landing-section-title {
-    color: var(--neon-magenta);
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin: 22px 0 10px;
-    border-bottom: 1px dashed var(--border-color);
-    padding-bottom: 5px;
+    color: var(--neon-magenta); font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: 1.5px;
+    text-transform: uppercase; margin: 22px 0 10px; border-bottom: 1px dashed var(--border-color); padding-bottom: 5px;
+    display: flex; justify-content: space-between; align-items: center;
   }
   .landing-section-title:first-child { margin-top: 0; }
-
-  .landing-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-  }
-
+  .landing-section-title .count { color: var(--text-dim); font-size: 9px; }
+  .landing-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
   .landing-tile {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(0, 240, 255, 0.15);
-    border-left: 3px solid var(--neon-cyan);
-    padding: 10px 12px;
-    text-decoration: none;
-    color: var(--text-main);
-    border-radius: 3px;
-    font-family: 'Courier New', Courier, monospace;
-    transition: all 0.15s ease;
+    display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(0,240,255,0.15); border-left: 3px solid var(--neon-cyan); padding: 10px 12px;
+    text-decoration: none; color: var(--text-main); border-radius: 3px; font-family: 'Courier New', monospace;
+    transition: all 0.15s ease; position: relative;
   }
-  .landing-tile:hover {
-    border-left-color: var(--neon-magenta);
-    background: rgba(0, 240, 255, 0.06);
-    transform: translateX(2px);
-  }
-  .landing-tile .name { color: var(--neon-cyan); font-weight: bold; font-size: 11px; }
+  .landing-tile:hover { border-left-color: var(--neon-magenta); background: rgba(0,240,255,0.06); transform: translateX(2px); }
+  .landing-tile .name { color: var(--neon-cyan); font-weight: bold; font-size: 11px; padding-right: 16px; }
   .landing-tile:hover .name { color: var(--neon-magenta); }
   .landing-tile .desc { color: var(--text-dim); font-size: 9px; line-height: 1.35; }
-
-  /* CYBER SIGNAL WORLD MONITOR SIDEBAR */
-  .signal-sidebar {
-    width: 320px;
-    min-width: 320px;
-    background: rgba(6, 9, 16, 0.95);
-    border-right: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    font-family: 'Courier New', Courier, monospace;
-    z-index: 10;
+  .landing-tile .pin {
+    position: absolute; top: 8px; right: 8px; font-size: 12px; color: var(--text-dim); cursor: pointer; z-index: 2;
   }
+  .landing-tile .pin.pinned { color: var(--neon-amber); }
+  .landing-empty { color: var(--text-dim); font-family: 'Courier New', monospace; font-size: 11px; padding: 20px 4px; text-align: center; }
 
-  .signal-header {
-    padding: 10px 12px;
-    font-size: 11px;
-    color: var(--neon-cyan);
-    border-bottom: 1px solid var(--border-color);
-    background: rgba(0, 240, 255, 0.05);
-    letter-spacing: 1px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+  /* ---------- SIGNAL SIDEBAR ---------- */
+  .signal-sidebar { width: 320px; min-width: 320px; background: rgba(6,9,16,0.95); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; font-family: 'Courier New', monospace; z-index: 10; }
+  .signal-header { padding: 10px 12px; font-size: 11px; color: var(--neon-cyan); border-bottom: 1px solid var(--border-color); background: rgba(0,240,255,0.05); letter-spacing: 1px; display: flex; justify-content: space-between; align-items: center; }
+  .signal-live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); display: inline-block; margin-right: 5px; animation: blink 1.6s infinite ease-in-out; }
+  .signal-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--border-color); }
+  .stat-box { background: rgba(0,240,255,0.04); border: 1px solid rgba(0,240,255,0.15); border-radius: 3px; padding: 6px 8px; }
+  .stat-box .label { font-size: 8px; color: var(--text-dim); letter-spacing: 1px; }
+  .stat-box .value { font-size: 13px; color: var(--neon-cyan); font-weight: bold; margin-top: 2px; }
+  .threat-block { padding: 10px 12px; border-bottom: 1px solid var(--border-color); }
+  .threat-label-row { display: flex; justify-content: space-between; font-size: 9px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 5px; }
+  .threat-bar-track { width: 100%; height: 6px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; border: 1px solid rgba(0,240,255,0.15); }
+  .threat-bar-fill { height: 100%; width: 30%; background: linear-gradient(90deg, var(--neon-green), var(--neon-amber), var(--neon-red)); transition: width 0.6s ease; }
+  .signal-feed { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .signal-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(0,240,255,0.12); border-left: 3px solid var(--neon-cyan); padding: 8px 10px; font-size: 10px; animation: fadeIn 0.4s ease; }
+  .signal-card.warn { border-left-color: var(--neon-amber); }
+  .signal-card.alert { border-left-color: var(--neon-red); }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:translateY(0);} }
+  .signal-tag { color: var(--neon-blue); font-weight: bold; margin-bottom: 2px; letter-spacing: 0.5px; }
+  .signal-card.warn .signal-tag { color: var(--neon-amber); }
+  .signal-card.alert .signal-tag { color: var(--neon-red); }
+  .signal-text { color: var(--text-main); line-height: 1.4; }
+  .signal-time { color: var(--text-dim); font-size: 8px; margin-top: 3px; }
 
-  .signal-live-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #00ff88;
-    box-shadow: 0 0 8px #00ff88;
-    display: inline-block;
-    margin-right: 5px;
-    animation: blink 1.6s infinite ease-in-out;
-  }
-
-  .signal-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .stat-box {
-    background: rgba(0, 240, 255, 0.04);
-    border: 1px solid rgba(0, 240, 255, 0.15);
-    border-radius: 3px;
-    padding: 6px 8px;
-  }
-
-  .stat-box .label {
-    font-size: 8px;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-  }
-
-  .stat-box .value {
-    font-size: 13px;
-    color: var(--neon-cyan);
-    font-weight: bold;
-    margin-top: 2px;
-  }
-
-  .threat-block {
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .threat-label-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 9px;
-    color: var(--text-dim);
-    letter-spacing: 1px;
-    margin-bottom: 5px;
-  }
-
-  .threat-bar-track {
-    width: 100%;
-    height: 6px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid rgba(0,240,255,0.15);
-  }
-
-  .threat-bar-fill {
-    height: 100%;
-    width: 30%;
-    background: linear-gradient(90deg, #00ff88, #ffcc00, #ff3b3b);
-    transition: width 0.6s ease;
-  }
-
-  .signal-feed {
-    flex: 1;
-    overflow-y: auto;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .signal-card {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(0, 240, 255, 0.12);
-    border-left: 3px solid var(--neon-cyan);
-    padding: 8px 10px;
-    font-size: 10px;
-    animation: fadeIn 0.4s ease;
-  }
-
-  .signal-card.warn { border-left-color: #ffcc00; }
-  .signal-card.alert { border-left-color: #ff3b3b; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .signal-tag {
-    color: var(--neon-blue);
-    font-weight: bold;
-    margin-bottom: 2px;
-    letter-spacing: 0.5px;
-  }
-
-  .signal-card.warn .signal-tag { color: #ffcc00; }
-  .signal-card.alert .signal-tag { color: #ff3b3b; }
-
-  .signal-text {
-    color: var(--text-main);
-    line-height: 1.4;
-  }
-
-  .signal-time {
-    color: var(--text-dim);
-    font-size: 8px;
-    margin-top: 3px;
-  }
-
-  /* ALERT BANNER */
   .alert-banner {
-    position: fixed;
-    top: 44px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(20, 4, 4, 0.92);
-    border: 1px solid rgba(255, 59, 59, 0.6);
-    color: #ff6b6b;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 11px;
-    letter-spacing: 1px;
-    padding: 8px 16px;
-    border-radius: 4px;
-    z-index: 500;
-    box-shadow: 0 0 20px rgba(255, 59, 59, 0.35);
-    display: none;
-    animation: fadeIn 0.3s ease;
+    position: fixed; top: 44px; left: 50%; transform: translateX(-50%);
+    background: rgba(20,4,4,0.92); border: 1px solid rgba(255,59,59,0.6); color: #ff6b6b;
+    font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: 1px; padding: 8px 16px;
+    border-radius: 4px; z-index: 500; box-shadow: 0 0 20px rgba(255,59,59,0.35); display: none; animation: fadeIn 0.3s ease;
   }
 
-  /* OSINT / TOOLKIT QUICK-ACCESS OVERLAY */
-  .osint-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9990;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: rgba(2, 4, 8, 0.78);
-    backdrop-filter: blur(3px);
-    font-family: 'Courier New', Courier, monospace;
-  }
-
+  /* ---------- TOOLKIT OVERLAY ---------- */
+  .osint-overlay { position: fixed; inset: 0; z-index: 9990; display: none; align-items: center; justify-content: center; background: rgba(2,4,8,0.78); backdrop-filter: blur(3px); font-family: 'Courier New', monospace; }
   .osint-overlay.open { display: flex; }
-
-  .osint-panel {
-    width: min(820px, 92vw);
-    max-height: 86vh;
-    overflow-y: auto;
-    background: var(--panel-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    box-shadow: 0 0 40px rgba(0, 240, 255, 0.25);
-    animation: fadeIn 0.25s ease;
-  }
-
-  .osint-panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border-color);
-    background: rgba(0, 240, 255, 0.05);
-    position: sticky;
-    top: 0;
-    z-index: 2;
-  }
-
-  .osint-panel-header .title {
-    color: var(--neon-cyan);
-    font-size: 12px;
-    letter-spacing: 1.5px;
-  }
-
-  .osint-panel-header .close-btn {
-    color: var(--text-dim);
-    border: 1px solid var(--border-color);
-    background: transparent;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 13px;
-    line-height: 1;
-  }
+  .osint-panel { width: min(860px, 92vw); max-height: 86vh; overflow-y: auto; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 0 40px rgba(0,240,255,0.25); animation: fadeIn 0.25s ease; }
+  .osint-panel-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border-color); background: rgba(0,240,255,0.05); position: sticky; top: 0; z-index: 2; }
+  .osint-panel-header .title { color: var(--neon-cyan); font-size: 12px; letter-spacing: 1.5px; }
+  .osint-panel-header .close-btn { color: var(--text-dim); border: 1px solid var(--border-color); background: transparent; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: 13px; line-height: 1; }
   .osint-panel-header .close-btn:hover { color: #000; background: var(--neon-cyan); }
-
-  .osint-panel-tabs {
-    display: flex;
-    gap: 6px;
-    padding: 10px 16px 0;
-    flex-wrap: wrap;
-    position: sticky;
-    top: 49px;
-    background: var(--panel-bg);
-    z-index: 1;
-  }
-
-  .osint-tab-btn {
-    background: rgba(0, 240, 255, 0.05);
-    border: 1px solid var(--border-color);
-    color: var(--text-dim);
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 9.5px;
-    letter-spacing: 0.5px;
-    padding: 6px 10px;
-    border-radius: 4px 4px 0 0;
-    cursor: pointer;
-    text-transform: uppercase;
-  }
-  .osint-tab-btn.active {
-    background: var(--neon-cyan);
-    color: #000;
-    border-color: var(--neon-cyan);
-  }
-
+  .osint-panel-tabs { display: flex; gap: 6px; padding: 10px 16px 0; flex-wrap: wrap; position: sticky; top: 49px; background: var(--panel-bg); z-index: 1; }
+  .osint-tab-btn { background: rgba(0,240,255,0.05); border: 1px solid var(--border-color); color: var(--text-dim); font-family: 'Courier New', monospace; font-size: 9.5px; letter-spacing: 0.5px; padding: 6px 10px; border-radius: 4px 4px 0 0; cursor: pointer; text-transform: uppercase; }
+  .osint-tab-btn.active { background: var(--neon-cyan); color: #000; border-color: var(--neon-cyan); }
   .osint-panel-body { padding: 14px 16px 18px; }
-
-  .osint-search-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-
-  .osint-search-row input {
-    flex: 1;
-    background: rgba(0, 240, 255, 0.05);
-    border: 1px solid var(--border-color);
-    color: var(--text-main);
-    padding: 8px 10px;
-    border-radius: 4px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 11px;
-    outline: none;
-  }
+  .osint-search-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .osint-search-row input { flex: 1; background: rgba(0,240,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 10px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 11px; outline: none; }
   .osint-search-row input::placeholder { color: var(--text-dim); }
-
-  .osint-search-row button {
-    background: rgba(0, 240, 255, 0.1);
-    border: 1px solid var(--neon-cyan);
-    color: var(--neon-cyan);
-    padding: 8px 14px;
-    border-radius: 4px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 10px;
-    letter-spacing: 1px;
-    cursor: pointer;
-    text-transform: uppercase;
-  }
+  .osint-search-row button { background: rgba(0,240,255,0.1); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 8px 14px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 10px; letter-spacing: 1px; cursor: pointer; text-transform: uppercase; }
   .osint-search-row button:hover { background: var(--neon-cyan); color: #000; }
-
   .osint-category { margin-bottom: 16px; }
   .osint-category[data-hidden="true"] { display: none; }
-
-  .osint-category-title {
-    color: var(--neon-magenta);
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    border-bottom: 1px dashed var(--border-color);
-    padding-bottom: 4px;
-  }
-
-  .osint-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 8px;
-  }
-
-  .osint-tool {
-    display: block;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(0, 240, 255, 0.15);
-    border-left: 3px solid var(--neon-cyan);
-    padding: 8px 10px;
-    text-decoration: none;
-    color: var(--text-main);
-    font-size: 10.5px;
-    border-radius: 3px;
-    transition: all 0.15s ease;
-  }
-  .osint-tool:hover {
-    border-left-color: var(--neon-magenta);
-    background: rgba(0, 240, 255, 0.06);
-    transform: translateX(2px);
-  }
-  .osint-tool .name { color: var(--neon-cyan); font-weight: bold; display: block; margin-bottom: 2px; }
+  .osint-category-title { color: var(--neon-magenta); font-size: 10px; letter-spacing: 1.5px; margin-bottom: 8px; text-transform: uppercase; border-bottom: 1px dashed var(--border-color); padding-bottom: 4px; }
+  .osint-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+  .osint-tool { display: block; background: rgba(255,255,255,0.02); border: 1px solid rgba(0,240,255,0.15); border-left: 3px solid var(--neon-cyan); padding: 8px 10px; text-decoration: none; color: var(--text-main); font-size: 10.5px; border-radius: 3px; transition: all 0.15s ease; position: relative; }
+  .osint-tool[data-hidden="true"] { display: none; }
+  .osint-tool:hover { border-left-color: var(--neon-magenta); background: rgba(0,240,255,0.06); transform: translateX(2px); }
+  .osint-tool .name { color: var(--neon-cyan); font-weight: bold; display: block; margin-bottom: 2px; padding-right: 14px; }
   .osint-tool:hover .name { color: var(--neon-magenta); }
   .osint-tool .desc { color: var(--text-dim); font-size: 9px; line-height: 1.35; }
-  .osint-tool .keys { color: #ffcc00; font-size: 9.5px; display: block; margin-top: 3px; letter-spacing: 0.5px; }
+  .osint-tool .pin { position: absolute; top: 8px; right: 8px; font-size: 11px; color: var(--text-dim); cursor: pointer; }
+  .osint-tool .pin.pinned { color: var(--neon-amber); }
+
+  /* ---------- MOBILE BOTTOM NAV ---------- */
+  .mobile-nav {
+    display: none;
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 9996;
+    background: rgba(6, 9, 16, 0.97); border-top: 1px solid var(--border-color);
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+    justify-content: space-around; align-items: stretch;
+    box-shadow: 0 -4px 18px rgba(0,0,0,0.4);
+  }
+  .mobile-nav-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; background: transparent; border: none; color: var(--text-dim);
+    font-family: 'Courier New', monospace; font-size: 9px; letter-spacing: 0.5px;
+    text-transform: uppercase; padding: 7px 2px; min-height: 46px; cursor: pointer;
+  }
+  .mobile-nav-btn .ic { font-size: 16px; line-height: 1; }
+  .mobile-nav-btn.active { color: var(--neon-cyan); }
+  .mobile-nav-btn.active .ic { text-shadow: 0 0 8px var(--neon-cyan); }
+
+  /* ---------- SIGNAL SIDEBAR AS SLIDE-OVER ON MOBILE ---------- */
+  .signal-sidebar-backdrop {
+    display: none; position: fixed; inset: 0; z-index: 9993; background: rgba(2,4,8,0.6);
+  }
+  .signal-sidebar-backdrop.show { display: block; }
 
   @media(max-width: 900px) {
-    .workspace { flex-direction: column; }
+    body { overflow-y: auto; }
+    .workspace { flex-direction: column; padding-bottom: 62px; }
     .map-hint { display: none; }
-    .signal-sidebar { display: none; }
     .osint-panel { max-height: 88vh; }
+
+    .top-bar { padding: 8px 10px; font-size: 10px; }
+    .telemetry { gap: 10px; font-size: 9px; }
+    .telemetry #utcClock { display: none; }
+
+    .touch-orb, .touch-menu { display: none !important; }
+    .mobile-nav { display: flex; }
+
+    .global-search-wrap { top: 8px; width: 94vw; }
+
+    .pane-label, .pane-close-btn, .pane-status-dot { transform: scale(0.92); }
+
+    .signal-sidebar {
+      position: fixed; top: 0; bottom: 0; left: 0; width: min(320px, 86vw); min-width: 0;
+      z-index: 9994; transform: translateX(-100%); transition: transform 0.25s ease;
+    }
+    .signal-sidebar.mobile-open { transform: translateX(0); }
+
+    .osint-panel { width: 100vw; max-height: 100vh; height: 100vh; border-radius: 0; }
+    .osint-overlay { align-items: stretch; justify-content: stretch; }
+
+    .landing-grid, .osint-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    .landing-toolbar { flex-direction: column; align-items: stretch; }
+    .landing-toolbar .landing-chip { align-self: flex-start; }
+
+    .pane-fallback { padding: 18px; }
+    .pane-fallback button { width: 100%; margin: 4px 0 0 !important; }
+
+    .tactical-layer-switch { top: auto; bottom: 74px; right: 10px; }
+    .tactical-locate-btn { bottom: 74px; right: 10px; }
+    .map-hud-overlay { bottom: 74px; left: 10px; font-size: 10px; }
+
+    .toast-stack { bottom: 70px; }
+  }
+
+  @media(max-width: 480px) {
+    .landing-grid, .osint-grid { grid-template-columns: 1fr 1fr; }
+    .mobile-nav-btn { font-size: 8px; }
   }
 </style>
 </head>
 <body>
 
-  <!-- CYBER PARTICLES BACKGROUND ENGINE -->
-  <canvas id="particleCanvas"></canvas>
+<canvas id="particleCanvas"></canvas>
 
-  <!-- TOP STATUS / IDENTITY BAR -->
-  <div class="top-bar">
-    <div class="brand"><span class="dot"></span> OPERATIVE PROFILE // CYBER MATRIX</div>
-    <div class="telemetry">
-      <div>LINK: <b>STABLE</b></div>
-      <div>GRID: <b>ACTIVE</b></div>
-      <div>THREAT: <b id="threatLevelTopbar">LOW</b></div>
-      <div id="utcClock">00:00:00 UTC</div>
+<div class="top-bar">
+  <div class="brand"><span class="dot"></span> OPS DASHBOARD // OFFICE &amp; NETWORK TOOLKIT</div>
+  <div class="telemetry">
+    <div>LINK: <b id="linkStatusTopbar">STABLE</b></div>
+    <div>GRID: <b>ACTIVE</b></div>
+    <div>THREAT: <b id="threatLevelTopbar">LOW</b></div>
+    <div id="utcClock">00:00:00 UTC</div>
+  </div>
+</div>
+
+<!-- GLOBAL SEARCH: filters every tool grid at once, press "/" to open -->
+<div class="global-search-wrap" id="globalSearchWrap">
+  <div class="global-search-box">
+    <span style="color:var(--neon-cyan)">⌕</span>
+    <input id="globalSearchInput" type="text" placeholder="Search every tool (office, IT/network, docs)… press / to open, Esc to close">
+    <div class="gs-close" onclick="closeGlobalSearch()">✕</div>
+  </div>
+  <div class="global-search-results" id="globalSearchResults"></div>
+</div>
+
+<div class="osint-overlay" id="osintOverlay">
+  <div class="osint-panel">
+    <div class="osint-panel-header">
+      <span class="title">◎ QUICK-ACCESS TOOLKIT</span>
+      <button class="close-btn" onclick="closeOsint()">✕</button>
+    </div>
+    <div class="osint-panel-tabs" id="osintTabs"></div>
+    <div class="osint-panel-body">
+      <div class="osint-search-row">
+        <input id="osintQuery" type="text" placeholder="Type a value (username / domain / IP / query), then pick a tool below…">
+        <button onclick="document.getElementById('osintQuery').focus()">Focus</button>
+      </div>
+      <div class="osint-category" data-group="office"><div class="osint-category-title">Office Suites (Docs / Sheets / Slides)</div><div class="osint-grid" id="osint-office"></div></div>
+      <div class="osint-category" data-group="office"><div class="osint-category-title">Email, Calendar &amp; Meetings</div><div class="osint-grid" id="osint-comms"></div></div>
+      <div class="osint-category" data-group="office"><div class="osint-category-title">Cloud Storage &amp; File Sync</div><div class="osint-grid" id="osint-storage"></div></div>
+      <div class="osint-category" data-group="office"><div class="osint-category-title">Project &amp; Task Management</div><div class="osint-grid" id="osint-pm"></div></div>
+      <div class="osint-category" data-group="office"><div class="osint-category-title">PDF &amp; File Conversion</div><div class="osint-grid" id="osint-pdftools"></div></div>
+      <div class="osint-category" data-group="office"><div class="osint-category-title">Design &amp; Diagramming</div><div class="osint-grid" id="osint-design"></div></div>
+      <div class="osint-category" data-group="it"><div class="osint-category-title">Network &amp; IT Troubleshooting</div><div class="osint-grid" id="osint-ittools"></div></div>
+      <div class="osint-category" data-group="shortcuts"><div class="osint-category-title">Keyboard Shortcut Cheatsheets</div><div class="osint-grid" id="osint-shortcuts"></div></div>
+      <div class="osint-category" data-group="research"><div class="osint-category-title">Search &amp; Research Frameworks</div><div class="osint-grid" id="osint-general"></div></div>
+      <div class="osint-category" data-group="research"><div class="osint-category-title">Domain / IP / Network Lookup</div><div class="osint-grid" id="osint-network"></div></div>
+      <div class="osint-category" data-group="research"><div class="osint-category-title">Web Archives</div><div class="osint-grid" id="osint-archive"></div></div>
+      <div class="osint-category" data-group="docs"><div class="osint-category-title">Open-Access Books, Papers &amp; Documents</div><div class="osint-grid" id="osint-docs"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="alert-banner" id="alertBanner"></div>
+<div class="toast-stack" id="toastStack"></div>
+<div class="signal-sidebar-backdrop" id="signalSidebarBackdrop" onclick="closeMobileSignal()"></div>
+
+<div class="workspace" id="workspace">
+  <div class="signal-sidebar" id="signalSidebar" style="display:none;">
+    <div class="signal-header"><span><span class="signal-live-dot"></span>SIGNAL MONITOR</span><span style="color:var(--neon-green);">LIVE</span></div>
+    <div class="signal-stats">
+      <div class="stat-box"><div class="label">ACTIVE NODES</div><div class="value" id="statNodes">0</div></div>
+      <div class="stat-box"><div class="label">CORE LINKS</div><div class="value" id="statLinks">0</div></div>
+      <div class="stat-box"><div class="label">AVG LOAD</div><div class="value" id="statLoad">0%</div></div>
+      <div class="stat-box"><div class="label">SIGNALS/MIN</div><div class="value" id="statRate">0</div></div>
+    </div>
+    <div class="threat-block">
+      <div class="threat-label-row"><span>GLOBAL THREAT LEVEL</span><span id="threatPct">30%</span></div>
+      <div class="threat-bar-track"><div class="threat-bar-fill" id="threatBar"></div></div>
+    </div>
+    <div class="signal-feed" id="signalFeed"></div>
+  </div>
+
+  <div class="pane" id="formPane">
+    <div class="pane-label">PORTFOLIO</div>
+    <div class="pane-status-dot" id="formStatusDot"></div>
+    <iframe id="formIframe" src="https://script.google.com/macros/s/AKfycbwulG1YH14qqpbMP-BX8pLwnDpBkuFGpOU0HQS1HFdgaXSQItg9tAXHIdbtyJMZwUU7XA/exec" allowfullscreen></iframe>
+    <div class="pane-fallback" id="formFallback">
+      <div class="t">⚠ PORTFOLIO DID NOT RESPOND</div>
+      <div class="d">The embedded form hasn't finished loading. This is usually a slow network, a stale script link,
+        or the target blocking embedding — not something in this dashboard. Try reloading, or open it directly in a new tab.</div>
+      <button onclick="reloadFormPane()">Reload pane</button>
+      <button onclick="openFormDirect()" style="margin-left:8px;">Open in new tab</button>
     </div>
   </div>
 
-  <!-- TOOLKIT QUICK-ACCESS OVERLAY (OSINT + Office + PDF + Shortcuts) -->
-  <div class="osint-overlay" id="osintOverlay">
-    <div class="osint-panel">
-      <div class="osint-panel-header">
-        <span class="title">◎ QUICK-ACCESS TOOLKIT</span>
-        <button class="close-btn" onclick="closeOsint()">✕</button>
-      </div>
-      <div class="osint-panel-tabs" id="osintTabs"></div>
-      <div class="osint-panel-body">
-        <div class="osint-search-row">
-          <input id="osintQuery" type="text" placeholder="Type a username / domain / IP / phrase, then pick a tool below…">
-          <button onclick="document.getElementById('osintQuery').focus()">Focus</button>
-        </div>
-
-        <div class="osint-category" data-group="office">
-          <div class="osint-category-title">Office Suites (Docs / Sheets / Slides)</div>
-          <div class="osint-grid" id="osint-office"></div>
-        </div>
-
-        <div class="osint-category" data-group="office">
-          <div class="osint-category-title">Email, Calendar & Meetings</div>
-          <div class="osint-grid" id="osint-comms"></div>
-        </div>
-
-        <div class="osint-category" data-group="office">
-          <div class="osint-category-title">Cloud Storage & File Sync</div>
-          <div class="osint-grid" id="osint-storage"></div>
-        </div>
-
-        <div class="osint-category" data-group="office">
-          <div class="osint-category-title">Project & Task Management</div>
-          <div class="osint-grid" id="osint-pm"></div>
-        </div>
-
-        <div class="osint-category" data-group="office">
-          <div class="osint-category-title">PDF & File Conversion</div>
-          <div class="osint-grid" id="osint-pdftools"></div>
-        </div>
-
-        <div class="osint-category" data-group="office">
-          <div class="osint-category-title">Design & Diagramming</div>
-          <div class="osint-grid" id="osint-design"></div>
-        </div>
-
-        <div class="osint-category" data-group="shortcuts">
-          <div class="osint-category-title">Keyboard Shortcut Cheatsheets</div>
-          <div class="osint-grid" id="osint-shortcuts"></div>
-        </div>
-
-        <div class="osint-category" data-group="osint">
-          <div class="osint-category-title">Search & Frameworks</div>
-          <div class="osint-grid" id="osint-general"></div>
-        </div>
-
-        <div class="osint-category" data-group="osint">
-          <div class="osint-category-title">Username / Social</div>
-          <div class="osint-grid" id="osint-username"></div>
-        </div>
-
-        <div class="osint-category" data-group="osint">
-          <div class="osint-category-title">Domain / IP / Network</div>
-          <div class="osint-grid" id="osint-network"></div>
-        </div>
-
-        <div class="osint-category" data-group="osint">
-          <div class="osint-category-title">Breach / Leak Check</div>
-          <div class="osint-grid" id="osint-breach"></div>
-        </div>
-
-        <div class="osint-category" data-group="osint">
-          <div class="osint-category-title">Images / Geolocation</div>
-          <div class="osint-grid" id="osint-image"></div>
-        </div>
-
-        <div class="osint-category" data-group="osint">
-          <div class="osint-category-title">Web Archives</div>
-          <div class="osint-grid" id="osint-archive"></div>
-        </div>
-
-        <div class="osint-category" data-group="docs">
-          <div class="osint-category-title">Open-Access Books, Papers & Documents</div>
-          <div class="osint-grid" id="osint-docs"></div>
-        </div>
-      </div>
+  <div class="pane" id="mapPane">
+    <div class="pane-label">GLOBAL NODE MAP // LIVE TRACE</div>
+    <canvas id="cyberMapCanvas"></canvas>
+    <div class="map-hud-overlay">
+      GLOBAL GRID: <span id="hudStatus">ACTIVE</span><br>
+      SECURE NODE LINK: STABLE<br>
+      <span class="dim">ZOOM: <span id="zoomReadout">1.00x</span> · NODES: <span id="nodeCount">0</span></span>
     </div>
+    <div class="map-node-panel" id="nodePanel">
+      <div class="title" id="nodePanelTitle">NODE</div>
+      <div id="nodePanelBody"></div>
+    </div>
+    <div class="map-hint">DRAG to pan · SCROLL/PINCH to zoom · CLICK a node to fly in and trace its data flow</div>
   </div>
 
-  <!-- GLOBAL ALERT BANNER -->
-  <div class="alert-banner" id="alertBanner"></div>
-
-  <!-- WORKSPACE PANELS -->
-  <div class="workspace" id="workspace">
-    <!-- CYBER SIGNAL WORLD MONITOR SIDEBAR -->
-    <div class="signal-sidebar" id="signalSidebar" style="display:none;">
-      <div class="signal-header">
-        <span><span class="signal-live-dot"></span>CYBER SIGNAL MONITOR</span>
-        <span style="color:#00ff88;">LIVE</span>
-      </div>
-      <div class="signal-stats">
-        <div class="stat-box">
-          <div class="label">ACTIVE NODES</div>
-          <div class="value" id="statNodes">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="label">CORE LINKS</div>
-          <div class="value" id="statLinks">0</div>
-        </div>
-        <div class="stat-box">
-          <div class="label">AVG LOAD</div>
-          <div class="value" id="statLoad">0%</div>
-        </div>
-        <div class="stat-box">
-          <div class="label">SIGNALS/MIN</div>
-          <div class="value" id="statRate">0</div>
-        </div>
-      </div>
-      <div class="threat-block">
-        <div class="threat-label-row"><span>GLOBAL THREAT LEVEL</span><span id="threatPct">30%</span></div>
-        <div class="threat-bar-track"><div class="threat-bar-fill" id="threatBar"></div></div>
-      </div>
-      <div class="signal-feed" id="signalFeed"></div>
+  <div class="pane" id="tacticalPane" style="display:none;">
+    <div class="pane-label">TACTICAL MAP // REAL-WORLD GRID</div>
+    <div id="tacticalMap"></div>
+    <div class="tactical-layer-switch">
+      <div class="tactical-layer-btn active" data-layer="dark" onclick="setTacticalLayer('dark')">Dark</div>
+      <div class="tactical-layer-btn" data-layer="sat" onclick="setTacticalLayer('sat')">Satellite</div>
+      <div class="tactical-layer-btn" data-layer="terrain" onclick="setTacticalLayer('terrain')">Terrain</div>
     </div>
-
-    <!-- FORM PANE -->
-    <div class="pane" id="formPane">
-      <div class="pane-label">PROFILE PORTFOLIO</div>
-      <iframe src="https://script.google.com/macros/s/AKfycbwulG1YH14qqpbMP-BX8pLwnDpBkuFGpOU0HQS1HFdgaXSQItg9tAXHIdbtyJMZwUU7XA/exec" allowfullscreen></iframe>
-    </div>
-
-    <!-- ANIMATED, PANNABLE / ZOOMABLE CYBER MAP PANE -->
-    <div class="pane" id="mapPane">
-      <div class="pane-label">GLOBAL NODE MAP // LIVE TRACE</div>
-      <canvas id="cyberMapCanvas"></canvas>
-      <div class="map-hud-overlay">
-        GLOBAL GRID: <span id="hudStatus">ACTIVE</span><br>
-        SECURE NODE LINK: STABLE<br>
-        <span class="dim">ZOOM: <span id="zoomReadout">1.00x</span> · NODES: <span id="nodeCount">0</span></span>
-      </div>
-      <div class="map-node-panel" id="nodePanel">
-        <div class="title" id="nodePanelTitle">NODE</div>
-        <div id="nodePanelBody"></div>
-      </div>
-      <div class="map-hint">DRAG to pan · SCROLL/PINCH to zoom · CLICK a node to fly in and trace its data flow</div>
-    </div>
-
-    <!-- TACTICAL GEOGRAPHIC MAP PANE (real-world, Leaflet + free tiles) -->
-    <div class="pane" id="tacticalPane" style="display:none;">
-      <div class="pane-label">TACTICAL MAP // REAL-WORLD GRID</div>
-      <div id="tacticalMap"></div>
-      <div class="tactical-layer-switch">
-        <div class="tactical-layer-btn active" data-layer="dark" onclick="setTacticalLayer('dark')">Dark</div>
-        <div class="tactical-layer-btn" data-layer="sat" onclick="setTacticalLayer('sat')">Satellite</div>
-        <div class="tactical-layer-btn" data-layer="terrain" onclick="setTacticalLayer('terrain')">Terrain</div>
-      </div>
-      <div class="tactical-locate-btn" onclick="locateMe()" title="Locate me">◎</div>
-    </div>
-
-    <!-- LANDING PAGE PANE: Office & productivity quick-launch grid -->
-    <div class="pane" id="landingPane" style="display:none;">
-      <div class="pane-label">LANDING // OFFICE QUICK-LAUNCH</div>
-      <div class="pane-close-btn" onclick="toggleView('global')" title="Back">✕</div>
-      <div class="landing-intro">
-        Quick-launch pad for the office & productivity apps you use daily, plus one-click keyboard shortcut references.
-        Everything here opens the real, official site in a new tab — nothing is embedded or proxied.
-      </div>
-      <div class="landing-grid-wrap" id="landingGridWrap"></div>
-    </div>
+    <div class="tactical-locate-btn" onclick="locateMe()" title="Locate me">◎</div>
   </div>
 
-  <!-- ASSISTIVE-TOUCH STYLE FLOATING ORB + RADIAL MENU
-       Placed last in the DOM and pinned to the highest z-index in the app
-       (99999 / 99998) so it always floats above every pane, iframe, map
-       layer, or overlay — including whatever page loads inside the
-       Profile Form iframe, no matter where that iframe navigates. It lives
-       entirely in this parent page, outside any iframe's document, so an
-       iframe's own content can never draw over it. -->
-  <div class="touch-orb" id="touchOrb">
-    <div class="touch-orb-icon">
-      <span></span><span></span><span></span>
-      <span></span><span></span><span></span>
-      <span></span><span></span><span></span>
+  <div class="pane" id="landingPane" style="display:none;">
+    <div class="pane-label">HUB // OFFICE &amp; TROUBLESHOOTING</div>
+    <div class="pane-close-btn" onclick="toggleView('global')" title="Back">✕</div>
+    <div class="landing-intro">
+      Quick-launch pad for the office, productivity, and IT-troubleshooting tools you use daily, plus keyboard
+      shortcut references and pinned favorites. Everything opens the real, official site in a new tab — nothing is
+      embedded or proxied.
     </div>
+    <div class="landing-toolbar">
+      <input class="landing-filter-input" id="landingFilterInput" type="text" placeholder="Filter tools by name or description…">
+      <div class="landing-chip active" data-chip="all">All</div>
+      <div class="landing-chip" data-chip="pinned">★ Pinned</div>
+    </div>
+    <div class="landing-grid-wrap" id="landingGridWrap"></div>
   </div>
-  <div class="touch-menu" id="touchMenu">
-    <div class="touch-menu-item" data-mode="global" onclick="toggleView('global')">Global<br>App</div>
-    <div class="touch-menu-item" data-mode="split" onclick="toggleView('split')">Split</div>
-    <div class="touch-menu-item" data-mode="form" onclick="toggleView('form')">Profile</div>
-    <div class="touch-menu-item" data-mode="map" onclick="toggleView('map')">Map</div>
-    <div class="touch-menu-item" data-mode="tactical" onclick="toggleView('tactical')">Tactical<br>Map</div>
-    <div class="touch-menu-item" data-mode="signal" onclick="toggleView('signal')">Signal</div>
-    <div class="touch-menu-item" data-mode="landing" onclick="toggleView('landing')">Office<br>Hub</div>
-    <div class="touch-menu-item" onclick="openOsint('office')" title="Office & productivity tools">Office<br>Tools</div>
-    <div class="touch-menu-item" onclick="openOsint('osint')" title="OSINT quick-access">OSINT</div>
-    <div class="touch-menu-item small" onclick="zoomBy(1.25)" title="Zoom in">+</div>
-    <div class="touch-menu-item small" onclick="zoomBy(0.8)" title="Zoom out">−</div>
-    <div class="touch-menu-item small" onclick="resetView()" title="Reset view">⟳</div>
-    <div class="touch-menu-item small" onclick="toggleFullScreen()" title="Fullscreen">⛶</div>
-  </div>
+</div>
+
+<div class="touch-orb" id="touchOrb">
+  <div class="touch-orb-icon"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+</div>
+<div class="touch-menu" id="touchMenu">
+  <div class="touch-menu-item" data-mode="global" onclick="toggleView('global')">Global<br>App</div>
+  <div class="touch-menu-item" data-mode="split" onclick="toggleView('split')">Split</div>
+  <div class="touch-menu-item" data-mode="form" onclick="toggleView('form')">PORTFOLIO</div>
+  <div class="touch-menu-item" data-mode="map" onclick="toggleView('map')">Map</div>
+  <div class="touch-menu-item" data-mode="tactical" onclick="toggleView('tactical')">Tactical<br>Map</div>
+  <div class="touch-menu-item" data-mode="signal" onclick="toggleView('signal')">Signal</div>
+  <div class="touch-menu-item" data-mode="landing" onclick="toggleView('landing')">Hub</div>
+  <div class="touch-menu-item" onclick="openOsint('office')" title="Office & productivity tools">Office<br>Tools</div>
+  <div class="touch-menu-item" onclick="openOsint('it')" title="Network / IT troubleshooting">IT<br>Tools</div>
+  <div class="touch-menu-item" onclick="openGlobalSearch()" title="Search everything">Search</div>
+  <div class="touch-menu-item small" onclick="zoomBy(1.25)" title="Zoom in">+</div>
+  <div class="touch-menu-item small" onclick="zoomBy(0.8)" title="Zoom out">−</div>
+  <div class="touch-menu-item small" onclick="resetView()" title="Reset view">⟳</div>
+  <div class="touch-menu-item small" onclick="toggleFullScreen()" title="Fullscreen">⛶</div>
+</div>
+
+<!-- MOBILE BOTTOM NAV — replaces the drag-orb pattern on small screens where
+     dragging a floating control is fiddly; five direct, thumb-reachable
+     destinations covering the same core views. -->
+<nav class="mobile-nav" id="mobileNav">
+  <button class="mobile-nav-btn" data-mnav="form" onclick="mobileNavGo('form')"><span class="ic">▣</span>Form</button>
+  <button class="mobile-nav-btn" data-mnav="map" onclick="mobileNavGo('map')"><span class="ic">◈</span>Map</button>
+  <button class="mobile-nav-btn" data-mnav="landing" onclick="mobileNavGo('landing')"><span class="ic">▤</span>Hub</button>
+  <button class="mobile-nav-btn" data-mnav="tools" onclick="mobileNavOpenTools()"><span class="ic">✚</span>Tools</button>
+  <button class="mobile-nav-btn" data-mnav="signal" onclick="toggleMobileSignal()"><span class="ic">◉</span>Signal</button>
+  <button class="mobile-nav-btn" data-mnav="search" onclick="openGlobalSearch()"><span class="ic">⌕</span>Search</button>
+</nav>
 
 <script>
-  /* --- CYBER PARTICLES ENGINE (BACKGROUND) --- */
-  const canvas = document.getElementById('particleCanvas');
-  const ctx = canvas.getContext('2d');
+/* =========================================================================
+   TOAST / NOTIFICATION LAYER
+   Central place for surfacing dynamic troubleshooting messages instead of
+   failing silently (e.g. an iframe that never loads, geolocation denied).
+   ========================================================================= */
+function showToast(message, kind, timeoutMs) {
+  kind = kind || 'info';
+  timeoutMs = timeoutMs || 5000;
+  const stack = document.getElementById('toastStack');
+  const el = document.createElement('div');
+  el.className = 'toast' + (kind !== 'info' ? ' ' + kind : '');
+  el.innerHTML = '<span class="msg"></span><span class="close">✕</span>';
+  el.querySelector('.msg').textContent = message;
+  el.querySelector('.close').addEventListener('click', () => el.remove());
+  stack.appendChild(el);
+  if (timeoutMs > 0) setTimeout(() => el.remove(), timeoutMs);
+}
 
-  let particlesArray = [];
-  const numberOfParticles = 75;
-
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+/* =========================================================================
+   PARTICLES BACKGROUND
+   ========================================================================= */
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let particlesArray = [];
+const numberOfParticles = 70;
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 2 + 1;
+    this.speedX = (Math.random() - 0.5) * 0.8;
+    this.speedY = (Math.random() - 0.5) * 0.8;
+    this.color = Math.random() > 0.3 ? '#00f0ff' : '#0077ff';
   }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
-
-  class Particle {
-    constructor() {
-      this.x = Math.random() * canvas.width;
-      this.y = Math.random() * canvas.height;
-      this.size = Math.random() * 2 + 1;
-      this.speedX = (Math.random() - 0.5) * 0.8;
-      this.speedY = (Math.random() - 0.5) * 0.8;
-      this.color = Math.random() > 0.3 ? '#00f0ff' : '#0077ff';
-    }
-    update() {
-      this.x += this.speedX;
-      this.y += this.speedY;
-      if (this.x > canvas.width) this.x = 0;
-      else if (this.x < 0) this.x = canvas.width;
-      if (this.y > canvas.height) this.y = 0;
-      else if (this.y < 0) this.y = canvas.height;
-    }
-    draw() {
-      ctx.fillStyle = this.color;
-      ctx.shadowBlur = 8;
-      ctx.shadowColor = this.color;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
+  update() {
+    this.x += this.speedX; this.y += this.speedY;
+    if (this.x > canvas.width) this.x = 0; else if (this.x < 0) this.x = canvas.width;
+    if (this.y > canvas.height) this.y = 0; else if (this.y < 0) this.y = canvas.height;
   }
-
-  function initParticles() {
-    particlesArray = [];
-    for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
+  draw() {
+    ctx.fillStyle = this.color; ctx.shadowBlur = 8; ctx.shadowColor = this.color;
+    ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
   }
-
-  function connectParticles() {
-    for (let a = 0; a < particlesArray.length; a++) {
-      for (let b = a + 1; b < particlesArray.length; b++) {
-        let dx = particlesArray[a].x - particlesArray[b].x;
-        let dy = particlesArray[a].y - particlesArray[b].y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < 120) {
-          ctx.strokeStyle = `rgba(0, 240, 255, ${0.15 * (1 - distance / 120)})`;
-          ctx.lineWidth = 0.6;
-          ctx.beginPath();
-          ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-          ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
-          ctx.stroke();
-        }
+}
+function initParticles() { particlesArray = []; for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle()); }
+function connectParticles() {
+  for (let a = 0; a < particlesArray.length; a++) {
+    for (let b = a + 1; b < particlesArray.length; b++) {
+      const dx = particlesArray[a].x - particlesArray[b].x, dy = particlesArray[a].y - particlesArray[b].y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < 120) {
+        ctx.strokeStyle = `rgba(0, 240, 255, ${0.15 * (1 - distance / 120)})`;
+        ctx.lineWidth = 0.6;
+        ctx.beginPath(); ctx.moveTo(particlesArray[a].x, particlesArray[a].y); ctx.lineTo(particlesArray[b].x, particlesArray[b].y); ctx.stroke();
       }
     }
   }
+}
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particlesArray.forEach(p => { p.update(); p.draw(); });
+  connectParticles();
+  requestAnimationFrame(animateParticles);
+}
+initParticles(); animateParticles();
 
-  function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < particlesArray.length; i++) {
-      particlesArray[i].update();
-      particlesArray[i].draw();
+setInterval(() => {
+  document.getElementById('utcClock').textContent = new Date().toUTCString().slice(17, 25) + " UTC";
+}, 1000);
+
+/* =========================================================================
+   CONNECTIVITY WATCHDOG — dynamic troubleshooting for the whole app
+   ========================================================================= */
+function updateLinkStatus() {
+  const el = document.getElementById('linkStatusTopbar');
+  if (navigator.onLine) {
+    el.textContent = 'STABLE'; el.style.color = 'var(--neon-cyan)';
+  } else {
+    el.textContent = 'OFFLINE'; el.style.color = 'var(--neon-red)';
+    showToast('No network connection detected. Embedded tools and live lookups will fail until connectivity is restored.', 'error', 8000);
+  }
+}
+window.addEventListener('online', () => { updateLinkStatus(); showToast('Connection restored.', 'ok', 3000); });
+window.addEventListener('offline', updateLinkStatus);
+updateLinkStatus();
+
+/* Iframe health check for the embedded Profile Form pane */
+(function () {
+  const iframe = document.getElementById('formIframe');
+  const dot = document.getElementById('formStatusDot');
+  const fallback = document.getElementById('formFallback');
+  let loaded = false;
+  const timer = setTimeout(() => {
+    if (!loaded) {
+      dot.classList.add('warn');
+      fallback.classList.add('show');
+      showToast('The Profile Form pane is taking longer than expected to load.', 'warn', 6000);
     }
-    connectParticles();
-    requestAnimationFrame(animateParticles);
+  }, 9000);
+  iframe.addEventListener('load', () => {
+    loaded = true;
+    clearTimeout(timer);
+    dot.classList.remove('warn'); dot.classList.add('ok');
+    fallback.classList.remove('show');
+  });
+  window.reloadFormPane = function () {
+    fallback.classList.remove('show');
+    dot.classList.remove('warn');
+    loaded = false;
+    iframe.src = iframe.src;
+    showToast('Reloading form…', 'info', 2500);
+    setTimeout(() => { if (!loaded) { fallback.classList.add('show'); dot.classList.add('warn'); } }, 9000);
+  };
+  window.openFormDirect = function () {
+    window.open(iframe.getAttribute('src'), '_blank', 'noopener');
+  };
+})();
+
+/* =========================================================================
+   ANIMATED, PANNABLE / ZOOMABLE CYBER WORLD MAP
+   ========================================================================= */
+const mapCanvas = document.getElementById('cyberMapCanvas');
+const mapCtx = mapCanvas.getContext('2d');
+const mapPane = document.getElementById('mapPane');
+const nodePanel = document.getElementById('nodePanel');
+const nodePanelTitle = document.getElementById('nodePanelTitle');
+const nodePanelBody = document.getElementById('nodePanelBody');
+const zoomReadout = document.getElementById('zoomReadout');
+const nodeCountEl = document.getElementById('nodeCount');
+
+function resizeMapCanvas() { mapCanvas.width = mapPane.clientWidth; mapCanvas.height = mapPane.clientHeight; }
+window.addEventListener('resize', resizeMapCanvas);
+resizeMapCanvas();
+
+const mapNodes = [
+  { x: 0.16, y: 0.28, label: "NA-01", region: "North America", status: "SECURE", load: 42, city: "New York",      lat: 40.71,  lng: -74.01 },
+  { x: 0.22, y: 0.22, label: "NA-02", region: "North America", status: "SECURE", load: 37, city: "San Francisco", lat: 37.77,  lng: -122.42 },
+  { x: 0.24, y: 0.52, label: "SA-01", region: "South America", status: "SECURE", load: 29, city: "São Paulo",     lat: -23.55, lng: -46.63 },
+  { x: 0.30, y: 0.62, label: "SA-02", region: "South America", status: "NOMINAL", load: 18, city: "Buenos Aires", lat: -34.60, lng: -58.38 },
+  { x: 0.46, y: 0.20, label: "EU-01", region: "Europe", status: "SECURE", load: 61, city: "London",     lat: 51.51, lng: -0.13 },
+  { x: 0.50, y: 0.24, label: "EU-02", region: "Europe", status: "SECURE", load: 55, city: "Frankfurt",  lat: 50.11, lng: 8.68 },
+  { x: 0.44, y: 0.46, label: "AF-01", region: "Africa", status: "NOMINAL", load: 23, city: "Lagos",     lat: 6.52,  lng: 3.38 },
+  { x: 0.50, y: 0.58, label: "AF-02", region: "Africa", status: "NOMINAL", load: 19, city: "Nairobi",   lat: -1.29, lng: 36.82 },
+  { x: 0.62, y: 0.30, label: "AS-01", region: "Asia", status: "SECURE", load: 74, city: "Tokyo",        lat: 35.68, lng: 139.69 },
+  { x: 0.70, y: 0.24, label: "AS-02", region: "Asia", status: "SECURE", load: 68, city: "Singapore",    lat: 1.35,  lng: 103.82 },
+  { x: 0.68, y: 0.44, label: "AS-03", region: "Asia", status: "NOMINAL", load: 51, city: "Mumbai",      lat: 19.08, lng: 72.88 },
+  { x: 0.84, y: 0.58, label: "OC-01", region: "Oceania", status: "SECURE", load: 33, city: "Sydney",    lat: -33.87, lng: 151.21 },
+  { x: 0.40, y: 0.34, label: "AT-CORE", region: "Atlantic Core", status: "CORE", load: 88, city: "Reykjavík (Atlantic hub)", lat: 64.15, lng: -21.94 },
+  { x: 0.60, y: 0.40, label: "IN-CORE", region: "Indian Core", status: "CORE", load: 81, city: "Malé (Indian hub)", lat: 4.17, lng: 73.51 }
+];
+nodeCountEl.textContent = mapNodes.length;
+
+let camera = { x: 0, y: 0, scale: 1 };
+let isPanning = false, panStart = { x: 0, y: 0 }, camStart = { x: 0, y: 0 };
+let hoveredNode = null, selectedNode = null, pulseAngle = 0, flyTarget = null;
+function clearFlyTarget() { flyTarget = null; }
+function worldToScreen(nx, ny) {
+  const worldX = nx * mapCanvas.width, worldY = ny * mapCanvas.height;
+  return { x: worldX * camera.scale + camera.x, y: worldY * camera.scale + camera.y };
+}
+function centerCamera() { camera.scale = 1; camera.x = 0; camera.y = 0; }
+centerCamera();
+function resetView() { clearFlyTarget(); centerCamera(); selectedNode = null; nodePanel.style.display = 'none'; }
+function zoomBy(factor) { applyZoom(factor, mapCanvas.width / 2, mapCanvas.height / 2); }
+function applyZoom(factor, pivotX, pivotY) {
+  const newScale = Math.min(6, Math.max(0.4, camera.scale * factor));
+  const worldX = (pivotX - camera.x) / camera.scale, worldY = (pivotY - camera.y) / camera.scale;
+  camera.scale = newScale;
+  camera.x = pivotX - worldX * camera.scale;
+  camera.y = pivotY - worldY * camera.scale;
+}
+mapCanvas.addEventListener('wheel', (e) => {
+  e.preventDefault(); clearFlyTarget();
+  const rect = mapCanvas.getBoundingClientRect();
+  applyZoom(e.deltaY < 0 ? 1.12 : 0.89, e.clientX - rect.left, e.clientY - rect.top);
+}, { passive: false });
+mapCanvas.addEventListener('mousedown', (e) => {
+  clearFlyTarget(); isPanning = true; mapCanvas.classList.add('panning');
+  panStart = { x: e.clientX, y: e.clientY }; camStart = { x: camera.x, y: camera.y };
+});
+window.addEventListener('mousemove', (e) => {
+  if (isPanning) {
+    camera.x = camStart.x + (e.clientX - panStart.x);
+    camera.y = camStart.y + (e.clientY - panStart.y);
+    return;
   }
-
-  initParticles();
-  animateParticles();
-
-  /* --- UTC CLOCK --- */
-  setInterval(() => {
-    const now = new Date();
-    document.getElementById('utcClock').innerText = now.toUTCString().slice(17, 25) + " UTC";
-  }, 1000);
-
-  /* =====================================================================
-     ANIMATED, FREE-NAVIGATION (PAN + ZOOM) CYBER WORLD MAP
-     ===================================================================== */
-  const mapCanvas = document.getElementById('cyberMapCanvas');
-  const mapCtx = mapCanvas.getContext('2d');
-  const mapPane = document.getElementById('mapPane');
-  const nodePanel = document.getElementById('nodePanel');
-  const nodePanelTitle = document.getElementById('nodePanelTitle');
-  const nodePanelBody = document.getElementById('nodePanelBody');
-  const zoomReadout = document.getElementById('zoomReadout');
-  const nodeCountEl = document.getElementById('nodeCount');
-
-  function resizeMapCanvas() {
-    mapCanvas.width = mapPane.clientWidth;
-    mapCanvas.height = mapPane.clientHeight;
+  const rect = mapCanvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  hoveredNode = null;
+  for (const n of mapNodes) {
+    const p = worldToScreen(n.x, n.y);
+    if (Math.hypot(p.x - mx, p.y - my) < 12) { hoveredNode = n; break; }
   }
-  window.addEventListener('resize', resizeMapCanvas);
-  resizeMapCanvas();
-
-  // World nodes laid out on a normalized 0..1 "world" plane (roughly
-  // continent-shaped clusters) so pan/zoom feels like navigating a globe.
-  const mapNodes = [
-    { x: 0.16, y: 0.28, label: "NA-01", region: "North America", status: "SECURE", load: 42, city: "New York",     lat: 40.71,  lng: -74.01 },
-    { x: 0.22, y: 0.22, label: "NA-02", region: "North America", status: "SECURE", load: 37, city: "San Francisco",lat: 37.77,  lng: -122.42 },
-    { x: 0.24, y: 0.52, label: "SA-01", region: "South America", status: "SECURE", load: 29, city: "São Paulo",    lat: -23.55, lng: -46.63 },
-    { x: 0.30, y: 0.62, label: "SA-02", region: "South America", status: "NOMINAL", load: 18, city: "Buenos Aires",lat: -34.60, lng: -58.38 },
-    { x: 0.46, y: 0.20, label: "EU-01", region: "Europe", status: "SECURE", load: 61, city: "London",     lat: 51.51, lng: -0.13 },
-    { x: 0.50, y: 0.24, label: "EU-02", region: "Europe", status: "SECURE", load: 55, city: "Frankfurt",  lat: 50.11, lng: 8.68 },
-    { x: 0.44, y: 0.46, label: "AF-01", region: "Africa", status: "NOMINAL", load: 23, city: "Lagos",     lat: 6.52,  lng: 3.38 },
-    { x: 0.50, y: 0.58, label: "AF-02", region: "Africa", status: "NOMINAL", load: 19, city: "Nairobi",   lat: -1.29, lng: 36.82 },
-    { x: 0.62, y: 0.30, label: "AS-01", region: "Asia", status: "SECURE", load: 74, city: "Tokyo",       lat: 35.68, lng: 139.69 },
-    { x: 0.70, y: 0.24, label: "AS-02", region: "Asia", status: "SECURE", load: 68, city: "Singapore",   lat: 1.35,  lng: 103.82 },
-    { x: 0.68, y: 0.44, label: "AS-03", region: "Asia", status: "NOMINAL", load: 51, city: "Mumbai",      lat: 19.08, lng: 72.88 },
-    { x: 0.84, y: 0.58, label: "OC-01", region: "Oceania", status: "SECURE", load: 33, city: "Sydney",   lat: -33.87, lng: 151.21 },
-    { x: 0.40, y: 0.34, label: "AT-CORE", region: "Atlantic Core", status: "CORE", load: 88, city: "Reykjavík (Atlantic hub)", lat: 64.15, lng: -21.94 },
-    { x: 0.60, y: 0.40, label: "IN-CORE", region: "Indian Core", status: "CORE", load: 81, city: "Malé (Indian hub)", lat: 4.17, lng: 73.51 }
-  ];
-  nodeCountEl.textContent = mapNodes.length;
-
-  // Pan/zoom camera state
-  let camera = { x: 0, y: 0, scale: 1 };
-  let targetScale = 1;
-  let isPanning = false;
-  let panStart = { x: 0, y: 0 };
-  let camStart = { x: 0, y: 0 };
-  let hoveredNode = null;
-  let selectedNode = null;
-  let pulseAngle = 0;
-  let flyTarget = null; // {x, y, scale} — camera eases toward this when a node is selected
-
-  function clearFlyTarget() { flyTarget = null; }
-
-  function worldToScreen(nx, ny) {
-    // node coords (0..1) mapped to a base "world" size, then camera-transformed
-    const worldX = nx * mapCanvas.width;
-    const worldY = ny * mapCanvas.height;
-    return {
-      x: worldX * camera.scale + camera.x,
-      y: worldY * camera.scale + camera.y
+  mapCanvas.style.cursor = hoveredNode ? 'pointer' : 'grab';
+});
+window.addEventListener('mouseup', () => { isPanning = false; mapCanvas.classList.remove('panning'); });
+mapCanvas.addEventListener('click', () => {
+  if (!hoveredNode) return;
+  selectedNode = (selectedNode === hoveredNode) ? null : hoveredNode;
+  if (selectedNode) {
+    nodePanel.style.display = 'block';
+    nodePanelTitle.textContent = selectedNode.label;
+    nodePanelBody.innerHTML = 'REGION: ' + selectedNode.region + '<br>STATUS: ' + selectedNode.status + '<br>LOAD: ' + selectedNode.load + '%';
+    const flyScale = Math.max(camera.scale, 2.1);
+    flyTarget = {
+      scale: flyScale,
+      x: mapCanvas.width / 2 - selectedNode.x * mapCanvas.width * flyScale,
+      y: mapCanvas.height / 2 - selectedNode.y * mapCanvas.height * flyScale
     };
-  }
-
-  function screenToWorldNorm(sx, sy) {
-    const worldX = (sx - camera.x) / camera.scale;
-    const worldY = (sy - camera.y) / camera.scale;
-    return { x: worldX / mapCanvas.width, y: worldY / mapCanvas.height };
-  }
-
-  function centerCamera() {
-    // start centered with a comfortable default zoom
-    camera.scale = 1;
-    targetScale = 1;
-    camera.x = 0;
-    camera.y = 0;
-  }
-  centerCamera();
-
-  function resetView() {
-    clearFlyTarget();
-    centerCamera();
-    selectedNode = null;
+  } else {
     nodePanel.style.display = 'none';
   }
-
-  function zoomBy(factor) {
-    const cx = mapCanvas.width / 2;
-    const cy = mapCanvas.height / 2;
-    applyZoom(factor, cx, cy);
-  }
-
-  function applyZoom(factor, pivotX, pivotY) {
-    const newScale = Math.min(6, Math.max(0.4, camera.scale * factor));
-    // keep the point under the pivot fixed while zooming
-    const worldX = (pivotX - camera.x) / camera.scale;
-    const worldY = (pivotY - camera.y) / camera.scale;
-    camera.scale = newScale;
-    targetScale = newScale;
-    camera.x = pivotX - worldX * camera.scale;
-    camera.y = pivotY - worldY * camera.scale;
-  }
-
-  /* ---- Mouse / touch: free pan + zoom navigation ---- */
-  mapCanvas.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    clearFlyTarget();
+});
+let lastTouchDist = null;
+mapCanvas.addEventListener('touchstart', (e) => {
+  clearFlyTarget();
+  if (e.touches.length === 1) { isPanning = true; panStart = { x: e.touches[0].clientX, y: e.touches[0].clientY }; camStart = { x: camera.x, y: camera.y }; }
+  else if (e.touches.length === 2) { isPanning = false; lastTouchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY); }
+}, { passive: true });
+mapCanvas.addEventListener('touchmove', (e) => {
+  if (e.touches.length === 1 && isPanning) {
+    camera.x = camStart.x + (e.touches[0].clientX - panStart.x);
+    camera.y = camStart.y + (e.touches[0].clientY - panStart.y);
+  } else if (e.touches.length === 2 && lastTouchDist) {
+    const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
     const rect = mapCanvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    const factor = e.deltaY < 0 ? 1.12 : 0.89;
-    applyZoom(factor, mx, my);
-  }, { passive: false });
-
-  mapCanvas.addEventListener('mousedown', (e) => {
-    clearFlyTarget();
-    isPanning = true;
-    mapCanvas.classList.add('panning');
-    panStart = { x: e.clientX, y: e.clientY };
-    camStart = { x: camera.x, y: camera.y };
-  });
-
-  window.addEventListener('mousemove', (e) => {
-    if (isPanning) {
-      const dx = e.clientX - panStart.x;
-      const dy = e.clientY - panStart.y;
-      camera.x = camStart.x + dx;
-      camera.y = camStart.y + dy;
-      return;
-    }
-    // hover detection
-    const rect = mapCanvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
-    hoveredNode = null;
-    for (const n of mapNodes) {
-      const p = worldToScreen(n.x, n.y);
-      if (Math.hypot(p.x - mx, p.y - my) < 12) { hoveredNode = n; break; }
-    }
-    mapCanvas.style.cursor = hoveredNode ? 'pointer' : 'grab';
-  });
-
-  window.addEventListener('mouseup', () => {
-    isPanning = false;
-    mapCanvas.classList.remove('panning');
-  });
-
-  mapCanvas.addEventListener('click', (e) => {
-    if (hoveredNode) {
-      selectedNode = (selectedNode === hoveredNode) ? null : hoveredNode;
-      if (selectedNode) {
-        nodePanel.style.display = 'block';
-        nodePanelTitle.textContent = selectedNode.label;
-        nodePanelBody.innerHTML =
-          'REGION: ' + selectedNode.region + '<br>' +
-          'STATUS: ' + selectedNode.status + '<br>' +
-          'LOAD: ' + selectedNode.load + '%';
-        // Smoothly fly the camera to frame this node
-        const flyScale = Math.max(camera.scale, 2.1);
-        flyTarget = {
-          scale: flyScale,
-          x: mapCanvas.width / 2 - selectedNode.x * mapCanvas.width * flyScale,
-          y: mapCanvas.height / 2 - selectedNode.y * mapCanvas.height * flyScale
-        };
-      } else {
-        nodePanel.style.display = 'none';
-      }
-    }
-  });
-
-  // Touch support for pan + pinch-ish (single-touch pan, two-finger zoom)
-  let lastTouchDist = null;
-  mapCanvas.addEventListener('touchstart', (e) => {
-    clearFlyTarget();
-    if (e.touches.length === 1) {
-      isPanning = true;
-      panStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      camStart = { x: camera.x, y: camera.y };
-    } else if (e.touches.length === 2) {
-      isPanning = false;
-      lastTouchDist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-    }
-  }, { passive: true });
-
-  mapCanvas.addEventListener('touchmove', (e) => {
-    if (e.touches.length === 1 && isPanning) {
-      const dx = e.touches[0].clientX - panStart.x;
-      const dy = e.touches[0].clientY - panStart.y;
-      camera.x = camStart.x + dx;
-      camera.y = camStart.y + dy;
-    } else if (e.touches.length === 2 && lastTouchDist) {
-      const dist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      const rect = mapCanvas.getBoundingClientRect();
-      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
-      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
-      applyZoom(dist / lastTouchDist, midX, midY);
-      lastTouchDist = dist;
-    }
-  }, { passive: true });
-
-  mapCanvas.addEventListener('touchend', () => {
-    isPanning = false;
-    lastTouchDist = null;
-  });
-
-  /* ---- Render loop: grid, links, animated data flow, nodes ---- */
-  function animateCyberMap() {
-    // Ease camera toward a fly-to target (from clicking a node), if any
-    if (flyTarget) {
-      camera.x += (flyTarget.x - camera.x) * 0.1;
-      camera.y += (flyTarget.y - camera.y) * 0.1;
-      camera.scale += (flyTarget.scale - camera.scale) * 0.1;
-      if (Math.abs(flyTarget.scale - camera.scale) < 0.01 &&
-          Math.hypot(flyTarget.x - camera.x, flyTarget.y - camera.y) < 0.5) {
-        flyTarget = null;
-      }
-    }
-
-    mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
-
-    // Background scanning grid (fixed to camera so it feels like a real map)
-    mapCtx.strokeStyle = 'rgba(0, 240, 255, 0.05)';
-    mapCtx.lineWidth = 1;
-    const step = 40 * camera.scale;
-    const offX = camera.x % step;
-    const offY = camera.y % step;
-    for (let x = offX; x < mapCanvas.width; x += step) {
-      mapCtx.beginPath(); mapCtx.moveTo(x, 0); mapCtx.lineTo(x, mapCanvas.height); mapCtx.stroke();
-    }
-    for (let y = offY; y < mapCanvas.height; y += step) {
-      mapCtx.beginPath(); mapCtx.moveTo(0, y); mapCtx.lineTo(mapCanvas.width, y); mapCtx.stroke();
-    }
-
-    const absNodes = mapNodes.map(n => ({ ...n, ...worldToScreen(n.x, n.y) }));
-
-    // Build the visible link list once so lines + flow particles agree
-    const visibleLinks = [];
-    for (let i = 0; i < absNodes.length; i++) {
-      for (let j = i + 1; j < absNodes.length; j++) {
-        const dist = Math.hypot(absNodes[i].x - absNodes[j].x, absNodes[i].y - absNodes[j].y);
-        if (dist < mapCanvas.width * 0.42) visibleLinks.push([absNodes[i], absNodes[j]]);
-      }
-    }
-
-    // Connecting data-link lines (dimmer normally, bright when tied to selection/hover)
-    visibleLinks.forEach(([a, b]) => {
-      const involved = selectedNode && (a.label === selectedNode.label || b.label === selectedNode.label);
-      mapCtx.strokeStyle = involved ? 'rgba(255, 0, 200, 0.55)' : 'rgba(0, 119, 255, 0.18)';
-      mapCtx.lineWidth = involved ? 1.6 : 1;
-      mapCtx.beginPath();
-      mapCtx.moveTo(a.x, a.y);
-      mapCtx.lineTo(b.x, b.y);
-      mapCtx.stroke();
-    });
-
-    // Directional data-flow particles — each link carries 1-2 packets of
-    // "world data flow" moving from the higher-load node to the lower-load
-    // one, at a speed proportional to that node's load (busier = faster).
-    pulseAngle += 0.018;
-    visibleLinks.forEach(([a, b], li) => {
-      const from = a.load >= b.load ? a : b;
-      const to = a.load >= b.load ? b : a;
-      const speed = 0.15 + (from.load / 100) * 0.35;
-      const involved = selectedNode && (a.label === selectedNode.label || b.label === selectedNode.label);
-      const packets = involved ? 3 : 1;
-      for (let p = 0; p < packets; p++) {
-        const phase = ((pulseAngle * speed) + (li * 0.37) + (p / packets)) % 1;
-        const px = from.x + (to.x - from.x) * phase;
-        const py = from.y + (to.y - from.y) * phase;
-        mapCtx.fillStyle = involved ? '#ff00c8' : '#00f0ff';
-        mapCtx.shadowBlur = 9;
-        mapCtx.shadowColor = mapCtx.fillStyle;
-        mapCtx.beginPath();
-        mapCtx.arc(px, py, 2 * Math.min(1.5, camera.scale), 0, Math.PI * 2);
-        mapCtx.fill();
-        mapCtx.shadowBlur = 0;
-      }
-    });
-
-    // Node markers, pulse rings, labels
-    absNodes.forEach((node, idx) => {
-      const isHot = (hoveredNode && hoveredNode.label === node.label) ||
-                    (selectedNode && selectedNode.label === node.label);
-      const baseColor = node.status === 'CORE' ? '#ff00c8' : '#ffffff';
-
-      mapCtx.fillStyle = isHot ? '#00f0ff' : baseColor;
-      mapCtx.beginPath();
-      mapCtx.arc(node.x, node.y, (node.status === 'CORE' ? 5 : 4) * Math.min(1.6, camera.scale), 0, Math.PI * 2);
-      mapCtx.fill();
-
-      mapCtx.strokeStyle = isHot ? 'rgba(0, 240, 255, 0.9)' : 'rgba(0, 240, 255, 0.5)';
-      mapCtx.lineWidth = 1.5;
-      mapCtx.beginPath();
-      const ringRadius = (6 + Math.sin(pulseAngle * 2 + idx) * 4) * Math.min(1.6, camera.scale);
-      mapCtx.arc(node.x, node.y, Math.abs(ringRadius), 0, Math.PI * 2);
-      mapCtx.stroke();
-
-      if (camera.scale > 0.55) {
-        mapCtx.fillStyle = isHot ? '#00f0ff' : 'rgba(0, 240, 255, 0.85)';
-        mapCtx.font = (10 * Math.min(1.3, camera.scale)) + 'px monospace';
-        mapCtx.fillText(node.label, node.x + 10, node.y + 4);
-      }
-    });
-
-    zoomReadout.textContent = camera.scale.toFixed(2) + 'x';
-    requestAnimationFrame(animateCyberMap);
+    applyZoom(dist / lastTouchDist, (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left, (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top);
+    lastTouchDist = dist;
   }
-  animateCyberMap();
+}, { passive: true });
+mapCanvas.addEventListener('touchend', () => { isPanning = false; lastTouchDist = null; });
 
-  /* =====================================================================
-     TACTICAL MAP — real-world geography via Leaflet + free tile providers
-     (CartoDB Dark Matter / Esri World Imagery / OpenTopoMap — all free,
-     no API key required). Uses the same node dataset as the abstract
-     animated map above, plotted at real lat/lng coordinates.
-     ===================================================================== */
-  let tacticalMap = null;
-  let tacticalMarkers = [];
-  let tacticalLinks = [];
-  let tacticalLinkDashOffset = 0;
-  let currentTileLayer = null;
+function animateCyberMap() {
+  if (flyTarget) {
+    camera.x += (flyTarget.x - camera.x) * 0.1;
+    camera.y += (flyTarget.y - camera.y) * 0.1;
+    camera.scale += (flyTarget.scale - camera.scale) * 0.1;
+    if (Math.abs(flyTarget.scale - camera.scale) < 0.01 && Math.hypot(flyTarget.x - camera.x, flyTarget.y - camera.y) < 0.5) flyTarget = null;
+  }
+  mapCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+  mapCtx.strokeStyle = 'rgba(0, 240, 255, 0.05)'; mapCtx.lineWidth = 1;
+  const step = 40 * camera.scale;
+  const offX = camera.x % step, offY = camera.y % step;
+  for (let x = offX; x < mapCanvas.width; x += step) { mapCtx.beginPath(); mapCtx.moveTo(x, 0); mapCtx.lineTo(x, mapCanvas.height); mapCtx.stroke(); }
+  for (let y = offY; y < mapCanvas.height; y += step) { mapCtx.beginPath(); mapCtx.moveTo(0, y); mapCtx.lineTo(mapCanvas.width, y); mapCtx.stroke(); }
 
-  const tileLayers = {
-    dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
-      subdomains: 'abcd', maxZoom: 19
-    }),
-    sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics', maxZoom: 19
-    }),
-    terrain: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      attribution: 'Map data: &copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap',
-      subdomains: 'abc', maxZoom: 17
-    })
-  };
+  const absNodes = mapNodes.map(n => ({ ...n, ...worldToScreen(n.x, n.y) }));
+  const visibleLinks = [];
+  for (let i = 0; i < absNodes.length; i++) {
+    for (let j = i + 1; j < absNodes.length; j++) {
+      if (Math.hypot(absNodes[i].x - absNodes[j].x, absNodes[i].y - absNodes[j].y) < mapCanvas.width * 0.42) visibleLinks.push([absNodes[i], absNodes[j]]);
+    }
+  }
+  visibleLinks.forEach(([a, b]) => {
+    const involved = selectedNode && (a.label === selectedNode.label || b.label === selectedNode.label);
+    mapCtx.strokeStyle = involved ? 'rgba(255, 0, 200, 0.55)' : 'rgba(0, 119, 255, 0.18)';
+    mapCtx.lineWidth = involved ? 1.6 : 1;
+    mapCtx.beginPath(); mapCtx.moveTo(a.x, a.y); mapCtx.lineTo(b.x, b.y); mapCtx.stroke();
+  });
+  pulseAngle += 0.018;
+  visibleLinks.forEach(([a, b], li) => {
+    const from = a.load >= b.load ? a : b, to = a.load >= b.load ? b : a;
+    const speed = 0.15 + (from.load / 100) * 0.35;
+    const involved = selectedNode && (a.label === selectedNode.label || b.label === selectedNode.label);
+    const packets = involved ? 3 : 1;
+    for (let p = 0; p < packets; p++) {
+      const phase = ((pulseAngle * speed) + (li * 0.37) + (p / packets)) % 1;
+      const px = from.x + (to.x - from.x) * phase, py = from.y + (to.y - from.y) * phase;
+      mapCtx.fillStyle = involved ? '#ff00c8' : '#00f0ff';
+      mapCtx.shadowBlur = 9; mapCtx.shadowColor = mapCtx.fillStyle;
+      mapCtx.beginPath(); mapCtx.arc(px, py, 2 * Math.min(1.5, camera.scale), 0, Math.PI * 2); mapCtx.fill();
+      mapCtx.shadowBlur = 0;
+    }
+  });
+  absNodes.forEach((node, idx) => {
+    const isHot = (hoveredNode && hoveredNode.label === node.label) || (selectedNode && selectedNode.label === node.label);
+    const baseColor = node.status === 'CORE' ? '#ff00c8' : '#ffffff';
+    mapCtx.fillStyle = isHot ? '#00f0ff' : baseColor;
+    mapCtx.beginPath(); mapCtx.arc(node.x, node.y, (node.status === 'CORE' ? 5 : 4) * Math.min(1.6, camera.scale), 0, Math.PI * 2); mapCtx.fill();
+    mapCtx.strokeStyle = isHot ? 'rgba(0, 240, 255, 0.9)' : 'rgba(0, 240, 255, 0.5)'; mapCtx.lineWidth = 1.5;
+    mapCtx.beginPath();
+    const ringRadius = (6 + Math.sin(pulseAngle * 2 + idx) * 4) * Math.min(1.6, camera.scale);
+    mapCtx.arc(node.x, node.y, Math.abs(ringRadius), 0, Math.PI * 2); mapCtx.stroke();
+    if (camera.scale > 0.55) {
+      mapCtx.fillStyle = isHot ? '#00f0ff' : 'rgba(0, 240, 255, 0.85)';
+      mapCtx.font = (10 * Math.min(1.3, camera.scale)) + 'px monospace';
+      mapCtx.fillText(node.label, node.x + 10, node.y + 4);
+    }
+  });
+  zoomReadout.textContent = camera.scale.toFixed(2) + 'x';
+  requestAnimationFrame(animateCyberMap);
+}
+animateCyberMap();
 
-  function initTacticalMap() {
-    if (tacticalMap) return;
-    tacticalMap = L.map('tacticalMap', {
-      center: [20, 10],
-      zoom: 2,
-      minZoom: 2,
-      worldCopyJump: true,
-      zoomControl: true
-    });
+/* =========================================================================
+   TACTICAL MAP — real-world geography via Leaflet + free tile providers
+   ========================================================================= */
+let tacticalMap = null, tacticalMarkers = [], tacticalLinks = [], tacticalLinkDashOffset = 0, currentTileLayer = null;
+const tileLayers = {
+  dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19 }),
+  sat: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics', maxZoom: 19 }),
+  terrain: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: 'Map data: &copy; OpenStreetMap contributors, SRTM | Map style: &copy; OpenTopoMap', subdomains: 'abc', maxZoom: 17 })
+};
+function initTacticalMap() {
+  if (tacticalMap) return;
+  try {
+    tacticalMap = L.map('tacticalMap', { center: [20, 10], zoom: 2, minZoom: 2, worldCopyJump: true, zoomControl: true });
     window.tacticalLeafletMap = tacticalMap;
-
     currentTileLayer = tileLayers.dark.addTo(tacticalMap);
     L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(tacticalMap);
-
-    // Node markers (pulsing cyber dots) with info popups
     mapNodes.forEach(n => {
       const isCore = n.status === 'CORE';
-      const icon = L.divIcon({
-        className: '',
-        html: `<div class="cyber-marker${isCore ? ' core' : ''}"><div class="ring"></div><div class="dot"></div></div>`,
-        iconSize: [16, 16],
-        iconAnchor: [8, 8]
-      });
+      const icon = L.divIcon({ className: '', html: `<div class="cyber-marker${isCore ? ' core' : ''}"><div class="ring"></div><div class="dot"></div></div>`, iconSize: [16, 16], iconAnchor: [8, 8] });
       const marker = L.marker([n.lat, n.lng], { icon }).addTo(tacticalMap);
-      marker.bindPopup(
-        `<b>${n.label}</b><br>${n.city}<br>REGION: ${n.region}<br>STATUS: ${n.status}<br>LOAD: ${n.load}%`
-      );
+      marker.bindPopup(`<b>${n.label}</b><br>${n.city}<br>REGION: ${n.region}<br>STATUS: ${n.status}<br>LOAD: ${n.load}%`);
       tacticalMarkers.push(marker);
     });
-
-    // Data-link lines between nearby / related nodes, same spirit as the
-    // abstract map's link graph, drawn as animated dashed geodesic-ish lines
     for (let i = 0; i < mapNodes.length; i++) {
       for (let j = i + 1; j < mapNodes.length; j++) {
         const a = mapNodes[i], b = mapNodes[j];
-        const dist = Math.hypot(a.x - b.x, a.y - b.y);
-        if (dist < 0.42) {
+        if (Math.hypot(a.x - b.x, a.y - b.y) < 0.42) {
           const involved = a.status === 'CORE' || b.status === 'CORE';
-          const line = L.polyline([[a.lat, a.lng], [b.lat, b.lng]], {
-            color: involved ? '#ff00c8' : '#0077ff',
-            weight: involved ? 1.6 : 1,
-            opacity: involved ? 0.55 : 0.28,
-            dashArray: '4 6'
-          }).addTo(tacticalMap);
-          tacticalLinks.push(line);
+          tacticalLinks.push(L.polyline([[a.lat, a.lng], [b.lat, b.lng]], { color: involved ? '#ff00c8' : '#0077ff', weight: involved ? 1.6 : 1, opacity: involved ? 0.55 : 0.28, dashArray: '4 6' }).addTo(tacticalMap));
         }
       }
     }
-
-    // Animate the dashed lines to feel like flowing tactical data links
     setInterval(() => {
       tacticalLinkDashOffset = (tacticalLinkDashOffset + 1) % 10;
-      tacticalLinks.forEach(line => {
-        const el = line.getElement && line.getElement();
-        if (el) el.style.strokeDashoffset = -tacticalLinkDashOffset;
-      });
+      tacticalLinks.forEach(line => { const el = line.getElement && line.getElement(); if (el) el.style.strokeDashoffset = -tacticalLinkDashOffset; });
     }, 90);
+  } catch (err) {
+    showToast('Tactical map failed to initialize (tile provider may be unreachable). Try the abstract Global Node Map instead.', 'error', 7000);
   }
+}
+function setTacticalLayer(key) {
+  if (!tacticalMap) return;
+  if (currentTileLayer) tacticalMap.removeLayer(currentTileLayer);
+  currentTileLayer = tileLayers[key].addTo(tacticalMap);
+  document.querySelectorAll('.tactical-layer-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.layer === key));
+}
+let userLocationMarker = null;
+function locateMe() {
+  if (!tacticalMap) return;
+  if (!navigator.geolocation) { showToast('Geolocation is not available in this browser.', 'error'); return; }
+  navigator.geolocation.getCurrentPosition((pos) => {
+    const { latitude, longitude } = pos.coords;
+    if (userLocationMarker) tacticalMap.removeLayer(userLocationMarker);
+    userLocationMarker = L.circleMarker([latitude, longitude], { radius: 8, color: '#00ff88', fillColor: '#00ff88', fillOpacity: 0.4, weight: 2 }).addTo(tacticalMap).bindPopup('<b>YOUR LOCATION</b>').openPopup();
+    tacticalMap.flyTo([latitude, longitude], 8, { duration: 1.2 });
+  }, (err) => {
+    showToast('Location access denied or unavailable (' + err.message + ').', 'warn', 6000);
+  });
+}
+window.addEventListener('DOMContentLoaded', initTacticalMap);
+if (document.readyState !== 'loading') initTacticalMap();
 
-  function setTacticalLayer(key) {
-    if (!tacticalMap) return;
-    if (currentTileLayer) tacticalMap.removeLayer(currentTileLayer);
-    currentTileLayer = tileLayers[key].addTo(tacticalMap);
-    document.querySelectorAll('.tactical-layer-btn').forEach(btn =>
-      btn.classList.toggle('active', btn.dataset.layer === key)
-    );
-  }
+/* =========================================================================
+   SIGNAL MONITOR — simulated, local-only feed driven by the node dataset
+   ========================================================================= */
+const signalFeedEl = document.getElementById('signalFeed');
+const statNodes = document.getElementById('statNodes'), statLinks = document.getElementById('statLinks');
+const statLoad = document.getElementById('statLoad'), statRate = document.getElementById('statRate');
+const threatBar = document.getElementById('threatBar'), threatPct = document.getElementById('threatPct');
+const threatLevelTopbar = document.getElementById('threatLevelTopbar'), alertBanner = document.getElementById('alertBanner');
+const signalTemplates = [
+  { tag: "[NODE SYNC]", kind: "info", text: (n) => `${n.label} (${n.region}) completed handshake — link nominal.` },
+  { tag: "[LOAD REPORT]", kind: "info", text: (n) => `${n.label} reporting ${n.load}% throughput, within normal bounds.` },
+  { tag: "[TRACE]", kind: "info", text: (n) => `Route trace across ${n.region} corridor resolved in optimal time.` },
+  { tag: "[LATENCY]", kind: "warn", text: (n) => `Elevated latency detected on ${n.label} uplink — monitoring.` },
+  { tag: "[ANOMALY]", kind: "warn", text: (n) => `Irregular packet pattern flagged near ${n.label}, low confidence.` },
+  { tag: "[INTRUSION ATTEMPT]", kind: "alert", text: (n) => `Blocked unauthorized probe against ${n.label} perimeter.` },
+  { tag: "[CORE STATUS]", kind: "info", text: (n) => `${n.label} core relay holding steady sync with all peers.` },
+];
+let signalsThisMinute = 0, lastRateReset = Date.now();
+function pushSignalCard() {
+  const node = mapNodes[Math.floor(Math.random() * mapNodes.length)];
+  const roll = Math.random();
+  let pool = signalTemplates.filter(t => t.kind === 'info');
+  if (roll > 0.82) pool = signalTemplates.filter(t => t.kind === 'alert');
+  else if (roll > 0.6) pool = signalTemplates.filter(t => t.kind === 'warn');
+  const tpl = pool[Math.floor(Math.random() * pool.length)];
+  const card = document.createElement('div');
+  card.className = 'signal-card' + (tpl.kind === 'warn' ? ' warn' : tpl.kind === 'alert' ? ' alert' : '');
+  const now = new Date();
+  card.innerHTML = `<div class="signal-tag">${tpl.tag}</div><div class="signal-text">${tpl.text(node)}</div><div class="signal-time">${now.toUTCString().slice(17, 25)} UTC</div>`;
+  signalFeedEl.prepend(card);
+  while (signalFeedEl.children.length > 30) signalFeedEl.removeChild(signalFeedEl.lastChild);
+  signalsThisMinute++;
+  if (tpl.kind === 'alert') { showAlertBanner(`⚠ ${tpl.tag} ${tpl.text(node)}`); bumpThreat(8); }
+  else if (tpl.kind === 'warn') bumpThreat(3);
+  else bumpThreat(-1);
+}
+function showAlertBanner(msg) {
+  alertBanner.textContent = msg; alertBanner.style.display = 'block';
+  clearTimeout(showAlertBanner._t);
+  showAlertBanner._t = setTimeout(() => { alertBanner.style.display = 'none'; }, 4000);
+}
+let threatValue = 30;
+function bumpThreat(delta) { threatValue = Math.min(95, Math.max(8, threatValue + delta)); renderThreat(); }
+function renderThreat() {
+  threatBar.style.width = threatValue + '%'; threatPct.textContent = Math.round(threatValue) + '%';
+  let label = 'LOW', color = 'var(--neon-green)';
+  if (threatValue > 70) { label = 'CRITICAL'; color = 'var(--neon-red)'; }
+  else if (threatValue > 45) { label = 'ELEVATED'; color = 'var(--neon-amber)'; }
+  else if (threatValue > 25) { label = 'GUARDED'; color = 'var(--neon-cyan)'; }
+  threatLevelTopbar.textContent = label; threatLevelTopbar.style.color = color;
+}
+function updateStats() {
+  statNodes.textContent = mapNodes.length;
+  statLinks.textContent = mapNodes.filter(n => n.status === 'CORE').length * 3;
+  statLoad.textContent = Math.round(mapNodes.reduce((s, n) => s + n.load, 0) / mapNodes.length) + '%';
+  const now = Date.now();
+  if (now - lastRateReset >= 60000) { statRate.textContent = signalsThisMinute; signalsThisMinute = 0; lastRateReset = now; }
+  else { const elapsedMin = Math.max(1 / 60, (now - lastRateReset) / 60000); statRate.textContent = Math.round(signalsThisMinute / elapsedMin); }
+}
+for (let i = 0; i < 5; i++) pushSignalCard();
+renderThreat(); updateStats();
+setInterval(pushSignalCard, 3200);
+setInterval(updateStats, 1000);
+setInterval(() => bumpThreat(-1), 5000);
 
-  let userLocationMarker = null;
-  function locateMe() {
-    if (!tacticalMap) return;
-    if (!navigator.geolocation) {
-      alert('Geolocation is not available in this browser.');
-      return;
-    }
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const { latitude, longitude } = pos.coords;
-      if (userLocationMarker) tacticalMap.removeLayer(userLocationMarker);
-      userLocationMarker = L.circleMarker([latitude, longitude], {
-        radius: 8, color: '#00ff88', fillColor: '#00ff88', fillOpacity: 0.4, weight: 2
-      }).addTo(tacticalMap).bindPopup('<b>YOUR LOCATION</b>').openPopup();
-      tacticalMap.flyTo([latitude, longitude], 8, { duration: 1.2 });
-    }, () => {
-      alert('Location access denied or unavailable.');
+/* =========================================================================
+   TOOL CATALOG
+   General office/productivity + IT-troubleshooting + research reference
+   links. Deliberately excludes people-search / "background check" services
+   (e.g. data broker lookup sites) — those exist to profile private
+   individuals without consent, which this dashboard does not support.
+   ========================================================================= */
+const osintTools = {
+  office: [
+    { name: "Google Docs", desc: "Free online word processor", url: () => "https://docs.google.com/document/u/0/" },
+    { name: "Google Sheets", desc: "Free online spreadsheets", url: () => "https://docs.google.com/spreadsheets/u/0/" },
+    { name: "Google Slides", desc: "Free online presentations", url: () => "https://docs.google.com/presentation/u/0/" },
+    { name: "Google Forms", desc: "Free online forms & surveys", url: () => "https://docs.google.com/forms/u/0/" },
+    { name: "Microsoft Word Online", desc: "Free web version of Word", url: () => "https://www.microsoft365.com/launch/word" },
+    { name: "Microsoft Excel Online", desc: "Free web version of Excel", url: () => "https://www.microsoft365.com/launch/excel" },
+    { name: "Microsoft PowerPoint Online", desc: "Free web version of PowerPoint", url: () => "https://www.microsoft365.com/launch/powerpoint" },
+    { name: "Office.com", desc: "Microsoft 365 web app launcher", url: () => "https://www.office.com/" },
+    { name: "LibreOffice", desc: "Free open-source office suite (download)", url: () => "https://www.libreoffice.org/download/download-libreoffice/" },
+    { name: "OnlyOffice", desc: "Free online/desktop office suite", url: () => "https://www.onlyoffice.com/" },
+    { name: "Zoho Writer", desc: "Free online document editor", url: () => "https://www.zoho.com/writer/" },
+    { name: "Zoho Sheet", desc: "Free online spreadsheet editor", url: () => "https://www.zoho.com/sheet/" },
+  ],
+  comms: [
+    { name: "Gmail", desc: "Email", url: () => "https://mail.google.com/" },
+    { name: "Outlook", desc: "Microsoft email & calendar", url: () => "https://outlook.office.com/mail/" },
+    { name: "Google Calendar", desc: "Scheduling & events", url: () => "https://calendar.google.com/" },
+    { name: "Zoom", desc: "Video meetings", url: () => "https://zoom.us/join" },
+    { name: "Google Meet", desc: "Video meetings", url: () => "https://meet.google.com/" },
+    { name: "Microsoft Teams", desc: "Chat & video meetings", url: () => "https://teams.microsoft.com/" },
+    { name: "Slack", desc: "Team messaging", url: () => "https://slack.com/signin" },
+  ],
+  storage: [
+    { name: "Google Drive", desc: "Cloud file storage", url: () => "https://drive.google.com/" },
+    { name: "Microsoft OneDrive", desc: "Cloud file storage", url: () => "https://onedrive.live.com/" },
+    { name: "Dropbox", desc: "Cloud file storage & sync", url: () => "https://www.dropbox.com/home" },
+    { name: "Box", desc: "Cloud content management", url: () => "https://app.box.com/" },
+  ],
+  pm: [
+    { name: "Notion", desc: "Notes, docs & workspace wiki", url: () => "https://www.notion.so/" },
+    { name: "Trello", desc: "Kanban task boards", url: () => "https://trello.com/" },
+    { name: "Asana", desc: "Project & task management", url: () => "https://app.asana.com/" },
+    { name: "Monday.com", desc: "Work OS / project tracking", url: () => "https://monday.com/" },
+    { name: "ClickUp", desc: "All-in-one productivity platform", url: () => "https://clickup.com/" },
+    { name: "Jira", desc: "Issue & agile project tracking", url: () => "https://www.atlassian.com/software/jira" },
+  ],
+  pdftools: [
+    { name: "iLovePDF", desc: "Merge, split, compress, convert PDFs", url: () => "https://www.ilovepdf.com/" },
+    { name: "Smallpdf", desc: "PDF editing & conversion toolkit", url: () => "https://smallpdf.com/" },
+    { name: "PDF24 Tools", desc: "Free PDF tools, no signup", url: () => "https://tools.pdf24.org/en/" },
+    { name: "Adobe Acrobat Online", desc: "Official Adobe PDF tools", url: () => "https://www.adobe.com/acrobat/online.html" },
+    { name: "CloudConvert", desc: "Convert between 200+ file formats", url: () => "https://cloudconvert.com/" },
+    { name: "Xodo", desc: "Free PDF reader, editor & annotator", url: () => "https://xodo.com/" },
+    { name: "TinyPNG", desc: "Compress PNG/JPG images", url: () => "https://tinypng.com/" },
+  ],
+  design: [
+    { name: "Canva", desc: "Graphic design & templates", url: () => "https://www.canva.com/" },
+    { name: "Figma", desc: "UI/UX & collaborative design", url: () => "https://www.figma.com/" },
+    { name: "diagrams.net (draw.io)", desc: "Free flowcharts & diagrams", url: () => "https://app.diagrams.net/" },
+    { name: "Lucidchart", desc: "Diagramming & flowcharts", url: () => "https://www.lucidchart.com/" },
+    { name: "Miro", desc: "Online collaborative whiteboard", url: () => "https://miro.com/" },
+  ],
+  ittools: [
+    { name: "Downdetector", desc: "Check if a service is down for everyone", url: (q) => q ? `https://downdetector.com/search/?q=${encodeURIComponent(q)}` : "https://downdetector.com/" },
+    { name: "Speedtest by Ookla", desc: "Test your internet connection speed", url: () => "https://www.speedtest.net/" },
+    { name: "Fast.com", desc: "Quick internet speed check (Netflix)", url: () => "https://fast.com/" },
+    { name: "IsItDownRightNow", desc: "Website uptime / outage checker", url: (q) => q ? `https://www.isitdownrightnow.com/${encodeURIComponent(q)}.html` : "https://www.isitdownrightnow.com/" },
+    { name: "DNS Checker", desc: "Check DNS propagation worldwide", url: (q) => q ? `https://dnschecker.org/#A/${encodeURIComponent(q)}` : "https://dnschecker.org/" },
+    { name: "Google Public DNS Help", desc: "Fix DNS issues (official guide)", url: () => "https://developers.google.com/speed/public-dns/docs/using" },
+    { name: "MX Toolbox", desc: "Diagnose email delivery / DNS / MX issues", url: (q) => q ? `https://mxtoolbox.com/SuperTool.aspx?action=mx%3a${encodeURIComponent(q)}` : "https://mxtoolbox.com/" },
+    { name: "SSL Labs Test", desc: "Diagnose HTTPS/SSL certificate issues", url: (q) => q ? `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(q)}` : "https://www.ssllabs.com/ssltest/" },
+    { name: "Can I use", desc: "Browser feature/compatibility support tables", url: (q) => q ? `https://caniuse.com/?search=${encodeURIComponent(q)}` : "https://caniuse.com/" },
+    { name: "What's My Browser", desc: "Diagnose browser/user-agent issues", url: () => "https://www.whatsmybrowser.org/" },
+    { name: "Microsoft 365 Service Health", desc: "Official Microsoft 365 outage status", url: () => "https://status.office365.com/" },
+    { name: "Google Workspace Status", desc: "Official Google Workspace outage status", url: () => "https://www.google.com/appsstatus/dashboard/" },
+  ],
+  shortcuts: [
+    { name: "Windows Shortcuts", desc: "Official Microsoft keyboard shortcuts", url: () => "https://support.microsoft.com/en-us/windows/keyboard-shortcuts-in-windows-dcc61a57-8ff0-cffe-9796-cb9706c75eec" },
+    { name: "macOS Shortcuts", desc: "Official Apple keyboard shortcuts", url: () => "https://support.apple.com/en-us/102650" },
+    { name: "Chrome Shortcuts", desc: "Official Chrome browser shortcuts", url: () => "https://support.google.com/chrome/answer/157179" },
+    { name: "Google Docs Shortcuts", desc: "Official Docs keyboard shortcuts", url: () => "https://support.google.com/docs/answer/179738" },
+    { name: "Google Sheets Shortcuts", desc: "Official Sheets keyboard shortcuts", url: () => "https://support.google.com/docs/answer/181110" },
+    { name: "Excel Shortcuts", desc: "Official Excel keyboard shortcuts", url: () => "https://support.microsoft.com/en-us/office/keyboard-shortcuts-in-excel-1798d9d5-842a-42b8-9c99-9b7213f0040f" },
+    { name: "Word Shortcuts", desc: "Official Word keyboard shortcuts", url: () => "https://support.microsoft.com/en-us/office/keyboard-shortcuts-in-word-95ef89dd-7142-4b50-afb2-f762f663ceb2" },
+    { name: "Gmail Shortcuts", desc: "Official Gmail keyboard shortcuts", url: () => "https://support.google.com/mail/answer/6594" },
+    { name: "Slack Shortcuts", desc: "Official Slack keyboard shortcuts", url: () => "https://slack.com/help/articles/201374536-Slack-keyboard-shortcuts" },
+    { name: "VS Code Shortcuts", desc: "Official VS Code keyboard reference", url: () => "https://code.visualstudio.com/docs/getstarted/keybindings" },
+    { name: "Photoshop Shortcuts", desc: "Official Photoshop keyboard shortcuts", url: () => "https://helpx.adobe.com/photoshop/using/default-keyboard-shortcuts.html" },
+    { name: "Figma Shortcuts", desc: "Official Figma keyboard shortcuts", url: () => "https://help.figma.com/hc/en-us/articles/360040328653" },
+  ],
+  general: [
+    { name: "OSINT Framework", desc: "Categorized directory of open-source research resources", url: () => "https://osintframework.com/" },
+    { name: "Google Advanced Search", desc: "Search with precise operators", url: (q) => `https://www.google.com/search?q=${encodeURIComponent(q || '')}` },
+    { name: "DuckDuckGo", desc: "Privacy-respecting search", url: (q) => `https://duckduckgo.com/?q=${encodeURIComponent(q || '')}` },
+  ],
+  network: [
+    { name: "WHOIS Lookup", desc: "Domain registration lookup", url: (q) => `https://who.is/whois/${encodeURIComponent(q || '')}` },
+    { name: "crt.sh", desc: "Certificate transparency log search", url: (q) => `https://crt.sh/?q=${encodeURIComponent(q || '')}` },
+    { name: "VirusTotal", desc: "Domain / IP / file reputation lookup", url: (q) => q ? `https://www.virustotal.com/gui/search/${encodeURIComponent(q)}` : "https://www.virustotal.com/" },
+    { name: "DNSDumpster", desc: "Passive DNS reconnaissance for your own domains", url: () => "https://dnsdumpster.com/" },
+    { name: "urlscan.io", desc: "Sandboxed URL/website scan & screenshot", url: (q) => q ? `https://urlscan.io/search/#${encodeURIComponent(q)}` : "https://urlscan.io/" },
+    { name: "Have I Been Pwned", desc: "Check if your own email/account appeared in a known breach", url: (q) => `https://haveibeenpwned.com/account/${encodeURIComponent(q || '')}` },
+  ],
+  archive: [
+    { name: "Wayback Machine", desc: "Historical snapshots of web pages", url: (q) => `https://web.archive.org/web/*/${encodeURIComponent(q || '')}` },
+    { name: "Archive.today", desc: "On-demand page archiving/lookup", url: () => "https://archive.ph/" },
+  ],
+  docs: [
+    { name: "Internet Archive", desc: "Books, texts & media — free lending library", url: (q) => `https://archive.org/search?query=${encodeURIComponent(q || '')}` },
+    { name: "Open Library", desc: "Catalog & free borrowing of scanned books", url: (q) => `https://openlibrary.org/search?q=${encodeURIComponent(q || '')}` },
+    { name: "Project Gutenberg", desc: "70,000+ free public-domain ebooks", url: (q) => `https://www.gutenberg.org/ebooks/search/?query=${encodeURIComponent(q || '')}` },
+    { name: "Google Books", desc: "Search & preview books, many free", url: (q) => `https://www.google.com/books/edition/_/search?q=${encodeURIComponent(q || '')}` },
+    { name: "HathiTrust", desc: "Digital library of scanned books", url: (q) => `https://catalog.hathitrust.org/Search/Home?lookfor=${encodeURIComponent(q || '')}&type=all` },
+    { name: "Unpaywall", desc: "Finds legal free versions of paywalled papers", url: (q) => q ? `https://api.unpaywall.org/v2/${encodeURIComponent(q)}?email=unpaywall@impactstory.org` : "https://unpaywall.org/" },
+    { name: "CORE", desc: "Aggregator of open-access research papers", url: (q) => `https://core.ac.uk/search?q=${encodeURIComponent(q || '')}` },
+    { name: "Semantic Scholar", desc: "AI-powered academic paper search", url: (q) => `https://www.semanticscholar.org/search?q=${encodeURIComponent(q || '')}` },
+    { name: "DOAJ", desc: "Directory of Open Access Journals", url: (q) => `https://doaj.org/search/articles?source=${encodeURIComponent('{"query":{"query_string":{"query":"' + (q || '') + '"}}}')}` },
+    { name: "Google Scholar", desc: "Scholarly literature search", url: (q) => `https://scholar.google.com/scholar?q=${encodeURIComponent(q || '')}` },
+    { name: "PubMed Central", desc: "Free full-text biomedical & life sciences papers", url: (q) => `https://www.ncbi.nlm.nih.gov/pmc/?term=${encodeURIComponent(q || '')}` },
+    { name: "arXiv", desc: "Free preprints: physics, math, CS & more", url: (q) => `https://arxiv.org/search/?query=${encodeURIComponent(q || '')}&searchtype=all` },
+  ],
+};
+const categoryGroup = {
+  office: 'office', comms: 'office', storage: 'office', pm: 'office', pdftools: 'office', design: 'office',
+  ittools: 'it', shortcuts: 'shortcuts', general: 'research', network: 'research', archive: 'research', docs: 'docs'
+};
+const categoryTitles = {
+  office: 'Office Suites', comms: 'Email, Calendar & Meetings', storage: 'Cloud Storage', pm: 'Project & Task Management',
+  pdftools: 'PDF & File Tools', design: 'Design & Diagramming', ittools: 'Network & IT Troubleshooting',
+  shortcuts: 'Keyboard Shortcuts', general: 'Search & Frameworks', network: 'Domain / IP / Network', archive: 'Web Archives',
+  docs: 'Open-Access Books, Papers & Documents'
+};
+
+/* ---- Pinned favorites (in-memory for this session; no persistent storage) ---- */
+const pinned = new Set();
+function toolKey(cat, name) { return cat + '::' + name; }
+function togglePin(cat, name) {
+  const key = toolKey(cat, name);
+  if (pinned.has(key)) pinned.delete(key); else pinned.add(key);
+  renderOsintTools(); renderLandingGrid(); runGlobalSearch();
+}
+
+function renderOsintTools() {
+  Object.entries(osintTools).forEach(([cat, tools]) => {
+    const el = document.getElementById('osint-' + cat);
+    if (!el) return;
+    el.innerHTML = tools.map(t => {
+      const key = toolKey(cat, t.name);
+      const isPinned = pinned.has(key);
+      return `<a class="osint-tool" href="#" data-cat="${cat}" data-name="${t.name.replace(/"/g, '&quot;')}">
+        <span class="pin ${isPinned ? 'pinned' : ''}" data-pin-cat="${cat}" data-pin-name="${t.name.replace(/"/g, '&quot;')}">${isPinned ? '★' : '☆'}</span>
+        <span class="name">${t.name}</span>
+        <span class="desc">${t.desc}</span>
+      </a>`;
+    }).join('');
+  });
+
+  document.querySelectorAll('.osint-tool .pin').forEach(p => {
+    p.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      togglePin(p.dataset.pinCat, p.dataset.pinName);
     });
-  }
-
-  // Initialize once Leaflet + DOM are ready
-  window.addEventListener('DOMContentLoaded', initTacticalMap);
-  if (document.readyState !== 'loading') initTacticalMap();
-
-  /* =====================================================================
-     CYBER SIGNAL WORLD MONITOR ENGINE
-     Simulated (client-side) live signal feed, stats and threat level,
-     driven off the same node data that powers the map above. No external
-     services are contacted — everything here is generated locally.
-     ===================================================================== */
-  const signalFeedEl = document.getElementById('signalFeed');
-  const statNodes = document.getElementById('statNodes');
-  const statLinks = document.getElementById('statLinks');
-  const statLoad = document.getElementById('statLoad');
-  const statRate = document.getElementById('statRate');
-  const threatBar = document.getElementById('threatBar');
-  const threatPct = document.getElementById('threatPct');
-  const threatLevelTopbar = document.getElementById('threatLevelTopbar');
-  const alertBanner = document.getElementById('alertBanner');
-
-  const signalTemplates = [
-    { tag: "[NODE SYNC]", kind: "info", text: (n) => `${n.label} (${n.region}) completed handshake — link nominal.` },
-    { tag: "[LOAD REPORT]", kind: "info", text: (n) => `${n.label} reporting ${n.load}% throughput, within normal bounds.` },
-    { tag: "[TRACE]", kind: "info", text: (n) => `Route trace across ${n.region} corridor resolved in optimal time.` },
-    { tag: "[LATENCY]", kind: "warn", text: (n) => `Elevated latency detected on ${n.label} uplink — monitoring.` },
-    { tag: "[ANOMALY]", kind: "warn", text: (n) => `Irregular packet pattern flagged near ${n.label}, low confidence.` },
-    { tag: "[INTRUSION ATTEMPT]", kind: "alert", text: (n) => `Blocked unauthorized probe against ${n.label} perimeter.` },
-    { tag: "[CORE STATUS]", kind: "info", text: (n) => `${n.label} core relay holding steady sync with all peers.` },
-  ];
-
-  let signalsThisMinute = 0;
-  let lastRateReset = Date.now();
-
-  function pushSignalCard() {
-    const node = mapNodes[Math.floor(Math.random() * mapNodes.length)];
-    // Weighted pick: mostly info, occasional warn, rare alert
-    const roll = Math.random();
-    let pool = signalTemplates.filter(t => t.kind === 'info');
-    if (roll > 0.82) pool = signalTemplates.filter(t => t.kind === 'alert');
-    else if (roll > 0.6) pool = signalTemplates.filter(t => t.kind === 'warn');
-    const tpl = pool[Math.floor(Math.random() * pool.length)];
-
-    const card = document.createElement('div');
-    card.className = 'signal-card' + (tpl.kind === 'warn' ? ' warn' : tpl.kind === 'alert' ? ' alert' : '');
-    const now = new Date();
-    card.innerHTML =
-      `<div class="signal-tag">${tpl.tag}</div>` +
-      `<div class="signal-text">${tpl.text(node)}</div>` +
-      `<div class="signal-time">${now.toUTCString().slice(17, 25)} UTC</div>`;
-    signalFeedEl.prepend(card);
-    while (signalFeedEl.children.length > 30) signalFeedEl.removeChild(signalFeedEl.lastChild);
-
-    signalsThisMinute++;
-
-    if (tpl.kind === 'alert') {
-      showAlertBanner(`⚠ ${tpl.tag} ${tpl.text(node)}`);
-      bumpThreat(8);
-    } else if (tpl.kind === 'warn') {
-      bumpThreat(3);
-    } else {
-      bumpThreat(-1);
-    }
-  }
-
-  function showAlertBanner(msg) {
-    alertBanner.textContent = msg;
-    alertBanner.style.display = 'block';
-    clearTimeout(showAlertBanner._t);
-    showAlertBanner._t = setTimeout(() => { alertBanner.style.display = 'none'; }, 4000);
-  }
-
-  let threatValue = 30;
-  function bumpThreat(delta) {
-    threatValue = Math.min(95, Math.max(8, threatValue + delta));
-    renderThreat();
-  }
-
-  function renderThreat() {
-    threatBar.style.width = threatValue + '%';
-    threatPct.textContent = Math.round(threatValue) + '%';
-    let label = 'LOW', color = '#00ff88';
-    if (threatValue > 70) { label = 'CRITICAL'; color = '#ff3b3b'; }
-    else if (threatValue > 45) { label = 'ELEVATED'; color = '#ffcc00'; }
-    else if (threatValue > 25) { label = 'GUARDED'; color = '#00e0ff'; }
-    threatLevelTopbar.textContent = label;
-    threatLevelTopbar.style.color = color;
-  }
-
-  function updateStats() {
-    statNodes.textContent = mapNodes.length;
-    const coreLinks = mapNodes.filter(n => n.status === 'CORE').length;
-    statLinks.textContent = coreLinks * 3; // illustrative derived metric
-    const avgLoad = Math.round(mapNodes.reduce((s, n) => s + n.load, 0) / mapNodes.length);
-    statLoad.textContent = avgLoad + '%';
-
-    const now = Date.now();
-    if (now - lastRateReset >= 60000) {
-      statRate.textContent = signalsThisMinute;
-      signalsThisMinute = 0;
-      lastRateReset = now;
-    } else {
-      // live-ish estimate before the first full minute completes
-      const elapsedMin = Math.max(1 / 60, (now - lastRateReset) / 60000);
-      statRate.textContent = Math.round(signalsThisMinute / elapsedMin);
-    }
-  }
-
-  // Seed initial feed cards immediately, then keep streaming
-  for (let i = 0; i < 5; i++) pushSignalCard();
-  renderThreat();
-  updateStats();
-  setInterval(pushSignalCard, 3200);
-  setInterval(updateStats, 1000);
-  // Threat naturally cools down over time if nothing new happens
-  setInterval(() => bumpThreat(-1), 5000);
-
-  /* =====================================================================
-     QUICK-ACCESS TOOLKIT DATA
-     A curated set of well-known, publicly available resources, grouped
-     into: Office & Productivity, PDF/File tools, Design, Keyboard
-     Shortcuts, OSINT search/lookup tools, and Open-Access documents.
-
-     Clicking a tile opens that service in a new tab, pre-filled with
-     whatever the person typed into the query box (when the tool supports
-     a URL query parameter). Nothing here is scraped or automated —
-     it's just a fast, organized set of bookmarks with your active query
-     carried along.
-
-     Note: this intentionally sticks to legitimate, official, or open-access
-     resources. It does not include paywall-bypass or document-"unlocker"
-     tools (e.g. Scribd/Course Hero downloaders, Sci-Hub, Library Genesis,
-     PDF Drive and similar shadow-library sites), since those exist to
-     strip paid or gated access without authorization rather than to
-     search or use open, public, or licensed resources.
-     ===================================================================== */
-  const osintTools = {
-    // ---------------- OFFICE & PRODUCTIVITY ----------------
-    office: [
-      { name: "Google Docs", desc: "Free online word processor", url: () => "https://docs.google.com/document/u/0/" },
-      { name: "Google Sheets", desc: "Free online spreadsheets", url: () => "https://docs.google.com/spreadsheets/u/0/" },
-      { name: "Google Slides", desc: "Free online presentations", url: () => "https://docs.google.com/presentation/u/0/" },
-      { name: "Google Forms", desc: "Free online forms & surveys", url: () => "https://docs.google.com/forms/u/0/" },
-      { name: "Microsoft Word Online", desc: "Free web version of Word", url: () => "https://www.microsoft365.com/launch/word" },
-      { name: "Microsoft Excel Online", desc: "Free web version of Excel", url: () => "https://www.microsoft365.com/launch/excel" },
-      { name: "Microsoft PowerPoint Online", desc: "Free web version of PowerPoint", url: () => "https://www.microsoft365.com/launch/powerpoint" },
-      { name: "Office.com", desc: "Microsoft 365 web app launcher", url: () => "https://www.office.com/" },
-      { name: "LibreOffice", desc: "Free open-source office suite (download)", url: () => "https://www.libreoffice.org/download/download-libreoffice/" },
-      { name: "OnlyOffice", desc: "Free online/desktop office suite", url: () => "https://www.onlyoffice.com/" },
-      { name: "Zoho Writer", desc: "Free online document editor", url: () => "https://www.zoho.com/writer/" },
-      { name: "Zoho Sheet", desc: "Free online spreadsheet editor", url: () => "https://www.zoho.com/sheet/" },
-    ],
-    comms: [
-      { name: "Gmail", desc: "Email", url: () => "https://mail.google.com/" },
-      { name: "Outlook", desc: "Microsoft email & calendar", url: () => "https://outlook.office.com/mail/" },
-      { name: "Google Calendar", desc: "Scheduling & events", url: () => "https://calendar.google.com/" },
-      { name: "Zoom", desc: "Video meetings", url: () => "https://zoom.us/join" },
-      { name: "Google Meet", desc: "Video meetings", url: () => "https://meet.google.com/" },
-      { name: "Microsoft Teams", desc: "Chat & video meetings", url: () => "https://teams.microsoft.com/" },
-      { name: "Slack", desc: "Team messaging", url: () => "https://slack.com/signin" },
-    ],
-    storage: [
-      { name: "Google Drive", desc: "Cloud file storage", url: () => "https://drive.google.com/" },
-      { name: "Microsoft OneDrive", desc: "Cloud file storage", url: () => "https://onedrive.live.com/" },
-      { name: "Dropbox", desc: "Cloud file storage & sync", url: () => "https://www.dropbox.com/home" },
-      { name: "Box", desc: "Cloud content management", url: () => "https://app.box.com/" },
-    ],
-    pm: [
-      { name: "Notion", desc: "Notes, docs & workspace wiki", url: () => "https://www.notion.so/" },
-      { name: "Trello", desc: "Kanban task boards", url: () => "https://trello.com/" },
-      { name: "Asana", desc: "Project & task management", url: () => "https://app.asana.com/" },
-      { name: "Monday.com", desc: "Work OS / project tracking", url: () => "https://monday.com/" },
-      { name: "ClickUp", desc: "All-in-one productivity platform", url: () => "https://clickup.com/" },
-      { name: "Jira", desc: "Issue & agile project tracking", url: () => "https://www.atlassian.com/software/jira" },
-    ],
-    pdftools: [
-      { name: "iLovePDF", desc: "Merge, split, compress, convert PDFs", url: () => "https://www.ilovepdf.com/" },
-      { name: "Smallpdf", desc: "PDF editing & conversion toolkit", url: () => "https://smallpdf.com/" },
-      { name: "PDF24 Tools", desc: "Free PDF tools, no signup", url: () => "https://tools.pdf24.org/en/" },
-      { name: "Adobe Acrobat Online", desc: "Official Adobe PDF tools", url: () => "https://www.adobe.com/acrobat/online.html" },
-      { name: "CloudConvert", desc: "Convert between 200+ file formats", url: () => "https://cloudconvert.com/" },
-      { name: "Xodo", desc: "Free PDF reader, editor & annotator", url: () => "https://xodo.com/" },
-      { name: "TinyPNG", desc: "Compress PNG/JPG images", url: () => "https://tinypng.com/" },
-    ],
-    design: [
-      { name: "Canva", desc: "Graphic design & templates", url: () => "https://www.canva.com/" },
-      { name: "Figma", desc: "UI/UX & collaborative design", url: () => "https://www.figma.com/" },
-      { name: "diagrams.net (draw.io)", desc: "Free flowcharts & diagrams", url: () => "https://app.diagrams.net/" },
-      { name: "Lucidchart", desc: "Diagramming & flowcharts", url: () => "https://www.lucidchart.com/" },
-      { name: "Miro", desc: "Online collaborative whiteboard", url: () => "https://miro.com/" },
-    ],
-    // ---------------- KEYBOARD SHORTCUTS ----------------
-    shortcuts: [
-      { name: "Windows Shortcuts", desc: "Official Microsoft keyboard shortcuts", url: () => "https://support.microsoft.com/en-us/windows/keyboard-shortcuts-in-windows-dcc61a57-8ff0-cffe-9796-cb9706c75eec" },
-      { name: "macOS Shortcuts", desc: "Official Apple keyboard shortcuts", url: () => "https://support.apple.com/en-us/102650" },
-      { name: "Chrome Shortcuts", desc: "Official Chrome browser shortcuts", url: () => "https://support.google.com/chrome/answer/157179" },
-      { name: "Google Docs Shortcuts", desc: "Official Docs keyboard shortcuts", url: () => "https://support.google.com/docs/answer/179738" },
-      { name: "Google Sheets Shortcuts", desc: "Official Sheets keyboard shortcuts", url: () => "https://support.google.com/docs/answer/181110" },
-      { name: "Excel Shortcuts", desc: "Official Excel keyboard shortcuts", url: () => "https://support.microsoft.com/en-us/office/keyboard-shortcuts-in-excel-1798d9d5-842a-42b8-9c99-9b7213f0040f" },
-      { name: "Word Shortcuts", desc: "Official Word keyboard shortcuts", url: () => "https://support.microsoft.com/en-us/office/keyboard-shortcuts-in-word-95ef89dd-7142-4b50-afb2-f762f663ceb2" },
-      { name: "Gmail Shortcuts", desc: "Official Gmail keyboard shortcuts", url: () => "https://support.google.com/mail/answer/6594" },
-      { name: "Slack Shortcuts", desc: "Official Slack keyboard shortcuts", url: () => "https://slack.com/help/articles/201374536-Slack-keyboard-shortcuts" },
-      { name: "VS Code Shortcuts", desc: "Official VS Code keyboard reference", url: () => "https://code.visualstudio.com/docs/getstarted/keybindings" },
-      { name: "Photoshop Shortcuts", desc: "Official Photoshop keyboard shortcuts", url: () => "https://helpx.adobe.com/photoshop/using/default-keyboard-shortcuts.html" },
-      { name: "Figma Shortcuts", desc: "Official Figma keyboard shortcuts", url: () => "https://help.figma.com/hc/en-us/articles/360040328653" },
-    ],
-    // ---------------- OSINT ----------------
-    general: [
-      { name: "OSINT Framework", desc: "Categorized directory of OSINT resources", url: () => "https://osintframework.com/" },
-      { name: "Google Dorking", desc: "Advanced search operators", url: (q) => `https://www.google.com/search?q=${encodeURIComponent(q || '')}` },
-      { name: "DuckDuckGo", desc: "Privacy-respecting search", url: (q) => `https://duckduckgo.com/?q=${encodeURIComponent(q || '')}` },
-      { name: "IntelTechniques", desc: "Search tool directory by Michael Bazzell", url: () => "https://inteltechniques.com/tools/" },
-    ],
-    username: [
-      { name: "WhatsMyName", desc: "Username enumeration across sites", url: (q) => `https://whatsmyname.app/?q=${encodeURIComponent(q || '')}` },
-      { name: "Namechk", desc: "Check username availability across platforms", url: (q) => `https://namechk.com/${encodeURIComponent(q || '')}` },
-      { name: "Social Searcher", desc: "Search public social mentions", url: (q) => `https://www.social-searcher.com/search-users/?q=${encodeURIComponent(q || '')}` },
-      { name: "LinkedIn Search", desc: "Public profile search", url: (q) => `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(q || '')}` },
-    ],
-    network: [
-      { name: "Shodan", desc: "Search engine for internet-connected devices", url: (q) => q ? `https://www.shodan.io/search?query=${encodeURIComponent(q)}` : "https://www.shodan.io/" },
-      { name: "Censys", desc: "Internet-wide host & certificate search", url: (q) => q ? `https://search.censys.io/search?resource=hosts&q=${encodeURIComponent(q)}` : "https://search.censys.io/" },
-      { name: "WHOIS Lookup", desc: "Domain registration lookup", url: (q) => `https://who.is/whois/${encodeURIComponent(q || '')}` },
-      { name: "crt.sh", desc: "Certificate transparency log search", url: (q) => `https://crt.sh/?q=${encodeURIComponent(q || '')}` },
-      { name: "VirusTotal", desc: "Domain / IP / file reputation lookup", url: (q) => q ? `https://www.virustotal.com/gui/search/${encodeURIComponent(q)}` : "https://www.virustotal.com/" },
-      { name: "DNSDumpster", desc: "Passive DNS reconnaissance", url: () => "https://dnsdumpster.com/" },
-      { name: "SecurityTrails", desc: "Historical DNS & domain intelligence", url: (q) => q ? `https://securitytrails.com/list/apex_domain/${encodeURIComponent(q)}` : "https://securitytrails.com/" },
-      { name: "urlscan.io", desc: "Sandboxed URL/website scan & screenshot", url: (q) => q ? `https://urlscan.io/search/#${encodeURIComponent(q)}` : "https://urlscan.io/" },
-      { name: "GreyNoise", desc: "Internet background-noise / scanner IP lookup", url: (q) => q ? `https://viz.greynoise.io/ip/${encodeURIComponent(q)}` : "https://viz.greynoise.io/" },
-    ],
-    breach: [
-      { name: "Have I Been Pwned", desc: "Check accounts against known breaches", url: (q) => `https://haveibeenpwned.com/account/${encodeURIComponent(q || '')}` },
-      { name: "DeHashed", desc: "Breach & leak data search", url: (q) => q ? `https://dehashed.com/search?query=${encodeURIComponent(q)}` : "https://dehashed.com/" },
-      { name: "Firefox Monitor", desc: "Mozilla breach monitoring", url: () => "https://monitor.firefox.com/" },
-      { name: "Intelligence X", desc: "Search engine for leaks, breaches & darknet indexes", url: (q) => q ? `https://intelx.io/?s=${encodeURIComponent(q)}` : "https://intelx.io/" },
-      { name: "LeakCheck", desc: "Data breach lookup by email/username/domain", url: (q) => q ? `https://leakcheck.io/search?query=${encodeURIComponent(q)}` : "https://leakcheck.io/" },
-    ],
-    image: [
-      { name: "Google Images", desc: "Reverse image search", url: () => "https://images.google.com/" },
-      { name: "Google Lens", desc: "Visual search & object/landmark ID", url: () => "https://lens.google.com/" },
-      { name: "TinEye", desc: "Reverse image search engine", url: () => "https://tineye.com/" },
-      { name: "Yandex Images", desc: "Often strongest for face matches", url: () => "https://yandex.com/images/" },
-      { name: "EXIF Data Viewer", desc: "Inspect image metadata/EXIF", url: () => "http://exif.regex.info/exif.cgi" },
-    ],
-    archive: [
-      { name: "Wayback Machine", desc: "Historical snapshots of web pages", url: (q) => `https://web.archive.org/web/*/${encodeURIComponent(q || '')}` },
-      { name: "Archive.today", desc: "On-demand page archiving/lookup", url: () => "https://archive.ph/" },
-      { name: "Google Cache Viewer", desc: "Cached page lookup", url: () => `https://cachedview.nl/` },
-    ],
-    // ---------------- OPEN-ACCESS DOCUMENTS ----------------
-    docs: [
-      { name: "Internet Archive", desc: "Books, texts & media — free lending library", url: (q) => `https://archive.org/search?query=${encodeURIComponent(q || '')}` },
-      { name: "Open Library", desc: "Catalog & free borrowing of scanned books", url: (q) => `https://openlibrary.org/search?q=${encodeURIComponent(q || '')}` },
-      { name: "Project Gutenberg", desc: "70,000+ free public-domain ebooks", url: (q) => `https://www.gutenberg.org/ebooks/search/?query=${encodeURIComponent(q || '')}` },
-      { name: "Google Books", desc: "Search & preview books, many free", url: (q) => `https://www.google.com/books/edition/_/search?q=${encodeURIComponent(q || '')}` },
-      { name: "HathiTrust", desc: "Digital library of scanned books", url: (q) => `https://catalog.hathitrust.org/Search/Home?lookfor=${encodeURIComponent(q || '')}&type=all` },
-      { name: "Unpaywall / oadoi", desc: "Finds legal free versions of paywalled papers", url: (q) => q ? `https://api.unpaywall.org/v2/${encodeURIComponent(q)}?email=unpaywall@impactstory.org` : "https://unpaywall.org/" },
-      { name: "CORE", desc: "Aggregator of open-access research papers", url: (q) => `https://core.ac.uk/search?q=${encodeURIComponent(q || '')}` },
-      { name: "Semantic Scholar", desc: "AI-powered academic paper search", url: (q) => `https://www.semanticscholar.org/search?q=${encodeURIComponent(q || '')}` },
-      { name: "BASE Search", desc: "Bielefeld academic search engine, open access", url: (q) => `https://www.base-search.net/Search/Results?lookfor=${encodeURIComponent(q || '')}` },
-      { name: "DOAJ", desc: "Directory of Open Access Journals", url: (q) => `https://doaj.org/search/articles?source=${encodeURIComponent('{"query":{"query_string":{"query":"' + (q || '') + '"}}}')}` },
-      { name: "Google Scholar", desc: "Scholarly literature search", url: (q) => `https://scholar.google.com/scholar?q=${encodeURIComponent(q || '')}` },
-      { name: "PubMed Central", desc: "Free full-text biomedical & life sciences papers", url: (q) => `https://www.ncbi.nlm.nih.gov/pmc/?term=${encodeURIComponent(q || '')}` },
-      { name: "arXiv", desc: "Free preprints: physics, math, CS & more", url: (q) => `https://arxiv.org/abs/${encodeURIComponent(q || '')}`.includes('undefined') ? "https://arxiv.org/" : `https://arxiv.org/search/?query=${encodeURIComponent(q || '')}&searchtype=all` },
-    ],
-  };
-
-  function renderOsintTools() {
-    Object.entries(osintTools).forEach(([cat, tools]) => {
-      const el = document.getElementById('osint-' + cat);
-      if (!el) return;
-      el.innerHTML = tools.map(t =>
-        `<a class="osint-tool" href="#" data-cat="${cat}" data-name="${t.name}">
-          <span class="name">${t.name}</span>
-          <span class="desc">${t.desc}</span>
-        </a>`
-      ).join('');
-    });
-
-    document.querySelectorAll('.osint-tool').forEach(a => {
-      a.addEventListener('click', (e) => {
-        e.preventDefault();
-        const cat = a.dataset.cat;
-        const name = a.dataset.name;
-        const tool = osintTools[cat].find(t => t.name === name);
-        const q = document.getElementById('osintQuery').value.trim();
+  });
+  document.querySelectorAll('.osint-tool').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      const cat = a.dataset.cat, name = a.dataset.name;
+      const tool = osintTools[cat].find(t => t.name === name);
+      const q = document.getElementById('osintQuery').value.trim();
+      try {
         window.open(tool.url(q), '_blank', 'noopener');
-      });
+      } catch (err) {
+        showToast('Could not build a link for "' + name + '". Try a simpler query.', 'error');
+      }
     });
-  }
-  renderOsintTools();
-
-  /* ---- Toolkit overlay: tabs to filter by group ---- */
-  const osintTabDefs = [
-    { key: 'all', label: 'All' },
-    { key: 'office', label: 'Office & Productivity' },
-    { key: 'shortcuts', label: 'Shortcuts' },
-    { key: 'osint', label: 'OSINT' },
-    { key: 'docs', label: 'Open-Access Docs' },
-  ];
-
-  function renderOsintTabs() {
-    const wrap = document.getElementById('osintTabs');
-    wrap.innerHTML = osintTabDefs.map(t =>
-      `<div class="osint-tab-btn" data-tab="${t.key}">${t.label}</div>`
-    ).join('');
-    wrap.querySelectorAll('.osint-tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => filterOsintTab(btn.dataset.tab));
-    });
-  }
-  renderOsintTabs();
-
-  function filterOsintTab(tab) {
-    document.querySelectorAll('.osint-tab-btn').forEach(btn =>
-      btn.classList.toggle('active', btn.dataset.tab === tab)
-    );
-    document.querySelectorAll('.osint-category').forEach(cat => {
-      const group = cat.dataset.group;
-      const show = tab === 'all' || group === tab;
-      cat.setAttribute('data-hidden', show ? 'false' : 'true');
-    });
-  }
-
-  function openOsint(tab) {
-    document.getElementById('osintOverlay').classList.add('open');
-    filterOsintTab(tab || 'all');
-    // close the radial orb menu when the overlay opens
-    touchMenu.classList.remove('open');
-    touchOrb.classList.remove('open');
-    setTimeout(() => document.getElementById('osintQuery').focus(), 50);
-  }
-
-  function closeOsint() {
-    document.getElementById('osintOverlay').classList.remove('open');
-  }
-
-  document.getElementById('osintOverlay').addEventListener('click', (e) => {
-    if (e.target.id === 'osintOverlay') closeOsint();
   });
+}
+renderOsintTools();
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeOsint();
+const osintTabDefs = [
+  { key: 'all', label: 'All' },
+  { key: 'office', label: 'Office & Productivity' },
+  { key: 'it', label: 'IT / Network' },
+  { key: 'shortcuts', label: 'Shortcuts' },
+  { key: 'research', label: 'Research' },
+  { key: 'docs', label: 'Open-Access Docs' },
+];
+function renderOsintTabs() {
+  const wrap = document.getElementById('osintTabs');
+  wrap.innerHTML = osintTabDefs.map(t => `<div class="osint-tab-btn" data-tab="${t.key}">${t.label}</div>`).join('');
+  wrap.querySelectorAll('.osint-tab-btn').forEach(btn => btn.addEventListener('click', () => filterOsintTab(btn.dataset.tab)));
+}
+renderOsintTabs();
+function filterOsintTab(tab) {
+  document.querySelectorAll('.osint-tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+  document.querySelectorAll('.osint-category').forEach(cat => {
+    const show = tab === 'all' || cat.dataset.group === tab;
+    cat.setAttribute('data-hidden', show ? 'false' : 'true');
   });
+}
+function openOsint(tab) {
+  document.getElementById('osintOverlay').classList.add('open');
+  filterOsintTab(tab || 'all');
+  touchMenu.classList.remove('open'); touchOrb.classList.remove('open');
+  setTimeout(() => document.getElementById('osintQuery').focus(), 50);
+}
+function closeOsint() { document.getElementById('osintOverlay').classList.remove('open'); }
+document.getElementById('osintOverlay').addEventListener('click', (e) => { if (e.target.id === 'osintOverlay') closeOsint(); });
 
-  /* =====================================================================
-     LANDING PANE — Office & productivity quick-launch grid
-     Renders the same "office"-group data as a full-page landing view
-     (an alternative to opening the toolkit overlay), for when the person
-     wants a dedicated "Office Hub" pane instead of a popup.
-     ===================================================================== */
-  const landingSections = [
-    { key: 'office', title: 'Office Suites' },
-    { key: 'comms', title: 'Email, Calendar & Meetings' },
-    { key: 'storage', title: 'Cloud Storage' },
-    { key: 'pm', title: 'Project & Task Management' },
-    { key: 'pdftools', title: 'PDF & File Tools' },
-    { key: 'design', title: 'Design & Diagramming' },
-    { key: 'shortcuts', title: 'Keyboard Shortcuts' },
-  ];
+/* =========================================================================
+   LANDING / HUB PANE — filterable grid + pins
+   ========================================================================= */
+let landingFilterText = '';
+let landingChip = 'all';
+function renderLandingGrid() {
+  const wrap = document.getElementById('landingGridWrap');
+  const sections = Object.keys(categoryTitles).filter(k => k !== 'general' && k !== 'network' && k !== 'archive' && k !== 'docs');
+  let html = '';
+  let totalShown = 0;
+  sections.forEach(cat => {
+    const tools = osintTools[cat] || [];
+    const filtered = tools.filter(t => {
+      const matchesText = !landingFilterText || (t.name + ' ' + t.desc).toLowerCase().includes(landingFilterText);
+      const matchesChip = landingChip === 'all' || (landingChip === 'pinned' && pinned.has(toolKey(cat, t.name)));
+      return matchesText && matchesChip;
+    });
+    if (!filtered.length) return;
+    totalShown += filtered.length;
+    const tiles = filtered.map(t => {
+      const key = toolKey(cat, t.name);
+      const isPinned = pinned.has(key);
+      return `<a class="landing-tile" href="${t.url()}" target="_blank" rel="noopener">
+        <span class="pin ${isPinned ? 'pinned' : ''}" data-pin-cat="${cat}" data-pin-name="${t.name.replace(/"/g, '&quot;')}">${isPinned ? '★' : '☆'}</span>
+        <span class="name">${t.name}</span>
+        <span class="desc">${t.desc}</span>
+      </a>`;
+    }).join('');
+    html += `<div class="landing-section-title"><span>${categoryTitles[cat]}</span><span class="count">${filtered.length}</span></div><div class="landing-grid">${tiles}</div>`;
+  });
+  wrap.innerHTML = totalShown ? html : `<div class="landing-empty">No tools match "${landingFilterText}". Try a different term or clear the filter.</div>`;
 
-  function renderLandingGrid() {
-    const wrap = document.getElementById('landingGridWrap');
-    wrap.innerHTML = landingSections.map(sec => {
-      const tools = osintTools[sec.key] || [];
-      const tiles = tools.map(t =>
-        `<a class="landing-tile" href="${t.url()}" target="_blank" rel="noopener">
-          <span class="name">${t.name}</span>
-          <span class="desc">${t.desc}</span>
-        </a>`
-      ).join('');
-      return `<div class="landing-section-title">${sec.title}</div><div class="landing-grid">${tiles}</div>`;
+  wrap.querySelectorAll('.pin').forEach(p => {
+    p.addEventListener('click', (e) => {
+      e.preventDefault(); e.stopPropagation();
+      togglePin(p.dataset.pinCat, p.dataset.pinName);
+    });
+  });
+}
+renderLandingGrid();
+
+document.getElementById('landingFilterInput').addEventListener('input', (e) => {
+  landingFilterText = e.target.value.trim().toLowerCase();
+  renderLandingGrid();
+});
+document.querySelectorAll('.landing-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    landingChip = chip.dataset.chip;
+    document.querySelectorAll('.landing-chip').forEach(c => c.classList.toggle('active', c === chip));
+    renderLandingGrid();
+  });
+});
+
+/* =========================================================================
+   GLOBAL SEARCH — press "/" anywhere to search every tool grid at once
+   ========================================================================= */
+function openGlobalSearch() {
+  document.getElementById('globalSearchWrap').classList.add('open');
+  const input = document.getElementById('globalSearchInput');
+  input.focus(); input.select();
+  touchMenu.classList.remove('open'); touchOrb.classList.remove('open');
+}
+function closeGlobalSearch() {
+  document.getElementById('globalSearchWrap').classList.remove('open');
+  document.getElementById('globalSearchResults').classList.remove('show');
+}
+function runGlobalSearch() {
+  const q = document.getElementById('globalSearchInput').value.trim().toLowerCase();
+  const resultsEl = document.getElementById('globalSearchResults');
+  if (!q) { resultsEl.classList.remove('show'); resultsEl.innerHTML = ''; return; }
+  const groups = {};
+  Object.entries(osintTools).forEach(([cat, tools]) => {
+    tools.forEach(t => {
+      if ((t.name + ' ' + t.desc).toLowerCase().includes(q)) {
+        (groups[cat] = groups[cat] || []).push(t);
+      }
+    });
+  });
+  const catKeys = Object.keys(groups);
+  if (!catKeys.length) {
+    resultsEl.innerHTML = `<div class="gsr-empty">No tools match "${q}".</div>`;
+  } else {
+    resultsEl.innerHTML = catKeys.map(cat => {
+      const items = groups[cat].slice(0, 8).map(t => {
+        const key = toolKey(cat, t.name);
+        const isPinned = pinned.has(key);
+        return `<div class="gsr-item" data-cat="${cat}" data-name="${t.name.replace(/"/g, '&quot;')}">
+          <div><div class="n">${t.name}</div><div class="d">${t.desc}</div></div>
+          <button class="pin-btn ${isPinned ? 'pinned' : ''}" data-pin-cat="${cat}" data-pin-name="${t.name.replace(/"/g, '&quot;')}">${isPinned ? '★' : '☆'}</button>
+        </div>`;
+      }).join('');
+      return `<div class="gsr-group-title">${categoryTitles[cat]}</div>${items}`;
     }).join('');
   }
-  renderLandingGrid();
+  resultsEl.classList.add('show');
 
-  /* =====================================================================
-     ASSISTIVE-TOUCH STYLE FLOATING ORB
-     Drag it anywhere on screen (mouse or touch). A single tap (no drag)
-     opens a radial stack of action buttons anchored to wherever the orb
-     currently sits, auto-flipping above/below/left/right to stay on-screen.
-     The orb + menu sit at a very high z-index so they always overlay every
-     other pane, panel, or overlay in the app (except the toolkit modal,
-     which intentionally sits on top while open).
-     ===================================================================== */
-  const touchOrb = document.getElementById('touchOrb');
-  const touchMenu = document.getElementById('touchMenu');
-
-  function placeOrb(x, y) {
-    const margin = 8;
-    const w = window.innerWidth, h = window.innerHeight;
-    x = Math.min(w - 56 - margin, Math.max(margin, x));
-    y = Math.min(h - 56 - margin, Math.max(margin, y));
-    touchOrb.style.left = x + 'px';
-    touchOrb.style.top = y + 'px';
-  }
-  // Default position: bottom-right, thumb-reachable
-  placeOrb(window.innerWidth - 76, window.innerHeight - 96);
-  window.addEventListener('resize', () => {
-    const rect = touchOrb.getBoundingClientRect();
-    placeOrb(rect.left, rect.top);
-    if (touchMenu.classList.contains('open')) positionMenu();
+  resultsEl.querySelectorAll('.pin-btn').forEach(b => {
+    b.addEventListener('click', (e) => { e.stopPropagation(); togglePin(b.dataset.pinCat, b.dataset.pinName); });
   });
-
-  let orbDragging = false;
-  let orbMoved = false;
-  let orbPointerStart = { x: 0, y: 0 };
-  let orbStart = { x: 0, y: 0 };
-
-  touchOrb.addEventListener('pointerdown', (e) => {
-    orbDragging = true;
-    orbMoved = false;
-    touchOrb.setPointerCapture(e.pointerId);
-    orbPointerStart = { x: e.clientX, y: e.clientY };
-    const rect = touchOrb.getBoundingClientRect();
-    orbStart = { x: rect.left, y: rect.top };
+  resultsEl.querySelectorAll('.gsr-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const cat = item.dataset.cat, name = item.dataset.name;
+      const tool = osintTools[cat].find(t => t.name === name);
+      window.open(tool.url(''), '_blank', 'noopener');
+    });
   });
+}
+document.getElementById('globalSearchInput').addEventListener('input', runGlobalSearch);
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); openGlobalSearch(); }
+  if (e.key === 'Escape') { closeGlobalSearch(); closeOsint(); }
+});
 
-  touchOrb.addEventListener('pointermove', (e) => {
-    if (!orbDragging) return;
-    const dx = e.clientX - orbPointerStart.x;
-    const dy = e.clientY - orbPointerStart.y;
-    if (Math.hypot(dx, dy) > 5) orbMoved = true;
-    if (orbMoved) {
-      placeOrb(orbStart.x + dx, orbStart.y + dy);
-      if (touchMenu.classList.contains('open')) positionMenu();
-    }
-  });
-
-  touchOrb.addEventListener('pointerup', (e) => {
-    orbDragging = false;
-    try { touchOrb.releasePointerCapture(e.pointerId); } catch (err) {}
-    if (!orbMoved) toggleTouchMenu();
-  });
-
-  function positionMenu() {
-    const rect = touchOrb.getBoundingClientRect();
-    const items = touchMenu.querySelectorAll('.touch-menu-item').length;
-    const itemH = 54; // 46px + gap
-    const menuH = Math.min(items * itemH + 16, window.innerHeight - 20);
-    const w = window.innerWidth, h = window.innerHeight;
-
-    // Prefer opening upward if there's room, otherwise downward.
-    let openUp = (rect.top - menuH) > 10;
-    let top = openUp ? Math.max(10, rect.top - menuH) : Math.min(h - menuH - 10, rect.bottom + 8);
-    // Keep menu horizontally aligned with the orb, flipped to stay on-screen.
-    let left = rect.left - 4;
-    if (left + 56 > w - 10) left = w - 66;
-    if (left < 10) left = 10;
-
-    // Clamp so the menu never spills above the viewport top when there
-    // isn't room either way (very small screens).
-    top = Math.max(6, Math.min(top, h - 60));
-
-    touchMenu.style.top = top + 'px';
-    touchMenu.style.left = left + 'px';
-    touchMenu.style.maxHeight = (h - top - 10) + 'px';
+/* =========================================================================
+   FLOATING ORB
+   ========================================================================= */
+const touchOrb = document.getElementById('touchOrb');
+const touchMenu = document.getElementById('touchMenu');
+function placeOrb(x, y) {
+  const margin = 8, w = window.innerWidth, h = window.innerHeight;
+  x = Math.min(w - 56 - margin, Math.max(margin, x));
+  y = Math.min(h - 56 - margin, Math.max(margin, y));
+  touchOrb.style.left = x + 'px'; touchOrb.style.top = y + 'px';
+}
+placeOrb(window.innerWidth - 76, window.innerHeight - 96);
+window.addEventListener('resize', () => {
+  const rect = touchOrb.getBoundingClientRect();
+  placeOrb(rect.left, rect.top);
+  if (touchMenu.classList.contains('open')) positionMenu();
+});
+let orbDragging = false, orbMoved = false, orbPointerStart = { x: 0, y: 0 }, orbStart = { x: 0, y: 0 };
+touchOrb.addEventListener('pointerdown', (e) => {
+  orbDragging = true; orbMoved = false;
+  touchOrb.setPointerCapture(e.pointerId);
+  orbPointerStart = { x: e.clientX, y: e.clientY };
+  const rect = touchOrb.getBoundingClientRect();
+  orbStart = { x: rect.left, y: rect.top };
+});
+touchOrb.addEventListener('pointermove', (e) => {
+  if (!orbDragging) return;
+  const dx = e.clientX - orbPointerStart.x, dy = e.clientY - orbPointerStart.y;
+  if (Math.hypot(dx, dy) > 5) orbMoved = true;
+  if (orbMoved) { placeOrb(orbStart.x + dx, orbStart.y + dy); if (touchMenu.classList.contains('open')) positionMenu(); }
+});
+touchOrb.addEventListener('pointerup', (e) => {
+  orbDragging = false;
+  try { touchOrb.releasePointerCapture(e.pointerId); } catch (err) {}
+  if (!orbMoved) toggleTouchMenu();
+});
+function positionMenu() {
+  const rect = touchOrb.getBoundingClientRect();
+  const items = touchMenu.querySelectorAll('.touch-menu-item').length;
+  const itemH = 54;
+  const menuH = Math.min(items * itemH + 16, window.innerHeight - 20);
+  const w = window.innerWidth, h = window.innerHeight;
+  let openUp = (rect.top - menuH) > 10;
+  let top = openUp ? Math.max(10, rect.top - menuH) : Math.min(h - menuH - 10, rect.bottom + 8);
+  let left = rect.left - 4;
+  if (left + 56 > w - 10) left = w - 66;
+  if (left < 10) left = 10;
+  top = Math.max(6, Math.min(top, h - 60));
+  touchMenu.style.top = top + 'px'; touchMenu.style.left = left + 'px'; touchMenu.style.maxHeight = (h - top - 10) + 'px';
+}
+function toggleTouchMenu() {
+  const willOpen = !touchMenu.classList.contains('open');
+  if (willOpen) {
+    positionMenu();
+    touchMenu.classList.add('open'); touchOrb.classList.add('open');
+    touchMenu.querySelectorAll('.touch-menu-item').forEach((el, i) => {
+      el.style.animation = 'none'; void el.offsetWidth;
+      el.style.animation = `orbPop 0.22s ease forwards`; el.style.animationDelay = (i * 0.03) + 's';
+    });
+  } else {
+    touchMenu.classList.remove('open'); touchOrb.classList.remove('open');
   }
-
-  function toggleTouchMenu() {
-    const willOpen = !touchMenu.classList.contains('open');
-    if (willOpen) {
-      positionMenu();
-      touchMenu.classList.add('open');
-      touchOrb.classList.add('open');
-      // restart the pop-in animation each time it opens
-      touchMenu.querySelectorAll('.touch-menu-item').forEach((el, i) => {
-        el.style.animation = 'none';
-        void el.offsetWidth;
-        el.style.animation = `orbPop 0.22s ease forwards`;
-        el.style.animationDelay = (i * 0.03) + 's';
-      });
-    } else {
-      touchMenu.classList.remove('open');
-      touchOrb.classList.remove('open');
-    }
+}
+document.addEventListener('pointerdown', (e) => {
+  if (touchMenu.classList.contains('open') && !touchMenu.contains(e.target) && !touchOrb.contains(e.target)) {
+    touchMenu.classList.remove('open'); touchOrb.classList.remove('open');
   }
+});
 
-  document.addEventListener('pointerdown', (e) => {
-    if (touchMenu.classList.contains('open') &&
-        !touchMenu.contains(e.target) && !touchOrb.contains(e.target)) {
-      touchMenu.classList.remove('open');
-      touchOrb.classList.remove('open');
-    }
-  });
+/* =========================================================================
+   VIEW TOGGLES
+   ========================================================================= */
+const viewButtons = document.querySelectorAll('.touch-menu-item[data-mode]');
+function setActiveButton(mode) { viewButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode)); }
+function toggleView(mode) {
+  const formPane = document.getElementById('formPane');
+  const mapPaneEl = document.getElementById('mapPane');
+  const tacticalPaneEl = document.getElementById('tacticalPane');
+  const landingPaneEl = document.getElementById('landingPane');
+  const signalSidebar = document.getElementById('signalSidebar');
 
-  /* --- VIEW TOGGLES --- */
-  const viewButtons = document.querySelectorAll('.touch-menu-item[data-mode]');
-  function setActiveButton(mode) {
-    viewButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+  formPane.style.display = 'none'; formPane.style.flex = '';
+  mapPaneEl.style.display = 'none'; mapPaneEl.style.flex = '';
+  tacticalPaneEl.style.display = 'none'; tacticalPaneEl.style.flex = '';
+  landingPaneEl.style.display = 'none'; landingPaneEl.style.flex = '';
+  signalSidebar.style.display = 'none';
+
+  if (mode === 'split') { formPane.style.display = 'block'; formPane.style.flex = '1'; mapPaneEl.style.display = 'block'; mapPaneEl.style.flex = '1'; }
+  else if (mode === 'form') { formPane.style.display = 'block'; formPane.style.flex = '1'; }
+  else if (mode === 'map') { mapPaneEl.style.display = 'block'; mapPaneEl.style.flex = '1'; }
+  else if (mode === 'tactical') { tacticalPaneEl.style.display = 'block'; tacticalPaneEl.style.flex = '1'; }
+  else if (mode === 'signal') { signalSidebar.style.display = 'flex'; mapPaneEl.style.display = 'block'; mapPaneEl.style.flex = '1'; }
+  else if (mode === 'landing') { landingPaneEl.style.display = 'block'; landingPaneEl.style.flex = '1'; }
+  else if (mode === 'global') { signalSidebar.style.display = 'flex'; tacticalPaneEl.style.display = 'block'; tacticalPaneEl.style.flex = '1'; formPane.style.display = 'block'; formPane.style.flex = '1'; }
+
+  resizeMapCanvas();
+  if (tacticalPaneEl.style.display !== 'none' && window.tacticalLeafletMap) setTimeout(() => window.tacticalLeafletMap.invalidateSize(), 60);
+  setActiveButton(mode);
+}
+function toggleFullScreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(err => showToast('Fullscreen failed: ' + err.message, 'error'));
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
   }
+}
 
-  function toggleView(mode) {
-    const formPane = document.getElementById('formPane');
-    const mapPaneEl = document.getElementById('mapPane');
-    const tacticalPaneEl = document.getElementById('tacticalPane');
-    const landingPaneEl = document.getElementById('landingPane');
-    const signalSidebar = document.getElementById('signalSidebar');
+/* =========================================================================
+   MOBILE NAV — thumb-reachable bottom bar for phones. Reuses the same
+   toggleView/openOsint/openGlobalSearch functions as the desktop orb menu
+   so behavior stays identical; this is purely an alternate control surface.
+   ========================================================================= */
+function isMobileLayout() { return window.innerWidth <= 900; }
 
-    // reset
-    formPane.style.display = 'none'; formPane.style.flex = '';
-    mapPaneEl.style.display = 'none'; mapPaneEl.style.flex = '';
-    tacticalPaneEl.style.display = 'none'; tacticalPaneEl.style.flex = '';
-    landingPaneEl.style.display = 'none'; landingPaneEl.style.flex = '';
-    signalSidebar.style.display = 'none';
+function setMobileNavActive(key) {
+  document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.toggle('active', b.dataset.mnav === key));
+}
 
-    if (mode === 'split') {
-      formPane.style.display = 'block'; formPane.style.flex = '1';
-      mapPaneEl.style.display = 'block'; mapPaneEl.style.flex = '1';
-    } else if (mode === 'form') {
-      formPane.style.display = 'block'; formPane.style.flex = '1';
-    } else if (mode === 'map') {
-      mapPaneEl.style.display = 'block'; mapPaneEl.style.flex = '1';
-    } else if (mode === 'tactical') {
-      tacticalPaneEl.style.display = 'block'; tacticalPaneEl.style.flex = '1';
-    } else if (mode === 'signal') {
-      signalSidebar.style.display = 'flex';
-      mapPaneEl.style.display = 'block'; mapPaneEl.style.flex = '1';
-    } else if (mode === 'landing') {
-      landingPaneEl.style.display = 'block'; landingPaneEl.style.flex = '1';
-    } else if (mode === 'global') {
-      signalSidebar.style.display = 'flex';
-      tacticalPaneEl.style.display = 'block'; tacticalPaneEl.style.flex = '1';
-      formPane.style.display = 'block'; formPane.style.flex = '1';
-    }
+function mobileNavGo(mode) {
+  closeMobileSignal();
+  toggleView(mode);
+  setMobileNavActive(mode);
+}
 
-    resizeMapCanvas();
-    if (tacticalPaneEl.style.display !== 'none' && window.tacticalLeafletMap) {
-      setTimeout(() => window.tacticalLeafletMap.invalidateSize(), 60);
-    }
-    setActiveButton(mode);
+function mobileNavOpenTools() {
+  closeMobileSignal();
+  openOsint('all');
+  setMobileNavActive('tools');
+}
+
+function toggleMobileSignal() {
+  const sidebar = document.getElementById('signalSidebar');
+  const backdrop = document.getElementById('signalSidebarBackdrop');
+  const opening = !sidebar.classList.contains('mobile-open');
+  if (opening) {
+    sidebar.style.display = 'flex';
+    requestAnimationFrame(() => sidebar.classList.add('mobile-open'));
+    backdrop.classList.add('show');
+    setMobileNavActive('signal');
+  } else {
+    closeMobileSignal();
   }
+}
+function closeMobileSignal() {
+  const sidebar = document.getElementById('signalSidebar');
+  const backdrop = document.getElementById('signalSidebarBackdrop');
+  sidebar.classList.remove('mobile-open');
+  backdrop.classList.remove('show');
+  setTimeout(() => {
+    if (!sidebar.classList.contains('mobile-open') && isMobileLayout()) sidebar.style.display = 'none';
+  }, 260);
+}
 
-  function toggleFullScreen() {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(err => {
-        alert(`Error attempting to enable full-screen mode: ${err.message}`);
-      });
-    } else if (document.exitFullscreen) {
-      document.exitFullscreen();
-    }
+/* On mobile, default to the Form view alone (full-width, one pane at a
+   time reads far better on a phone than the desktop's multi-pane layout). */
+function applyLayoutForViewport() {
+  if (isMobileLayout()) {
+    toggleView('form');
+    setMobileNavActive('form');
+  } else {
+    toggleView('global');
   }
+}
+window.addEventListener('resize', () => {
+  // Avoid fighting the user mid-interaction: only re-apply on the
+  // desktop<->mobile breakpoint crossing, not on every resize tick.
+  const nowMobile = isMobileLayout();
+  if (nowMobile !== window.__wasMobileLayout) {
+    window.__wasMobileLayout = nowMobile;
+    applyLayoutForViewport();
+  }
+});
+window.__wasMobileLayout = isMobileLayout();
+applyLayoutForViewport();
 
-  // Default: global app view (signal monitor + map + form)
-  toggleView('global');
+showToast('Dashboard ready. Press "/" any time to search every tool at once.', 'ok', 4000);
 </script>
 </body>
 </html>
