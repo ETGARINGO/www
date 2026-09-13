@@ -1,3324 +1,1567 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0,
-                 maximum-scale=1.0, user-scalable=no,
-                 viewport-fit=cover">
-
-  <meta name="theme-color" content="#0b1020">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="LETReady">
-
-  <title>LETReady — Your Personal LET Preparation Coach</title>
-
-  <style>
-    /* =========================================================
-       LETREADY — COMPLETE MOBILE-FIRST UI
-       ========================================================= */
-
-    :root {
-      --bg: #070b14;
-      --bg2: #0d1322;
-      --card: rgba(18, 27, 45, .88);
-      --card2: rgba(23, 34, 55, .95);
-      --border: rgba(255,255,255,.09);
-
-      --text: #f5f7fb;
-      --muted: #91a0b8;
-
-      --primary: #5b8cff;
-      --primary2: #7c5cff;
-      --success: #21c982;
-      --warning: #f6b73c;
-      --danger: #ff5f6d;
-      --cyan: #28c7e8;
-
-      --radius: 20px;
-      --radius-sm: 14px;
-
-      --shadow:
-        0 20px 60px rgba(0,0,0,.35);
-
-      --nav-height: 76px;
-    }
-
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-    }
-
-    body {
-      overflow-x: hidden;
-      padding-bottom: calc(var(--nav-height) + 20px);
-    }
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-    }
-
-    /* =========================================================
-       APP
-       ========================================================= */
-
-    .app {
-      width: 100%;
-      min-height: 100vh;
-    }
-
-    .container {
-      width: min(1180px, 100%);
-      margin: auto;
-      padding: 18px;
-    }
-
-    /* =========================================================
-       TOP HEADER
-       ========================================================= */
-
-    .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(7,11,20,.82);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .topbar-inner {
-      width: min(1180px,100%);
-      margin: auto;
-      min-height: 68px;
-      padding: 10px 18px;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
-
-    .brand-logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 13px;
-
-      display: grid;
-      place-items: center;
-
-      background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--primary2)
-        );
-
-      box-shadow:
-        0 10px 30px rgba(91,140,255,.28);
-
-      font-size: 22px;
-    }
-
-    .brand-text strong {
-      display: block;
-      font-size: 17px;
-      letter-spacing: -.3px;
-    }
-
-    .brand-text span {
-      display: block;
-      color: var(--muted);
-      font-size: 10px;
-      margin-top: 1px;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 13px;
-
-      color: var(--text);
-      background: rgba(255,255,255,.055);
-      border: 1px solid var(--border);
-
-      display: grid;
-      place-items: center;
-      font-size: 18px;
-    }
-
-    .icon-btn:active {
-      transform: scale(.94);
-    }
-
-    /* =========================================================
-       PAGE SYSTEM
-       ========================================================= */
-
-    .page {
-      display: none;
-      animation: fadeIn .25s ease;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .page-title {
-      margin: 8px 0 3px;
-      font-size: clamp(25px,6vw,36px);
-      letter-spacing: -.8px;
-    }
-
-    .page-subtitle {
-      color: var(--muted);
-      margin: 0 0 22px;
-      font-size: 14px;
-    }
-
-    /* =========================================================
-       HERO / READINESS
-       ========================================================= */
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-
-      padding: 23px;
-      border-radius: 26px;
-
-      background:
-        radial-gradient(
-          circle at 90% 0%,
-          rgba(124,92,255,.30),
-          transparent 38%
-        ),
-        radial-gradient(
-          circle at 0% 100%,
-          rgba(40,199,232,.12),
-          transparent 40%
-        ),
-        linear-gradient(
-          145deg,
-          #121d35,
-          #0b1220
-        );
-
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: var(--shadow);
-    }
-
-    .hero-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      align-items: flex-start;
-    }
-
-    .hero h2 {
-      margin: 0 0 6px;
-      font-size: 20px;
-    }
-
-    .hero p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.5;
-      font-size: 13px;
-    }
-
-    .score-ring {
-      width: 94px;
-      height: 94px;
-      flex: 0 0 94px;
-      border-radius: 50%;
-
-      background:
-        conic-gradient(
-          var(--primary) 0 78%,
-          rgba(255,255,255,.08) 78% 100%
-        );
-
-      display: grid;
-      place-items: center;
-      position: relative;
-    }
-
-    .score-ring::before {
-      content: "";
-      position: absolute;
-      inset: 7px;
-      background: #0c1527;
-      border-radius: 50%;
-    }
-
-    .score-value {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-    }
-
-    .score-value strong {
-      display: block;
-      font-size: 23px;
-    }
-
-    .score-value span {
-      color: var(--muted);
-      font-size: 9px;
-      text-transform: uppercase;
-    }
-
-    .hero-bottom {
-      margin-top: 22px;
-      padding-top: 17px;
-      border-top: 1px solid rgba(255,255,255,.08);
-
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .pill {
-      padding: 8px 11px;
-      border-radius: 100px;
-      font-size: 11px;
-      background: rgba(255,255,255,.055);
-      border: 1px solid rgba(255,255,255,.07);
-      color: #cdd6e5;
-    }
-
-    /* =========================================================
-       BUTTONS
-       ========================================================= */
-
-    .btn {
-      min-height: 46px;
-      padding: 0 17px;
-      border-radius: 13px;
-
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-
-      color: white;
-      font-weight: 700;
-      font-size: 13px;
-    }
-
-    .btn-primary {
-      background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--primary2)
-        );
-      box-shadow: 0 10px 25px rgba(91,140,255,.22);
-    }
-
-    .btn-secondary {
-      background: rgba(255,255,255,.06);
-      border: 1px solid var(--border);
-    }
-
-    .btn-success {
-      background: var(--success);
-    }
-
-    .btn-danger {
-      background: var(--danger);
-    }
-
-    .btn-full {
-      width: 100%;
-    }
-
-    /* =========================================================
-       STATS
-       ========================================================= */
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2,1fr);
-      gap: 10px;
-      margin: 15px 0;
-    }
-
-    .stat-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 15px;
-    }
-
-    .stat-icon {
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
-
-    .stat-card strong {
-      display: block;
-      font-size: 20px;
-    }
-
-    .stat-card span {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 3px;
-    }
-
-    /* =========================================================
-       SECTION
-       ========================================================= */
-
-    .section {
-      margin-top: 24px;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .section-title {
-      font-size: 17px;
-      font-weight: 800;
-      margin: 0;
-    }
-
-    .see-all {
-      color: #9db7ff;
-      font-size: 11px;
-      font-weight: 700;
-      background: transparent;
-    }
-
-    /* =========================================================
-       DAILY GOAL
-       ========================================================= */
-
-    .goal-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 17px;
-    }
-
-    .goal-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .goal-head strong {
-      font-size: 14px;
-    }
-
-    .goal-head span {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .progress {
-      height: 8px;
-      border-radius: 100px;
-      background: rgba(255,255,255,.07);
-      overflow: hidden;
-      margin: 14px 0;
-    }
-
-    .progress > div {
-      height: 100%;
-      width: 68%;
-      border-radius: inherit;
-      background:
-        linear-gradient(
-          90deg,
-          var(--primary),
-          var(--cyan)
-        );
-    }
-
-    .goal-items {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 7px;
-    }
-
-    .goal-item {
-      text-align: center;
-      padding: 10px 5px;
-      border-radius: 11px;
-      background: rgba(255,255,255,.035);
-    }
-
-    .goal-item strong {
-      display: block;
-      font-size: 15px;
-    }
-
-    .goal-item span {
-      font-size: 9px;
-      color: var(--muted);
-    }
-
-    /* =========================================================
-       RECOMMENDATION
-       ========================================================= */
-
-    .recommendation {
-      display: flex;
-      gap: 13px;
-      align-items: center;
-
-      padding: 15px;
-      border-radius: var(--radius-sm);
-
-      background:
-        linear-gradient(
-          135deg,
-          rgba(246,183,60,.12),
-          rgba(255,255,255,.035)
-        );
-
-      border: 1px solid rgba(246,183,60,.18);
-    }
-
-    .recommendation-icon {
-      width: 43px;
-      height: 43px;
-      border-radius: 13px;
-      background: rgba(246,183,60,.14);
-      display: grid;
-      place-items: center;
-      font-size: 21px;
-      flex: 0 0 43px;
-    }
-
-    .recommendation strong {
-      display: block;
-      font-size: 13px;
-    }
-
-    .recommendation p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.45;
-    }
-
-    /* =========================================================
-       SUBJECT CARDS
-       ========================================================= */
-
-    .subject-grid {
-      display: grid;
-      gap: 10px;
-    }
-
-    .subject-card {
-      padding: 16px;
-      border-radius: var(--radius-sm);
-      background: var(--card);
-      border: 1px solid var(--border);
-    }
-
-    .subject-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .subject-info {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
-
-    .subject-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-
-      display: grid;
-      place-items: center;
-      background: rgba(91,140,255,.13);
-      font-size: 20px;
-    }
-
-    .subject-info strong {
-      display: block;
-      font-size: 13px;
-    }
-
-    .subject-info span {
-      display: block;
-      color: var(--muted);
-      font-size: 10px;
-      margin-top: 3px;
-    }
-
-    .subject-score {
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .subject-bar {
-      margin-top: 12px;
-    }
-
-    .subject-bar .progress {
-      margin: 0;
-      height: 6px;
-    }
-
-    /* =========================================================
-       REVIEW PAGE
-       ========================================================= */
-
-    .search {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-
-      padding: 0 14px;
-      height: 48px;
-
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-    }
-
-    .search input {
-      width: 100%;
-      background: transparent;
-      border: 0;
-      outline: 0;
-      color: var(--text);
-      font-size: 13px;
-    }
-
-    .search input::placeholder {
-      color: #69778d;
-    }
-
-    .category-card {
-      padding: 18px;
-      border-radius: var(--radius);
-      background: var(--card);
-      border: 1px solid var(--border);
-      margin-bottom: 11px;
-    }
-
-    .category-head {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-    }
-
-    .category-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: rgba(124,92,255,.14);
-      font-size: 22px;
-    }
-
-    .category-head strong {
-      display: block;
-      font-size: 15px;
-    }
-
-    .category-head span {
-      display: block;
-      color: var(--muted);
-      font-size: 10px;
-      margin-top: 3px;
-    }
-
-    .topic-list {
-      display: grid;
-      gap: 7px;
-    }
-
-    .topic {
-      padding: 11px;
-      border-radius: 11px;
-      background: rgba(255,255,255,.035);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      font-size: 12px;
-    }
-
-    .topic small {
-      color: var(--muted);
-      font-size: 9px;
-    }
-
-    /* =========================================================
-       PRACTICE
-       ========================================================= */
-
-    .mode-grid {
-      display: grid;
-      grid-template-columns: repeat(2,1fr);
-      gap: 10px;
-    }
-
-    .mode-card {
-      text-align: left;
-      padding: 17px;
-      min-height: 155px;
-
-      border-radius: var(--radius);
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
-
-    .mode-card:active {
-      transform: scale(.98);
-    }
-
-    .mode-icon {
-      font-size: 26px;
-      margin-bottom: 13px;
-    }
-
-    .mode-card strong {
-      display: block;
-      font-size: 13px;
-    }
-
-    .mode-card p {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 10px;
-      line-height: 1.45;
-    }
-
-    /* =========================================================
-       TEST MODAL
-       ========================================================= */
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 500;
-
-      display: none;
-      align-items: flex-end;
-      justify-content: center;
-
-      background: rgba(0,0,0,.65);
-      backdrop-filter: blur(8px);
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .modal-sheet {
-      width: min(600px,100%);
-      max-height: 92vh;
-      overflow-y: auto;
-
-      padding: 22px;
-      border-radius: 25px 25px 0 0;
-
-      background: #0c1424;
-      border: 1px solid var(--border);
-      box-shadow: 0 -20px 60px rgba(0,0,0,.4);
-
-      animation: sheetUp .25s ease;
-    }
-
-    @keyframes sheetUp {
-      from {
-        transform: translateY(100%);
-      }
-
-      to {
-        transform: translateY(0);
-      }
-    }
-
-    .modal-handle {
-      width: 42px;
-      height: 4px;
-      background: rgba(255,255,255,.18);
-      border-radius: 20px;
-      margin: -7px auto 20px;
-    }
-
-    .modal-title {
-      font-size: 21px;
-      margin: 0 0 5px;
-    }
-
-    .modal-subtitle {
-      color: var(--muted);
-      font-size: 12px;
-      margin: 0 0 20px;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      color: #cbd5e5;
-      font-size: 11px;
-      font-weight: 700;
-      margin-bottom: 7px;
-    }
-
-    .form-control {
-      width: 100%;
-      height: 46px;
-      padding: 0 12px;
-
-      color: var(--text);
-      background: rgba(255,255,255,.045);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      outline: none;
-    }
-
-    option {
-      background: #111a2b;
-    }
-
-    /* =========================================================
-       QUESTION SCREEN
-       ========================================================= */
-
-    .test-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 600;
-
-      display: none;
-      flex-direction: column;
-
-      background: #070b14;
-    }
-
-    .test-screen.show {
-      display: flex;
-    }
-
-    .test-header {
-      padding:
-        max(12px, env(safe-area-inset-top))
-        15px 12px;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      border-bottom: 1px solid var(--border);
-    }
-
-    .test-progress {
-      flex: 1;
-      margin: 0 14px;
-    }
-
-    .test-progress .progress {
-      margin: 0;
-      height: 5px;
-    }
-
-    .timer {
-      min-width: 70px;
-      text-align: right;
-      color: var(--warning);
-      font-weight: 800;
-      font-size: 13px;
-    }
-
-    .question-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 17px;
-    }
-
-    .question-meta {
-      display: flex;
-      gap: 7px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .question-number {
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .question-text {
-      font-size: 20px;
-      line-height: 1.45;
-      font-weight: 750;
-      margin: 8px 0 23px;
-    }
-
-    .choices {
-      display: grid;
-      gap: 10px;
-    }
-
-    .choice {
-      position: relative;
-
-      width: 100%;
-      padding: 15px;
-
-      display: flex;
-      gap: 11px;
-      align-items: flex-start;
-
-      text-align: left;
-      color: var(--text);
-
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-    }
-
-    .choice-letter {
-      width: 30px;
-      height: 30px;
-      flex: 0 0 30px;
-
-      display: grid;
-      place-items: center;
-
-      border-radius: 9px;
-      background: rgba(255,255,255,.06);
-
-      font-weight: 800;
-      font-size: 12px;
-    }
-
-    .choice-text {
-      font-size: 13px;
-      line-height: 1.45;
-      padding-top: 5px;
-    }
-
-    .choice.selected {
-      border-color: var(--primary);
-      background: rgba(91,140,255,.12);
-    }
-
-    .test-footer {
-      padding:
-        12px 15px
-        max(12px, env(safe-area-inset-bottom));
-
-      display: flex;
-      gap: 8px;
-
-      border-top: 1px solid var(--border);
-      background: #090e18;
-    }
-
-    .test-footer .btn {
-      flex: 1;
-    }
-
-    /* =========================================================
-       RESULT
-       ========================================================= */
-
-    .result-card {
-      text-align: center;
-      padding: 25px 18px;
-      border-radius: 25px;
-
-      background:
-        radial-gradient(
-          circle at top,
-          rgba(91,140,255,.16),
-          transparent 55%
-        ),
-        var(--card);
-
-      border: 1px solid var(--border);
-    }
-
-    .result-score {
-      font-size: 54px;
-      font-weight: 900;
-      letter-spacing: -2px;
-    }
-
-    .result-label {
-      color: var(--muted);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .result-status {
-      display: inline-flex;
-      margin-top: 13px;
-      padding: 8px 13px;
-      border-radius: 100px;
-
-      color: #aaf1ce;
-      background: rgba(33,201,130,.12);
-      border: 1px solid rgba(33,201,130,.18);
-
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    /* =========================================================
-       ANALYTICS
-       ========================================================= */
-
-    .analytics-card {
-      padding: 18px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 11px;
-    }
-
-    .analytics-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    .analytics-head strong {
-      font-size: 14px;
-    }
-
-    .analytics-head span {
-      color: var(--muted);
-      font-size: 10px;
-    }
-
-    .metric-row {
-      margin-bottom: 13px;
-    }
-
-    .metric-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .metric-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      margin-bottom: 6px;
-    }
-
-    .metric-label span:last-child {
-      color: var(--muted);
-    }
-
-    /* =========================================================
-       MISTAKES
-       ========================================================= */
-
-    .mistake-card {
-      padding: 16px;
-      border-radius: var(--radius-sm);
-      background: var(--card);
-      border: 1px solid var(--border);
-      margin-bottom: 10px;
-    }
-
-    .mistake-card small {
-      color: var(--danger);
-      font-size: 10px;
-      font-weight: 800;
-    }
-
-    .mistake-card strong {
-      display: block;
-      font-size: 13px;
-      line-height: 1.45;
-      margin: 8px 0;
-    }
-
-    .mistake-answer {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .mistake-answer b {
-      color: var(--success);
-    }
-
-    /* =========================================================
-       PROFILE
-       ========================================================= */
-
-    .profile-card {
-      text-align: center;
-      padding: 25px;
-      border-radius: 25px;
-      background: var(--card);
-      border: 1px solid var(--border);
-    }
-
-    .avatar {
-      width: 72px;
-      height: 72px;
-      margin: auto;
-
-      display: grid;
-      place-items: center;
-
-      border-radius: 50%;
-      background:
-        linear-gradient(
-          135deg,
-          var(--primary),
-          var(--primary2)
-        );
-
-      font-size: 28px;
-      font-weight: 900;
-    }
-
-    .profile-card h2 {
-      margin: 12px 0 3px;
-      font-size: 20px;
-    }
-
-    .profile-card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .profile-menu {
-      margin-top: 12px;
-      display: grid;
-      gap: 8px;
-    }
-
-    .profile-item {
-      width: 100%;
-      min-height: 52px;
-      padding: 0 14px;
-
-      display: flex;
-      align-items: center;
-      gap: 11px;
-
-      text-align: left;
-      color: var(--text);
-
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-    }
-
-    .profile-item span:nth-child(2) {
-      flex: 1;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .profile-item small {
-      color: var(--muted);
-    }
-
-    /* =========================================================
-       BOTTOM NAVIGATION
-       ========================================================= */
-
-    .bottom-nav {
-      position: fixed;
-      z-index: 200;
-      left: 0;
-      right: 0;
-      bottom: 0;
-
-      height: var(--nav-height);
-
-      padding:
-        7px 8px
-        max(7px, env(safe-area-inset-bottom));
-
-      display: grid;
-      grid-template-columns: repeat(5,1fr);
-
-      background: rgba(8,13,23,.94);
-      backdrop-filter: blur(20px);
-      border-top: 1px solid var(--border);
-    }
-
-    .nav-btn {
-      position: relative;
-
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-
-      color: #68758a;
-      background: transparent;
-      border-radius: 12px;
-    }
-
-    .nav-btn .nav-icon {
-      font-size: 19px;
-    }
-
-    .nav-btn span:last-child {
-      font-size: 9px;
-      font-weight: 700;
-    }
-
-    .nav-btn.active {
-      color: #9eb9ff;
-      background: rgba(91,140,255,.09);
-    }
-
-    .nav-btn.active::before {
-      content: "";
-      position: absolute;
-      top: -7px;
-      width: 22px;
-      height: 3px;
-      border-radius: 10px;
-      background: var(--primary);
-    }
-
-    /* =========================================================
-       TOAST
-       ========================================================= */
-
-    .toast {
-      position: fixed;
-      z-index: 1000;
-      left: 50%;
-      bottom: calc(var(--nav-height) + 15px);
-
-      transform: translate(-50%, 20px);
-
-      min-width: 230px;
-      max-width: calc(100% - 30px);
-
-      padding: 12px 15px;
-
-      border-radius: 13px;
-      background: #162238;
-      border: 1px solid var(--border);
-
-      box-shadow: var(--shadow);
-
-      color: white;
-      font-size: 12px;
-      text-align: center;
-
-      opacity: 0;
-      pointer-events: none;
-      transition: .25s ease;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translate(-50%,0);
-    }
-
-    /* =========================================================
-       DESKTOP
-       ========================================================= */
-
-    @media (min-width: 760px) {
-
-      body {
-        padding-bottom: 0;
-      }
-
-      .container {
-        padding: 28px;
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(4,1fr);
-      }
-
-      .subject-grid {
-        grid-template-columns: repeat(3,1fr);
-      }
-
-      .mode-grid {
-        grid-template-columns: repeat(4,1fr);
-      }
-
-      .bottom-nav {
-        position: sticky;
-        top: 68px;
-        bottom: auto;
-        margin: 0 auto;
-        width: min(700px,100%);
-        border: 1px solid var(--border);
-        border-radius: 18px;
-        height: 64px;
-      }
-
-      .hero {
-        padding: 30px;
-      }
-    }
-
-    @media (min-width: 1000px) {
-
-      .dashboard-layout {
-        display: grid;
-        grid-template-columns: 1.4fr .9fr;
-        gap: 15px;
-        align-items: start;
-      }
-
-      .subject-grid {
-        grid-template-columns: repeat(2,1fr);
-      }
-    }
-
-    /* =========================================================
-       ACCESSIBILITY
-       ========================================================= */
-
-    :focus-visible {
-      outline: 2px solid var(--primary);
-      outline-offset: 2px;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        animation-duration: .01ms !important;
-        transition-duration: .01ms !important;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LETReady">
+<title>LETReady — Your Personal LET Preparation Coach</title>
+
+<style>
+/* =========================================================
+   THEME TOKENS — dark / light / neumorphic
+   ========================================================= */
+:root,
+[data-theme="dark"] {
+  --bg: #070b14;
+  --bg2: #0d1322;
+  --card: rgba(18, 27, 45, .88);
+  --card2: rgba(23, 34, 55, .95);
+  --border: rgba(255,255,255,.09);
+  --text: #f5f7fb;
+  --muted: #91a0b8;
+  --primary: #5b8cff;
+  --primary2: #7c5cff;
+  --success: #21c982;
+  --warning: #f6b73c;
+  --danger: #ff5f6d;
+  --cyan: #28c7e8;
+  --radius: 20px;
+  --radius-sm: 14px;
+  --shadow: 0 20px 60px rgba(0,0,0,.35);
+  --nav-height: 76px;
+  --surface-shadow: none;
+  --surface-shadow-in: none;
+  --track: rgba(255,255,255,.07);
+}
+
+[data-theme="light"] {
+  --bg: #eef1f7;
+  --bg2: #ffffff;
+  --card: #ffffff;
+  --card2: #ffffff;
+  --border: rgba(15,23,42,.08);
+  --text: #12182b;
+  --muted: #64708a;
+  --primary: #3d6bf0;
+  --primary2: #7350f2;
+  --success: #14a874;
+  --warning: #c9860f;
+  --danger: #e0454f;
+  --cyan: #1198b8;
+  --shadow: 0 14px 34px rgba(30,41,80,.10);
+  --surface-shadow: 0 1px 2px rgba(15,23,42,.04), 0 8px 20px rgba(15,23,42,.06);
+  --surface-shadow-in: none;
+  --track: rgba(15,23,42,.07);
+}
+
+[data-theme="neu"] {
+  --bg: #e6e9f0;
+  --bg2: #e6e9f0;
+  --card: #e6e9f0;
+  --card2: #e6e9f0;
+  --border: transparent;
+  --text: #313a52;
+  --muted: #7b8399;
+  --primary: #5b7cfa;
+  --primary2: #8a6bf5;
+  --success: #2bb989;
+  --warning: #d99a2b;
+  --danger: #e0636e;
+  --cyan: #2fa9c7;
+  --shadow: none;
+  --surface-shadow: 8px 8px 16px #c5c9d3, -8px -8px 16px #ffffff;
+  --surface-shadow-in: inset 4px 4px 8px #c5c9d3, inset -4px -4px 8px #ffffff;
+  --track: #dde1e9;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0; padding: 0; width: 100%; min-height: 100%;
+  background: var(--bg); color: var(--text);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  transition: background .25s ease, color .25s ease;
+}
+body { overflow-x: hidden; padding-bottom: calc(var(--nav-height) + 20px); }
+button, input, select { font: inherit; color: inherit; }
+button { border: 0; cursor: pointer; background: none; }
+
+.app { width: 100%; min-height: 100vh; }
+.container { width: min(1180px, 100%); margin: auto; padding: 18px; }
+
+/* =========================================================
+   SURFACES — cards adapt shadow style per theme
+   ========================================================= */
+.surface {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--surface-shadow);
+}
+[data-theme="neu"] .surface,
+[data-theme="neu"] .stat-card,
+[data-theme="neu"] .subject-card,
+[data-theme="neu"] .category-card,
+[data-theme="neu"] .mode-card,
+[data-theme="neu"] .analytics-card,
+[data-theme="neu"] .mistake-card,
+[data-theme="neu"] .goal-card,
+[data-theme="neu"] .profile-card,
+[data-theme="neu"] .profile-item,
+[data-theme="neu"] .icon-btn,
+[data-theme="neu"] .search,
+[data-theme="neu"] .form-control,
+[data-theme="neu"] .choice,
+[data-theme="neu"] .result-card { box-shadow: var(--surface-shadow); border: none; }
+[data-theme="neu"] .progress { box-shadow: var(--surface-shadow-in); }
+[data-theme="neu"] .choice.selected { box-shadow: var(--surface-shadow-in); }
+[data-theme="neu"] .btn-primary,
+[data-theme="neu"] .btn-success,
+[data-theme="neu"] .btn-danger { box-shadow: 5px 5px 10px #c5c9d3, -5px -5px 10px #ffffff; }
+[data-theme="neu"] .score-ring::before { background: var(--bg); box-shadow: var(--surface-shadow-in); }
+
+/* =========================================================
+   TOP HEADER
+   ========================================================= */
+.topbar { position: sticky; top: 0; z-index: 100; background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(18px); border-bottom: 1px solid var(--border); }
+.topbar-inner { width: min(1180px,100%); margin: auto; min-height: 68px; padding: 10px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 11px; }
+.brand-logo { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; background: linear-gradient(135deg, var(--primary), var(--primary2)); box-shadow: 0 10px 30px rgba(91,140,255,.28); font-size: 22px; }
+.brand-text strong { display: block; font-size: 17px; letter-spacing: -.3px; }
+.brand-text span { display: block; color: var(--muted); font-size: 10px; margin-top: 1px; }
+.header-actions { display: flex; gap: 8px; }
+.icon-btn { width: 42px; height: 42px; border-radius: 13px; color: var(--text); background: rgba(128,128,128,.09); border: 1px solid var(--border); display: grid; place-items: center; font-size: 18px; }
+.icon-btn:active { transform: scale(.94); }
+
+/* =========================================================
+   PAGE SYSTEM
+   ========================================================= */
+.page { display: none; animation: fadeIn .25s ease; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.page-title { margin: 8px 0 3px; font-size: clamp(25px,6vw,36px); letter-spacing: -.8px; }
+.page-subtitle { color: var(--muted); margin: 0 0 22px; font-size: 14px; }
+
+/* =========================================================
+   HERO
+   ========================================================= */
+.hero { position: relative; overflow: hidden; padding: 23px; border-radius: 26px;
+  background: radial-gradient(circle at 90% 0%, rgba(124,92,255,.20), transparent 38%), radial-gradient(circle at 0% 100%, rgba(40,199,232,.10), transparent 40%), var(--card2);
+  border: 1px solid var(--border); box-shadow: var(--shadow), var(--surface-shadow); }
+.hero-top { display: flex; justify-content: space-between; gap: 15px; align-items: flex-start; }
+.hero h2 { margin: 0 0 6px; font-size: 20px; }
+.hero p { margin: 0; color: var(--muted); line-height: 1.5; font-size: 13px; }
+.score-ring { width: 94px; height: 94px; flex: 0 0 94px; border-radius: 50%;
+  background: conic-gradient(var(--primary) 0 var(--score-pct, 78%), var(--track) var(--score-pct, 78%) 100%);
+  display: grid; place-items: center; position: relative; transition: background .4s ease; }
+.score-ring::before { content: ""; position: absolute; inset: 7px; background: var(--bg2); border-radius: 50%; }
+.score-value { position: relative; z-index: 1; text-align: center; }
+.score-value strong { display: block; font-size: 23px; }
+.score-value span { color: var(--muted); font-size: 9px; text-transform: uppercase; }
+.hero-bottom { margin-top: 22px; padding-top: 17px; border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { padding: 8px 11px; border-radius: 100px; font-size: 11px; background: rgba(128,128,128,.1); border: 1px solid var(--border); color: var(--text); }
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+.btn { min-height: 46px; padding: 0 17px; border-radius: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; font-size: 13px; }
+.btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary2)); color: #fff; box-shadow: 0 10px 25px rgba(91,140,255,.22); }
+.btn-secondary { background: rgba(128,128,128,.08); border: 1px solid var(--border); color: var(--text); }
+.btn-success { background: var(--success); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-full { width: 100%; }
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* =========================================================
+   STATS
+   ========================================================= */
+.stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin: 15px 0; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 15px; }
+.stat-icon { font-size: 20px; margin-bottom: 10px; }
+.stat-card strong { display: block; font-size: 20px; }
+.stat-card span { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+
+.section { margin-top: 24px; }
+.section-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.section-title { font-size: 17px; font-weight: 800; margin: 0; }
+.see-all { color: var(--primary); font-size: 11px; font-weight: 700; background: transparent; }
+
+/* GOAL */
+.goal-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 17px; }
+.goal-head { display: flex; justify-content: space-between; align-items: center; }
+.goal-head strong { font-size: 14px; }
+.goal-head span { font-size: 12px; color: var(--muted); }
+.progress { height: 8px; border-radius: 100px; background: var(--track); overflow: hidden; margin: 14px 0; }
+.progress > div { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--primary), var(--cyan)); transition: width .4s ease; }
+.goal-items { display: grid; grid-template-columns: repeat(3,1fr); gap: 7px; }
+.goal-item { text-align: center; padding: 10px 5px; border-radius: 11px; background: rgba(128,128,128,.05); }
+.goal-item strong { display: block; font-size: 15px; }
+.goal-item span { font-size: 9px; color: var(--muted); }
+
+/* RECOMMENDATION */
+.recommendation { display: flex; gap: 13px; align-items: center; padding: 15px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, rgba(246,183,60,.12), rgba(128,128,128,.02)); border: 1px solid rgba(246,183,60,.22); }
+.recommendation-icon { width: 43px; height: 43px; border-radius: 13px; background: rgba(246,183,60,.16); display: grid; place-items: center; font-size: 21px; flex: 0 0 43px; }
+.recommendation strong { display: block; font-size: 13px; }
+.recommendation p { margin: 4px 0 0; color: var(--muted); font-size: 11px; line-height: 1.45; }
+
+/* SUBJECTS */
+.subject-grid { display: grid; gap: 10px; }
+.subject-card { padding: 16px; border-radius: var(--radius-sm); background: var(--card); border: 1px solid var(--border); }
+.subject-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.subject-info { display: flex; align-items: center; gap: 11px; }
+.subject-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(91,140,255,.13); font-size: 20px; }
+.subject-info strong { display: block; font-size: 13px; }
+.subject-info span { display: block; color: var(--muted); font-size: 10px; margin-top: 3px; }
+.subject-score { font-size: 14px; font-weight: 800; }
+.subject-bar { margin-top: 12px; }
+.subject-bar .progress { margin: 0; height: 6px; }
+
+/* SEARCH */
+.search { display: flex; align-items: center; gap: 9px; padding: 0 14px; height: 48px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
+.search input { width: 100%; background: transparent; border: 0; outline: 0; color: var(--text); font-size: 13px; }
+.search input::placeholder { color: var(--muted); }
+
+.category-card { padding: 18px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--border); margin-bottom: 11px; }
+.category-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.category-icon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: rgba(124,92,255,.14); font-size: 22px; }
+.category-head strong { display: block; font-size: 15px; }
+.category-head span { display: block; color: var(--muted); font-size: 10px; margin-top: 3px; }
+.topic-list { display: grid; gap: 7px; }
+.topic { padding: 11px; border-radius: 11px; background: rgba(128,128,128,.05); display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; color: var(--text); }
+.topic small { color: var(--muted); font-size: 9px; }
+.topic .mastery-tag { padding: 3px 8px; border-radius: 100px; font-size: 9px; font-weight: 800; }
+
+/* PRACTICE MODES */
+.mode-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+.mode-card { text-align: left; padding: 17px; min-height: 155px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--border); color: var(--text); }
+.mode-card:active { transform: scale(.98); }
+.mode-icon { font-size: 26px; margin-bottom: 13px; }
+.mode-card strong { display: block; font-size: 13px; }
+.mode-card p { margin: 6px 0 0; color: var(--muted); font-size: 10px; line-height: 1.45; }
+
+/* MODAL */
+.modal { position: fixed; inset: 0; z-index: 500; display: none; align-items: flex-end; justify-content: center; background: rgba(0,0,0,.55); backdrop-filter: blur(8px); }
+.modal.show { display: flex; }
+.modal-sheet { width: min(600px,100%); max-height: 92vh; overflow-y: auto; padding: 22px; border-radius: 25px 25px 0 0; background: var(--bg2); border: 1px solid var(--border); box-shadow: 0 -20px 60px rgba(0,0,0,.3); animation: sheetUp .25s ease; }
+@keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 42px; height: 4px; background: rgba(128,128,128,.3); border-radius: 20px; margin: -7px auto 20px; }
+.modal-title { font-size: 21px; margin: 0 0 5px; }
+.modal-subtitle { color: var(--muted); font-size: 12px; margin: 0 0 20px; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; color: var(--text); font-size: 11px; font-weight: 700; margin-bottom: 7px; }
+.form-control { width: 100%; height: 46px; padding: 0 12px; color: var(--text); background: rgba(128,128,128,.06); border: 1px solid var(--border); border-radius: 12px; outline: none; }
+option { background: var(--bg2); color: var(--text); }
+
+/* TEST SCREEN */
+.test-screen { position: fixed; inset: 0; z-index: 600; display: none; flex-direction: column; background: var(--bg); }
+.test-screen.show { display: flex; }
+.test-header { padding: max(12px, env(safe-area-inset-top)) 15px 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.test-progress { flex: 1; margin: 0 14px; }
+.test-progress .progress { margin: 0; height: 5px; }
+.timer { min-width: 70px; text-align: right; color: var(--warning); font-weight: 800; font-size: 13px; }
+.question-body { flex: 1; overflow-y: auto; padding: 20px 17px; }
+.question-meta { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
+.question-number { color: var(--muted); font-size: 11px; }
+.question-text { font-size: 20px; line-height: 1.45; font-weight: 750; margin: 8px 0 23px; }
+.choices { display: grid; gap: 10px; }
+.choice { position: relative; width: 100%; padding: 15px; display: flex; gap: 11px; align-items: flex-start; text-align: left; color: var(--text); background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
+.choice-letter { width: 30px; height: 30px; flex: 0 0 30px; display: grid; place-items: center; border-radius: 9px; background: rgba(128,128,128,.09); font-weight: 800; font-size: 12px; }
+.choice-text { font-size: 13px; line-height: 1.45; padding-top: 5px; }
+.choice.selected { border-color: var(--primary); background: rgba(91,140,255,.12); }
+.choice.correct { border-color: var(--success); background: rgba(33,201,130,.14); }
+.choice.incorrect { border-color: var(--danger); background: rgba(255,95,109,.14); }
+.choice[disabled] { pointer-events: none; }
+.explain-box { margin-top: 14px; padding: 13px; border-radius: 12px; background: rgba(91,140,255,.08); border: 1px solid rgba(91,140,255,.18); font-size: 12px; line-height: 1.55; color: var(--text); display: none; }
+.explain-box.show { display: block; }
+.test-footer { padding: 12px 15px max(12px, env(safe-area-inset-bottom)); display: flex; gap: 8px; border-top: 1px solid var(--border); background: var(--bg2); }
+.test-footer .btn { flex: 1; }
+.bookmark-btn.active { color: var(--warning); }
+
+/* RESULT */
+.result-card { text-align: center; padding: 25px 18px; border-radius: 25px; background: radial-gradient(circle at top, rgba(91,140,255,.14), transparent 55%), var(--card); border: 1px solid var(--border); }
+.result-score { font-size: 54px; font-weight: 900; letter-spacing: -2px; }
+.result-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+.result-status { display: inline-flex; margin-top: 13px; padding: 8px 13px; border-radius: 100px; color: var(--success); background: rgba(33,201,130,.12); border: 1px solid rgba(33,201,130,.22); font-size: 11px; font-weight: 800; }
+.result-breakdown { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 18px; }
+.result-breakdown div { padding: 10px 5px; border-radius: 11px; background: rgba(128,128,128,.05); }
+.result-breakdown strong { display: block; font-size: 16px; }
+.result-breakdown span { font-size: 9px; color: var(--muted); }
+
+/* ANALYTICS */
+.analytics-card { padding: 18px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 11px; }
+.analytics-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.analytics-head strong { font-size: 14px; }
+.analytics-head span { color: var(--muted); font-size: 10px; }
+.metric-row { margin-bottom: 13px; }
+.metric-row:last-child { margin-bottom: 0; }
+.metric-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 6px; }
+.metric-label span:last-child { color: var(--muted); }
+
+/* MISTAKES */
+.mistake-card { padding: 16px; border-radius: var(--radius-sm); background: var(--card); border: 1px solid var(--border); margin-bottom: 10px; }
+.mistake-card small { color: var(--danger); font-size: 10px; font-weight: 800; }
+.mistake-card strong { display: block; font-size: 13px; line-height: 1.45; margin: 8px 0; }
+.mistake-answer { font-size: 11px; color: var(--muted); }
+.mistake-answer b { color: var(--success); }
+.empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
+.empty-state .emoji { font-size: 40px; margin-bottom: 10px; }
+
+/* PROFILE */
+.profile-card { text-align: center; padding: 25px; border-radius: 25px; background: var(--card); border: 1px solid var(--border); }
+.avatar { width: 72px; height: 72px; margin: auto; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary2)); font-size: 28px; font-weight: 900; color: #fff; }
+.profile-card h2 { margin: 12px 0 3px; font-size: 20px; }
+.profile-card p { margin: 0; color: var(--muted); font-size: 11px; }
+.profile-menu { margin-top: 12px; display: grid; gap: 8px; }
+.profile-item { width: 100%; min-height: 52px; padding: 0 14px; display: flex; align-items: center; gap: 11px; text-align: left; color: var(--text); background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
+.profile-item span:nth-child(2) { flex: 1; font-size: 12px; font-weight: 700; }
+.profile-item small { color: var(--muted); }
+
+/* THEME SWITCHER */
+.theme-switch { display: flex; gap: 8px; margin-top: 14px; }
+.theme-opt { flex: 1; padding: 12px 6px; border-radius: 13px; text-align: center; background: rgba(128,128,128,.06); border: 1px solid var(--border); font-size: 11px; font-weight: 700; }
+.theme-opt.active { border-color: var(--primary); color: var(--primary); background: rgba(91,140,255,.1); }
+.theme-opt .swatch { width: 100%; height: 26px; border-radius: 8px; margin-bottom: 7px; }
+
+/* BOTTOM NAV */
+.bottom-nav { position: fixed; z-index: 200; left: 0; right: 0; bottom: 0; height: var(--nav-height); padding: 7px 8px max(7px, env(safe-area-inset-bottom)); display: grid; grid-template-columns: repeat(5,1fr); background: color-mix(in srgb, var(--bg2) 90%, transparent); backdrop-filter: blur(20px); border-top: 1px solid var(--border); }
+.nav-btn { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--muted); background: transparent; border-radius: 12px; }
+.nav-btn .nav-icon { font-size: 19px; }
+.nav-btn span:last-child { font-size: 9px; font-weight: 700; }
+.nav-btn.active { color: var(--primary); background: rgba(91,140,255,.09); }
+.nav-btn.active::before { content: ""; position: absolute; top: -7px; width: 22px; height: 3px; border-radius: 10px; background: var(--primary); }
+
+/* TOAST */
+.toast { position: fixed; z-index: 1000; left: 50%; bottom: calc(var(--nav-height) + 15px); transform: translate(-50%, 20px); min-width: 230px; max-width: calc(100% - 30px); padding: 12px 15px; border-radius: 13px; background: var(--card2); border: 1px solid var(--border); box-shadow: var(--shadow); color: var(--text); font-size: 12px; text-align: center; opacity: 0; pointer-events: none; transition: .25s ease; }
+.toast.show { opacity: 1; transform: translate(-50%,0); }
+
+/* DESKTOP */
+@media (min-width: 760px) {
+  body { padding-bottom: 0; }
+  .container { padding: 28px; }
+  .stats-grid { grid-template-columns: repeat(4,1fr); }
+  .subject-grid { grid-template-columns: repeat(3,1fr); }
+  .mode-grid { grid-template-columns: repeat(4,1fr); }
+  .bottom-nav { position: sticky; top: 68px; bottom: auto; margin: 0 auto; width: min(700px,100%); border: 1px solid var(--border); border-radius: 18px; height: 64px; }
+  .hero { padding: 30px; }
+}
+@media (min-width: 1000px) {
+  .dashboard-layout { display: grid; grid-template-columns: 1.4fr .9fr; gap: 15px; align-items: start; }
+  .subject-grid { grid-template-columns: repeat(2,1fr); }
+}
+
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+</style>
 </head>
 
-<body>
+<body data-theme="dark">
 
 <div class="app">
 
-  <!-- =======================================================
-       HEADER
-       ======================================================= -->
-
   <header class="topbar">
     <div class="topbar-inner">
-
       <div class="brand">
         <div class="brand-logo">🎓</div>
-
         <div class="brand-text">
           <strong>LETReady</strong>
           <span>Your Personal LET Preparation Coach</span>
         </div>
       </div>
-
       <div class="header-actions">
-
-        <button
-          class="icon-btn"
-          onclick="showToast('Notifications are up to date')"
-          aria-label="Notifications">
-          🔔
-        </button>
-
-        <button
-          class="icon-btn"
-          onclick="showToast('Search coming soon')"
-          aria-label="Search">
-          🔍
-        </button>
-
+        <button class="icon-btn" onclick="cycleTheme()" id="themeBtn" aria-label="Change theme">🌙</button>
+        <button class="icon-btn" onclick="showToast('You are all caught up')" aria-label="Notifications">🔔</button>
       </div>
-
     </div>
   </header>
 
-
-  <!-- =======================================================
-       MAIN
-       ======================================================= -->
-
   <main class="container">
 
-
-    <!-- =====================================================
-         HOME
-         ===================================================== -->
-
+    <!-- HOME -->
     <section id="homePage" class="page active">
 
-      <h1 class="page-title">Good evening! 👋</h1>
-
-      <p class="page-subtitle">
-        Let's make progress toward becoming LET-ready.
-      </p>
-
+      <h1 class="page-title" id="greeting">Good evening! 👋</h1>
+      <p class="page-subtitle">Let's make progress toward becoming LET-ready.</p>
 
       <div class="dashboard-layout">
-
         <div>
 
-          <!-- READINESS -->
-
           <div class="hero">
-
             <div class="hero-top">
-
               <div>
                 <h2>Your LET Readiness</h2>
-
-                <p>
-                  Your current performance indicates a
-                  <strong style="color:#8fe6bc;">
-                    GOOD
-                  </strong>
-                  level of readiness.
-                </p>
+                <p>Your current performance indicates a <strong id="readinessWord" style="color:#8fe6bc;">GOOD</strong> level of readiness.</p>
               </div>
-
-              <div class="score-ring">
-
+              <div class="score-ring" id="scoreRing">
                 <div class="score-value">
-                  <strong>78%</strong>
+                  <strong id="scoreValue">78%</strong>
                   <span>Ready</span>
                 </div>
-
               </div>
-
             </div>
-
             <div class="hero-bottom">
-
-              <span class="pill">📈 +6% this month</span>
-              <span class="pill">🎯 2 weak areas</span>
-              <span class="pill">🔥 12-day streak</span>
-
+              <span class="pill" id="trendPill">📈 +0% this month</span>
+              <span class="pill" id="weakPill">🎯 2 weak areas</span>
+              <span class="pill" id="streakPill">🔥 0-day streak</span>
             </div>
-
           </div>
-
-
-          <!-- STATS -->
 
           <div class="stats-grid">
-
-            <div class="stat-card">
-              <div class="stat-icon">📝</div>
-              <strong>2,845</strong>
-              <span>Questions Answered</span>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-icon">🎯</div>
-              <strong>78%</strong>
-              <span>Overall Accuracy</span>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-icon">⏱️</div>
-              <strong>34h</strong>
-              <span>Study Time</span>
-            </div>
-
-            <div class="stat-card">
-              <div class="stat-icon">🔥</div>
-              <strong>12</strong>
-              <span>Day Streak</span>
-            </div>
-
+            <div class="stat-card"><div class="stat-icon">📝</div><strong id="statQuestions">0</strong><span>Questions Answered</span></div>
+            <div class="stat-card"><div class="stat-icon">🎯</div><strong id="statAccuracy">0%</strong><span>Overall Accuracy</span></div>
+            <div class="stat-card"><div class="stat-icon">⏱️</div><strong id="statTime">0m</strong><span>Study Time</span></div>
+            <div class="stat-card"><div class="stat-icon">🔥</div><strong id="statStreak">0</strong><span>Day Streak</span></div>
           </div>
 
-
-          <!-- DAILY GOAL -->
-
           <div class="section">
-
             <div class="section-header">
               <h2 class="section-title">Today's Study Goal</h2>
-
-              <span class="pill">68% complete</span>
+              <span class="pill" id="goalPct">0% complete</span>
             </div>
-
             <div class="goal-card">
-
               <div class="goal-head">
                 <strong>Keep your momentum going</strong>
-                <span>20 / 30 questions</span>
+                <span id="goalCount">0 / 30 questions</span>
               </div>
-
-              <div class="progress">
-                <div style="width:68%"></div>
-              </div>
-
+              <div class="progress"><div id="goalBar" style="width:0%"></div></div>
               <div class="goal-items">
-
-                <div class="goal-item">
-                  <strong>20</strong>
-                  <span>Questions</span>
-                </div>
-
-                <div class="goal-item">
-                  <strong>18m</strong>
-                  <span>Study Time</span>
-                </div>
-
-                <div class="goal-item">
-                  <strong>🔥 12</strong>
-                  <span>Streak</span>
-                </div>
-
+                <div class="goal-item"><strong id="goalQ">0</strong><span>Questions</span></div>
+                <div class="goal-item"><strong id="goalMin">0m</strong><span>Study Time</span></div>
+                <div class="goal-item"><strong id="goalStreak">🔥 0</strong><span>Streak</span></div>
               </div>
-
             </div>
-
           </div>
 
-
-          <!-- RECOMMENDATION -->
-
           <div class="section">
-
-            <div class="section-header">
-              <h2 class="section-title">Recommended For You</h2>
-            </div>
-
+            <div class="section-header"><h2 class="section-title">Recommended For You</h2></div>
             <div class="recommendation">
-
-              <div class="recommendation-icon">
-                ⚡
-              </div>
-
+              <div class="recommendation-icon">⚡</div>
               <div style="flex:1">
-
-                <strong>
-                  Focus on Assessment of Learning
-                </strong>
-
-                <p>
-                  Your recent accuracy is 68%.
-                  Improve this topic before your next mock exam.
-                </p>
-
+                <strong id="recTitle">Focus on your weakest topic</strong>
+                <p id="recBody">Answer a few questions to unlock a personalized recommendation.</p>
               </div>
-
-              <button
-                class="btn btn-primary"
-                style="padding:0 12px; min-height:38px;"
-                onclick="openPractice('weak')">
-                Practice
-              </button>
-
+              <button class="btn btn-primary" style="padding:0 12px; min-height:38px;" onclick="openPractice('weak')">Practice</button>
             </div>
-
           </div>
 
         </div>
 
-
-        <!-- SUBJECTS -->
-
         <div class="section" style="margin-top:0;">
-
           <div class="section-header">
             <h2 class="section-title">Subject Performance</h2>
-            <button class="see-all" onclick="navigate('progress')">
-              View Analytics
-            </button>
+            <button class="see-all" onclick="navigate('progress')">View Analytics</button>
           </div>
-
-          <div class="subject-grid">
-
-            <div class="subject-card">
-
-              <div class="subject-top">
-
-                <div class="subject-info">
-
-                  <div class="subject-icon">
-                    📘
-                  </div>
-
-                  <div>
-                    <strong>General Education</strong>
-                    <span>Strong performance</span>
-                  </div>
-
-                </div>
-
-                <div class="subject-score">
-                  86%
-                </div>
-
-              </div>
-
-              <div class="subject-bar">
-                <div class="progress">
-                  <div style="width:86%"></div>
-                </div>
-              </div>
-
-            </div>
-
-
-            <div class="subject-card">
-
-              <div class="subject-top">
-
-                <div class="subject-info">
-
-                  <div class="subject-icon">
-                    🧠
-                  </div>
-
-                  <div>
-                    <strong>Professional Education</strong>
-                    <span>Needs improvement</span>
-                  </div>
-
-                </div>
-
-                <div
-                  class="subject-score"
-                  style="color:var(--warning)">
-                  74%
-                </div>
-
-              </div>
-
-              <div class="subject-bar">
-                <div class="progress">
-                  <div style="width:74%"></div>
-                </div>
-              </div>
-
-            </div>
-
-
-            <div class="subject-card">
-
-              <div class="subject-top">
-
-                <div class="subject-info">
-
-                  <div class="subject-icon">
-                    🎓
-                  </div>
-
-                  <div>
-                    <strong>Major / Specialization</strong>
-                    <span>Good performance</span>
-                  </div>
-
-                </div>
-
-                <div class="subject-score">
-                  81%
-                </div>
-
-              </div>
-
-              <div class="subject-bar">
-                <div class="progress">
-                  <div style="width:81%"></div>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-
+          <div class="subject-grid" id="subjectGrid"></div>
         </div>
 
       </div>
-
     </section>
 
 
-    <!-- =====================================================
-         REVIEW
-         ===================================================== -->
-
+    <!-- REVIEW -->
     <section id="reviewPage" class="page">
-
       <h1 class="page-title">Review</h1>
-
-      <p class="page-subtitle">
-        Learn concepts before you practice them.
-      </p>
+      <p class="page-subtitle">Learn concepts before you practice them.</p>
 
       <div class="search">
         🔍
-        <input
-          type="search"
-          placeholder="Search lessons, topics or concepts..."
-          oninput="filterTopics(this.value)">
+        <input type="search" placeholder="Search lessons, topics or concepts..." oninput="filterTopics(this.value)">
       </div>
 
-
-      <div id="reviewContent" style="margin-top:15px;">
-
-        <!-- GENERAL EDUCATION -->
-
-        <div class="category-card topic-search">
-
-          <div class="category-head">
-
-            <div class="category-icon">
-              📘
-            </div>
-
-            <div>
-              <strong>General Education</strong>
-              <span>Core knowledge and academic competencies</span>
-            </div>
-
-          </div>
-
-          <div class="topic-list">
-
-            <button class="topic"
-              onclick="showToast('Opening English lessons')">
-              <span>English Language</span>
-              <small>12 lessons</small>
-            </button>
-
-            <button class="topic"
-              onclick="showToast('Opening Mathematics lessons')">
-              <span>Mathematics</span>
-              <small>18 lessons</small>
-            </button>
-
-            <button class="topic"
-              onclick="showToast('Opening Science lessons')">
-              <span>Science</span>
-              <small>15 lessons</small>
-            </button>
-
-            <button class="topic"
-              onclick="showToast('Opening Filipino lessons')">
-              <span>Filipino</span>
-              <small>14 lessons</small>
-            </button>
-
-            <button class="topic"
-              onclick="showToast('Opening Social Sciences lessons')">
-              <span>Social Sciences</span>
-              <small>16 lessons</small>
-            </button>
-
-          </div>
-
-        </div>
-
-
-        <!-- PROFESSIONAL EDUCATION -->
-
-        <div class="category-card topic-search">
-
-          <div class="category-head">
-
-            <div class="category-icon">
-              🧠
-            </div>
-
-            <div>
-              <strong>Professional Education</strong>
-              <span>Teaching, learning and educational foundations</span>
-            </div>
-
-          </div>
-
-          <div class="topic-list">
-
-            <button class="topic">
-              <span>Learner Development</span>
-              <small>14 lessons</small>
-            </button>
-
-            <button class="topic">
-              <span>Facilitating Learning</span>
-              <small>17 lessons</small>
-            </button>
-
-            <button class="topic">
-              <span>Assessment of Learning</span>
-              <small>20 lessons</small>
-            </button>
-
-            <button class="topic">
-              <span>Curriculum Development</span>
-              <small>13 lessons</small>
-            </button>
-
-            <button class="topic">
-              <span>Teaching Profession</span>
-              <small>15 lessons</small>
-            </button>
-
-            <button class="topic">
-              <span>Educational Technology</span>
-              <small>11 lessons</small>
-            </button>
-
-          </div>
-
-        </div>
-
-
-        <!-- MAJOR -->
-
-        <div class="category-card topic-search">
-
-          <div class="category-head">
-
-            <div class="category-icon">
-              🎓
-            </div>
-
-            <div>
-              <strong>Major / Specialization</strong>
-              <span>Your selected LET specialization</span>
-            </div>
-
-          </div>
-
-          <div class="topic-list">
-
-            <button class="topic">
-              <span>Major Subject 1</span>
-              <small>20 lessons</small>
-            </button>
-
-            <button class="topic">
-              <span>Major Subject 2</span>
-              <small>18 lessons</small>
-            </button>
-
-            <button class="topic">
-              <span>Major Subject 3</span>
-              <small>15 lessons</small>
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
+      <div id="reviewContent" style="margin-top:15px;"></div>
     </section>
 
 
-    <!-- =====================================================
-         PRACTICE
-         ===================================================== -->
-
+    <!-- PRACTICE -->
     <section id="practicePage" class="page">
-
       <h1 class="page-title">Practice</h1>
-
-      <p class="page-subtitle">
-        Practice until you master the topic.
-      </p>
-
+      <p class="page-subtitle">Practice until you master the topic.</p>
 
       <div class="mode-grid">
-
-        <button
-          class="mode-card"
-          onclick="openPractice('quick')">
-
-          <div class="mode-icon">⚡</div>
-
-          <strong>Quick Practice</strong>
-
-          <p>
-            5–20 questions for short study sessions.
-          </p>
-
-        </button>
-
-
-        <button
-          class="mode-card"
-          onclick="openPractice('weak')">
-
-          <div class="mode-icon">🎯</div>
-
-          <strong>My Weak Areas</strong>
-
-          <p>
-            Practice topics where your performance needs improvement.
-          </p>
-
-        </button>
-
-
-        <button
-          class="mode-card"
-          onclick="openPractice('question')">
-
-          <div class="mode-icon">📝</div>
-
-          <strong>Question Bank</strong>
-
-          <p>
-            Browse and practice thousands of LET-style questions.
-          </p>
-
-        </button>
-
-
-        <button
-          class="mode-card"
-          onclick="openPractice('test')">
-
-          <div class="mode-icon">⏱️</div>
-
-          <strong>Practice Test</strong>
-
-          <p>
-            Create a customized timed examination.
-          </p>
-
-        </button>
-
-
-        <button
-          class="mode-card"
-          onclick="openPractice('mock')">
-
-          <div class="mode-icon">🧪</div>
-
-          <strong>Mock LET</strong>
-
-          <p>
-            Simulate the full examination experience.
-          </p>
-
-        </button>
-
-
-        <button
-          class="mode-card"
-          onclick="navigate('mistakes')">
-
-          <div class="mode-icon">❌</div>
-
-          <strong>Mistake Review</strong>
-
-          <p>
-            Review questions you previously answered incorrectly.
-          </p>
-
-        </button>
-
+        <button class="mode-card" onclick="openPractice('quick')"><div class="mode-icon">⚡</div><strong>Quick Practice</strong><p>5–20 questions for short study sessions.</p></button>
+        <button class="mode-card" onclick="openPractice('weak')"><div class="mode-icon">🎯</div><strong>My Weak Areas</strong><p>Practice topics where your performance needs improvement.</p></button>
+        <button class="mode-card" onclick="openPractice('question')"><div class="mode-icon">📝</div><strong>Question Bank</strong><p>Browse and practice LET-style questions.</p></button>
+        <button class="mode-card" onclick="openPractice('test')"><div class="mode-icon">⏱️</div><strong>Practice Test</strong><p>Create a customized timed examination.</p></button>
+        <button class="mode-card" onclick="openPractice('mock')"><div class="mode-icon">🧪</div><strong>Mock LET</strong><p>Simulate the full examination experience.</p></button>
+        <button class="mode-card" onclick="navigate('mistakes')"><div class="mode-icon">❌</div><strong>Mistake Review</strong><p>Review questions you previously answered incorrectly.</p></button>
       </div>
-
-
-      <!-- RECENT PRACTICE -->
 
       <div class="section">
-
-        <div class="section-header">
-          <h2 class="section-title">
-            Recent Practice
-          </h2>
+        <div class="section-header"><h2 class="section-title">Recent Practice</h2></div>
+        <div class="analytics-card" id="recentPracticeCard">
+          <div class="analytics-head"><strong>No sessions yet</strong><span>—</span></div>
+          <p style="color:var(--muted); font-size:12px; margin:0 0 14px;">Complete a practice session to see it here.</p>
+          <button class="btn btn-secondary btn-full" onclick="openPractice('quick')">Start Practicing</button>
         </div>
-
-        <div class="analytics-card">
-
-          <div class="analytics-head">
-            <strong>Professional Education</strong>
-            <span>Today</span>
-          </div>
-
-          <div class="metric-row">
-
-            <div class="metric-label">
-              <span>Assessment of Learning</span>
-              <span>68%</span>
-            </div>
-
-            <div class="progress">
-              <div style="width:68%"></div>
-            </div>
-
-          </div>
-
-          <button
-            class="btn btn-secondary btn-full"
-            onclick="openPractice('weak')">
-            Continue Practice
-          </button>
-
-        </div>
-
       </div>
-
     </section>
 
 
-    <!-- =====================================================
-         PROGRESS
-         ===================================================== -->
-
+    <!-- PROGRESS -->
     <section id="progressPage" class="page">
-
       <h1 class="page-title">Progress</h1>
-
-      <p class="page-subtitle">
-        Understand your strengths, weaknesses and improvement.
-      </p>
-
+      <p class="page-subtitle">Understand your strengths, weaknesses and improvement.</p>
 
       <div class="result-card">
-
-        <div class="result-label">
-          LET Readiness Score
-        </div>
-
-        <div class="result-score">
-          78
-        </div>
-
-        <div class="result-label">
-          out of 100
-        </div>
-
-        <div class="result-status">
-          ● GOOD READINESS
-        </div>
-
+        <div class="result-label">LET Readiness Score</div>
+        <div class="result-score" id="progressScore">78</div>
+        <div class="result-label">out of 100</div>
+        <div class="result-status" id="progressStatus">● GOOD READINESS</div>
       </div>
-
 
       <div class="section">
-
         <div class="analytics-card">
-
-          <div class="analytics-head">
-            <strong>Subject Performance</strong>
-            <span>This month</span>
-          </div>
-
-
-          <div class="metric-row">
-
-            <div class="metric-label">
-              <span>General Education</span>
-              <span>86%</span>
-            </div>
-
-            <div class="progress">
-              <div style="width:86%"></div>
-            </div>
-
-          </div>
-
-
-          <div class="metric-row">
-
-            <div class="metric-label">
-              <span>Professional Education</span>
-              <span>74%</span>
-            </div>
-
-            <div class="progress">
-              <div style="width:74%"></div>
-            </div>
-
-          </div>
-
-
-          <div class="metric-row">
-
-            <div class="metric-label">
-              <span>Major / Specialization</span>
-              <span>81%</span>
-            </div>
-
-            <div class="progress">
-              <div style="width:81%"></div>
-            </div>
-
-          </div>
-
+          <div class="analytics-head"><strong>Subject Performance</strong><span>All time</span></div>
+          <div id="progressSubjects"></div>
         </div>
 
-
         <div class="analytics-card">
-
-          <div class="analytics-head">
-            <strong>Topic Mastery</strong>
-            <span>18 topics</span>
-          </div>
-
-
+          <div class="analytics-head"><strong>Topic Mastery</strong><span id="masteryCount">0 topics attempted</span></div>
           <div class="metric-row">
-
-            <div class="metric-label">
-              <span>Strong</span>
-              <span>10 topics</span>
-            </div>
-
-            <div class="progress">
-              <div style="width:72%"></div>
-            </div>
-
+            <div class="metric-label"><span>Strong (80%+)</span><span id="masteryStrong">0 topics</span></div>
+            <div class="progress"><div id="masteryStrongBar" style="width:0%; background:linear-gradient(90deg,var(--success),var(--cyan));"></div></div>
           </div>
-
-
           <div class="metric-row">
-
-            <div class="metric-label">
-              <span>Developing</span>
-              <span>5 topics</span>
-            </div>
-
-            <div class="progress">
-              <div style="width:40%"></div>
-            </div>
-
+            <div class="metric-label"><span>Developing (60–79%)</span><span id="masteryDev">0 topics</span></div>
+            <div class="progress"><div id="masteryDevBar" style="width:0%; background:linear-gradient(90deg,var(--warning),var(--primary));"></div></div>
           </div>
-
-
           <div class="metric-row">
-
-            <div class="metric-label">
-              <span>Needs Improvement</span>
-              <span>3 topics</span>
-            </div>
-
-            <div class="progress">
-              <div style="width:24%"></div>
-            </div>
-
+            <div class="metric-label"><span>Needs Improvement (&lt;60%)</span><span id="masteryWeak">0 topics</span></div>
+            <div class="progress"><div id="masteryWeakBar" style="width:0%; background:linear-gradient(90deg,var(--danger),var(--warning));"></div></div>
           </div>
-
         </div>
 
-
         <div class="analytics-card">
-
-          <div class="analytics-head">
-            <strong>Study Activity</strong>
-            <span>Last 7 days</span>
-          </div>
-
+          <div class="analytics-head"><strong>Study Activity</strong><span>Last 7 days</span></div>
           <div class="goal-items">
-
-            <div class="goal-item">
-              <strong>342</strong>
-              <span>Questions</span>
-            </div>
-
-            <div class="goal-item">
-              <strong>4.8h</strong>
-              <span>Study Time</span>
-            </div>
-
-            <div class="goal-item">
-              <strong>86%</strong>
-              <span>Retention</span>
-            </div>
-
+            <div class="goal-item"><strong id="weekQuestions">0</strong><span>Questions</span></div>
+            <div class="goal-item"><strong id="weekTime">0h</strong><span>Study Time</span></div>
+            <div class="goal-item"><strong id="weekAccuracy">0%</strong><span>Accuracy</span></div>
           </div>
-
         </div>
-
       </div>
-
     </section>
 
 
-    <!-- =====================================================
-         MISTAKES
-         ===================================================== -->
-
+    <!-- MISTAKES -->
     <section id="mistakesPage" class="page">
-
       <h1 class="page-title">My Mistakes</h1>
-
-      <p class="page-subtitle">
-        Learn from every question you got wrong.
-      </p>
-
+      <p class="page-subtitle">Learn from every question you got wrong.</p>
 
       <div class="recommendation">
-
-        <div class="recommendation-icon">
-          💡
-        </div>
-
+        <div class="recommendation-icon">💡</div>
         <div>
-
-          <strong>
-            24 questions need review
-          </strong>
-
-          <p>
-            Repeating these questions can improve your weak areas.
-          </p>
-
+          <strong id="mistakeCountText">0 questions need review</strong>
+          <p>Repeating these questions can improve your weak areas.</p>
         </div>
-
       </div>
 
-
-      <div style="margin-top:15px;">
-
-        <div class="mistake-card">
-
-          <small>❌ PROFESSIONAL EDUCATION</small>
-
-          <strong>
-            Which type of assessment is primarily conducted
-            during instruction to improve learning?
-          </strong>
-
-          <div class="mistake-answer">
-            Your answer:
-            <span style="color:var(--danger)">Summative</span>
-            <br>
-            Correct answer:
-            <b>Formative</b>
-          </div>
-
-          <button
-            class="btn btn-secondary"
-            style="margin-top:12px;width:100%;"
-            onclick="showToast('Explanation opened')">
-            View Explanation
-          </button>
-
-        </div>
-
-
-        <div class="mistake-card">
-
-          <small>❌ GENERAL EDUCATION</small>
-
-          <strong>
-            Which statement best describes critical thinking?
-          </strong>
-
-          <div class="mistake-answer">
-            Your answer:
-            <span style="color:var(--danger)">Memorizing information</span>
-            <br>
-            Correct answer:
-            <b>Evaluating information and reasoning</b>
-          </div>
-
-          <button
-            class="btn btn-secondary"
-            style="margin-top:12px;width:100%;"
-            onclick="showToast('Explanation opened')">
-            View Explanation
-          </button>
-
-        </div>
-
-
-        <button
-          class="btn btn-primary btn-full"
-          onclick="openPractice('mistakes')">
-          🔄 Practice My Mistakes
-        </button>
-
-      </div>
-
+      <div style="margin-top:15px;" id="mistakesList"></div>
     </section>
 
 
-    <!-- =====================================================
-         PROFILE
-         ===================================================== -->
-
+    <!-- PROFILE -->
     <section id="profilePage" class="page">
-
       <h1 class="page-title">Profile</h1>
-
-      <p class="page-subtitle">
-        Manage your LET preparation preferences.
-      </p>
-
+      <p class="page-subtitle">Manage your LET preparation preferences.</p>
 
       <div class="profile-card">
-
-        <div class="avatar">
-          LR
-        </div>
-
+        <div class="avatar">LR</div>
         <h2>LET Reviewee</h2>
+        <p>Future Professional Teacher</p>
+        <div style="margin-top:16px;"><span class="pill">🎓 Professional Education</span></div>
 
-        <p>
-          Future Professional Teacher
-        </p>
-
-        <div style="margin-top:16px;">
-
-          <span class="pill">
-            🎓 Professional Education
-          </span>
-
+        <div class="theme-switch">
+          <button class="theme-opt" data-t="dark" onclick="setTheme('dark')">
+            <div class="swatch" style="background:linear-gradient(135deg,#0d1322,#070b14)"></div>Dark
+          </button>
+          <button class="theme-opt" data-t="light" onclick="setTheme('light')">
+            <div class="swatch" style="background:linear-gradient(135deg,#ffffff,#e9edf5); border:1px solid #ddd;"></div>Light
+          </button>
+          <button class="theme-opt" data-t="neu" onclick="setTheme('neu')">
+            <div class="swatch" style="background:#e6e9f0; box-shadow: inset 2px 2px 4px #c5c9d3, inset -2px -2px 4px #ffffff;"></div>Soft
+          </button>
         </div>
-
       </div>
-
 
       <div class="profile-menu">
-
-        <button
-          class="profile-item"
-          onclick="showToast('LET track settings')">
-
-          <span>🎓</span>
-          <span>LET Track & Specialization</span>
-          <small>›</small>
-
-        </button>
-
-
-        <button
-          class="profile-item"
-          onclick="showToast('Study plan settings')">
-
-          <span>📅</span>
-          <span>My Study Plan</span>
-          <small>›</small>
-
-        </button>
-
-
-        <button
-          class="profile-item"
-          onclick="showToast('Notification settings')">
-
-          <span>🔔</span>
-          <span>Notifications</span>
-          <small>›</small>
-
-        </button>
-
-
-        <button
-          class="profile-item"
-          onclick="showToast('Bookmarks opened')">
-
-          <span>🔖</span>
-          <span>Bookmarks & Saved Questions</span>
-          <small>›</small>
-
-        </button>
-
-
-        <button
-          class="profile-item"
-          onclick="showToast('App settings')">
-
-          <span>⚙️</span>
-          <span>Settings</span>
-          <small>›</small>
-
-        </button>
-
-
-        <button
-          class="profile-item"
-          onclick="showToast('LETReady v1.0')">
-
-          <span>ℹ️</span>
-          <span>About LETReady</span>
-          <small>›</small>
-
-        </button>
-
+        <button class="profile-item" onclick="showToast('LET track settings')"><span>🎓</span><span>LET Track & Specialization</span><small>›</small></button>
+        <button class="profile-item" onclick="showToast('Study plan settings')"><span>📅</span><span>My Study Plan</span><small>›</small></button>
+        <button class="profile-item" onclick="showToast('Notification settings')"><span>🔔</span><span>Notifications</span><small>›</small></button>
+        <button class="profile-item" onclick="navigate('bookmarks')"><span>🔖</span><span>Bookmarks & Saved Questions</span><small id="bookmarkCountBadge">›</small></button>
+        <button class="profile-item" onclick="confirmResetData()"><span>🗑️</span><span>Reset My Progress</span><small>›</small></button>
+        <button class="profile-item" onclick="showToast('LETReady v2.0 — now with themes')"><span>ℹ️</span><span>About LETReady</span><small>›</small></button>
       </div>
+    </section>
 
+
+    <!-- BOOKMARKS -->
+    <section id="bookmarksPage" class="page">
+      <h1 class="page-title">Bookmarks</h1>
+      <p class="page-subtitle">Questions you saved for later review.</p>
+      <div id="bookmarksList"></div>
     </section>
 
   </main>
 
-
-  <!-- =======================================================
-       BOTTOM NAV
-       ======================================================= -->
-
   <nav class="bottom-nav">
-
-    <button
-      class="nav-btn active"
-      data-page="home"
-      onclick="navigate('home')">
-
-      <span class="nav-icon">🏠</span>
-      <span>Home</span>
-
-    </button>
-
-
-    <button
-      class="nav-btn"
-      data-page="review"
-      onclick="navigate('review')">
-
-      <span class="nav-icon">📚</span>
-      <span>Review</span>
-
-    </button>
-
-
-    <button
-      class="nav-btn"
-      data-page="practice"
-      onclick="navigate('practice')">
-
-      <span class="nav-icon">📝</span>
-      <span>Practice</span>
-
-    </button>
-
-
-    <button
-      class="nav-btn"
-      data-page="progress"
-      onclick="navigate('progress')">
-
-      <span class="nav-icon">📊</span>
-      <span>Progress</span>
-
-    </button>
-
-
-    <button
-      class="nav-btn"
-      data-page="profile"
-      onclick="navigate('profile')">
-
-      <span class="nav-icon">👤</span>
-      <span>Profile</span>
-
-    </button>
-
+    <button class="nav-btn active" data-page="home" onclick="navigate('home')"><span class="nav-icon">🏠</span><span>Home</span></button>
+    <button class="nav-btn" data-page="review" onclick="navigate('review')"><span class="nav-icon">📚</span><span>Review</span></button>
+    <button class="nav-btn" data-page="practice" onclick="navigate('practice')"><span class="nav-icon">📝</span><span>Practice</span></button>
+    <button class="nav-btn" data-page="progress" onclick="navigate('progress')"><span class="nav-icon">📊</span><span>Progress</span></button>
+    <button class="nav-btn" data-page="profile" onclick="navigate('profile')"><span class="nav-icon">👤</span><span>Profile</span></button>
   </nav>
-
 </div>
 
 
-<!-- =========================================================
-     PRACTICE CONFIGURATION MODAL
-     ========================================================= -->
-
+<!-- PRACTICE CONFIG MODAL -->
 <div id="practiceModal" class="modal">
-
   <div class="modal-sheet">
-
     <div class="modal-handle"></div>
-
-    <h2 class="modal-title" id="modalTitle">
-      Start Practice
-    </h2>
-
-    <p class="modal-subtitle" id="modalSubtitle">
-      Customize your practice session.
-    </p>
-
+    <h2 class="modal-title" id="modalTitle">Start Practice</h2>
+    <p class="modal-subtitle" id="modalSubtitle">Customize your practice session.</p>
 
     <div class="form-group">
-
       <label>Subject</label>
-
-      <select class="form-control">
-
-        <option>General Education</option>
-        <option selected>Professional Education</option>
-        <option>Major / Specialization</option>
-        <option>All Subjects</option>
-
+      <select class="form-control" id="cfgSubject">
+        <option value="all">All Subjects</option>
+        <option value="gened">General Education</option>
+        <option value="profed" selected>Professional Education</option>
+        <option value="major">Major / Specialization</option>
       </select>
-
     </div>
 
-
     <div class="form-group">
-
       <label>Number of Questions</label>
-
-      <select class="form-control">
-
-        <option>5 Questions</option>
-        <option selected>20 Questions</option>
-        <option>30 Questions</option>
-        <option>50 Questions</option>
-        <option>100 Questions</option>
-
+      <select class="form-control" id="cfgCount">
+        <option value="5">5 Questions</option>
+        <option value="10" selected>10 Questions</option>
+        <option value="15">15 Questions</option>
+        <option value="20">All available</option>
       </select>
-
     </div>
 
-
     <div class="form-group">
-
       <label>Difficulty</label>
-
-      <select class="form-control">
-
-        <option>Easy</option>
-        <option selected>Mixed</option>
-        <option>Medium</option>
-        <option>Hard</option>
-
+      <select class="form-control" id="cfgDifficulty">
+        <option value="all" selected>Mixed</option>
+        <option value="Easy">Easy</option>
+        <option value="Medium">Medium</option>
+        <option value="Hard">Hard</option>
       </select>
-
     </div>
-
 
     <div class="form-group">
-
       <label>Time Limit</label>
-
-      <select class="form-control">
-
-        <option>No Time Limit</option>
-        <option selected>20 Minutes</option>
-        <option>30 Minutes</option>
-        <option>60 Minutes</option>
-
+      <select class="form-control" id="cfgTime">
+        <option value="0">No Time Limit</option>
+        <option value="600" selected>10 Minutes</option>
+        <option value="1200">20 Minutes</option>
+        <option value="1800">30 Minutes</option>
       </select>
-
     </div>
 
-
-    <button
-      class="btn btn-primary btn-full"
-      onclick="startTest()">
-
-      🚀 Start Practice
-
-    </button>
-
-
-    <button
-      class="btn btn-secondary btn-full"
-      style="margin-top:8px;"
-      onclick="closePractice()">
-
-      Cancel
-
-    </button>
-
+    <button class="btn btn-primary btn-full" onclick="startTest()">🚀 Start Practice</button>
+    <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="closePractice()">Cancel</button>
   </div>
-
 </div>
 
 
-<!-- =========================================================
-     TEST SCREEN
-     ========================================================= -->
-
+<!-- TEST SCREEN -->
 <div id="testScreen" class="test-screen">
-
   <div class="test-header">
-
-    <button
-      class="icon-btn"
-      onclick="confirmExitTest()">
-      ✕
-    </button>
-
+    <button class="icon-btn" onclick="confirmExitTest()">✕</button>
     <div class="test-progress">
-
-      <div class="question-number">
-        Question <span id="questionNumber">1</span> of 5
-      </div>
-
-      <div class="progress">
-        <div id="questionProgress" style="width:20%"></div>
-      </div>
-
+      <div class="question-number">Question <span id="questionNumber">1</span> of <span id="questionTotal">5</span></div>
+      <div class="progress"><div id="questionProgress" style="width:20%"></div></div>
     </div>
-
-    <div class="timer" id="timer">
-      20:00
-    </div>
-
+    <div class="timer" id="timer">--:--</div>
   </div>
-
 
   <div class="question-body">
-
     <div class="question-meta">
-
-      <span class="pill">
-        Professional Education
-      </span>
-
-      <span class="pill">
-        Medium
-      </span>
-
+      <span class="pill" id="qSubjectPill">Professional Education</span>
+      <span class="pill" id="qDifficultyPill">Medium</span>
     </div>
-
-
-    <div
-      class="question-text"
-      id="questionText">
-
-      Which type of assessment is primarily used
-      during instruction to monitor student learning
-      and provide feedback?
-
-    </div>
-
-
-    <div
-      class="choices"
-      id="choices">
-
-      <button class="choice" onclick="selectChoice(this)">
-
-        <span class="choice-letter">A</span>
-
-        <span class="choice-text">
-          Summative assessment
-        </span>
-
-      </button>
-
-
-      <button class="choice" onclick="selectChoice(this)">
-
-        <span class="choice-letter">B</span>
-
-        <span class="choice-text">
-          Formative assessment
-        </span>
-
-      </button>
-
-
-      <button class="choice" onclick="selectChoice(this)">
-
-        <span class="choice-letter">C</span>
-
-        <span class="choice-text">
-          Placement assessment
-        </span>
-
-      </button>
-
-
-      <button class="choice" onclick="selectChoice(this)">
-
-        <span class="choice-letter">D</span>
-
-        <span class="choice-text">
-          Norm-referenced assessment
-        </span>
-
-      </button>
-
-    </div>
-
+    <div class="question-text" id="questionText">Loading question...</div>
+    <div class="choices" id="choices"></div>
+    <div class="explain-box" id="explainBox"></div>
   </div>
-
 
   <div class="test-footer">
-
-    <button
-      class="btn btn-secondary"
-      onclick="previousQuestion()">
-      ← Previous
-    </button>
-
-    <button
-      class="btn btn-secondary"
-      onclick="markQuestion()">
-      🔖 Mark
-    </button>
-
-    <button
-      class="btn btn-primary"
-      onclick="nextQuestion()">
-      Next →
-    </button>
-
+    <button class="btn btn-secondary" onclick="previousQuestion()">← Prev</button>
+    <button class="btn btn-secondary bookmark-btn" id="bookmarkBtn" onclick="toggleBookmark()">🔖 Mark</button>
+    <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next →</button>
   </div>
-
 </div>
 
 
-<!-- =========================================================
-     TOAST
-     ========================================================= -->
+<!-- RESULTS SCREEN -->
+<div id="resultScreen" class="test-screen">
+  <div class="question-body" style="padding-top:40px;">
+    <div class="result-card">
+      <div class="result-label">Session Score</div>
+      <div class="result-score" id="finalScore">0</div>
+      <div class="result-label">out of 100</div>
+      <div class="result-status" id="finalStatus">● GOOD JOB</div>
+
+      <div class="result-breakdown">
+        <div><strong id="finalCorrect" style="color:var(--success)">0</strong><span>Correct</span></div>
+        <div><strong id="finalWrong" style="color:var(--danger)">0</strong><span>Incorrect</span></div>
+        <div><strong id="finalTime">0:00</strong><span>Time Used</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <button class="btn btn-primary btn-full" onclick="closeResults('practice')">Back to Practice</button>
+      <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="closeResults('progress')">View Full Analytics</button>
+    </div>
+  </div>
+</div>
+
 
 <div id="toast" class="toast"></div>
 
 
 <script>
+/* =========================================================
+   DATA: question bank
+   ========================================================= */
+const QUESTION_BANK = [
+  { id:"pe1", subject:"profed", topic:"Assessment of Learning", difficulty:"Medium",
+    question:"Which type of assessment is primarily used during instruction to monitor student learning and provide feedback?",
+    choices:["Summative assessment","Formative assessment","Placement assessment","Norm-referenced assessment"],
+    answer:1, explanation:"Formative assessment happens during instruction and is used to give ongoing feedback so teaching and learning can be adjusted, unlike summative assessment which evaluates learning after instruction ends." },
+  { id:"pe2", subject:"profed", topic:"Facilitating Learning", difficulty:"Easy",
+    question:"Which learning theory emphasizes that learners actively construct knowledge through experience?",
+    choices:["Behaviorism","Essentialism","Constructivism","Perennialism"],
+    answer:2, explanation:"Constructivism holds that learners build their own understanding through experience and reflection, rather than passively receiving information." },
+  { id:"pe3", subject:"profed", topic:"Learner Development", difficulty:"Medium",
+    question:"Which principle states that learners differ in their abilities, interests and learning needs?",
+    choices:["Individual differences","Uniformity principle","Standardization","Isolation principle"],
+    answer:0, explanation:"The principle of individual differences recognizes that each learner has a unique pace, interest, and readiness level, which should guide differentiated instruction." },
+  { id:"pe4", subject:"profed", topic:"Facilitating Learning", difficulty:"Easy",
+    question:"Which approach encourages students to connect new information with their prior knowledge?",
+    choices:["Passive learning","Meaningful learning","Mechanical repetition","Direct memorization"],
+    answer:1, explanation:"Meaningful learning links new concepts to what a learner already knows, which improves retention compared to rote memorization." },
+  { id:"pe5", subject:"profed", topic:"Assessment of Learning", difficulty:"Hard",
+    question:"Which assessment is commonly administered at the end of an instructional period?",
+    choices:["Diagnostic","Formative","Summative","Informal"],
+    answer:2, explanation:"Summative assessment measures what a student has learned at the end of a unit, term, or course, typically for grading purposes." },
+  { id:"pe6", subject:"profed", topic:"Curriculum Development", difficulty:"Medium",
+    question:"Which curriculum is actually delivered by the teacher in the classroom, as opposed to what is written in official documents?",
+    choices:["Written curriculum","Taught curriculum","Tested curriculum","Recommended curriculum"],
+    answer:1, explanation:"The taught curriculum refers to what teachers actually implement in the classroom, which may differ from the written or recommended curriculum." },
+  { id:"pe7", subject:"profed", topic:"Teaching Profession", difficulty:"Easy",
+    question:"Under the Code of Ethics for Professional Teachers, a teacher's foremost obligation is to whom?",
+    choices:["The school administration","The students","The Department of Education","Fellow teachers"],
+    answer:1, explanation:"The Code of Ethics places the teacher's primary responsibility toward the learners, whose growth and welfare guide professional conduct." },
+  { id:"pe8", subject:"profed", topic:"Educational Technology", difficulty:"Medium",
+    question:"Which best describes the TPACK framework?",
+    choices:["A classroom seating arrangement","The intersection of technology, pedagogy and content knowledge","A grading rubric","A behavior management system"],
+    answer:1, explanation:"TPACK (Technological Pedagogical Content Knowledge) describes how technology, pedagogy, and content knowledge intersect to support effective teaching." },
 
-  /* =========================================================
-     LETREADY APPLICATION LOGIC
-     ========================================================= */
+  { id:"ge1", subject:"gened", topic:"English Language", difficulty:"Easy",
+    question:"Which sentence uses subject-verb agreement correctly?",
+    choices:["The list of items are on the table.","The list of items is on the table.","The list of items were on the table.","The list of items be on the table."],
+    answer:1, explanation:"The subject 'list' is singular, so it takes the singular verb 'is,' even though 'items' (plural) comes right before the verb." },
+  { id:"ge2", subject:"gened", topic:"Mathematics", difficulty:"Medium",
+    question:"What is 3/4 expressed as a percentage?",
+    choices:["34%","75%","43%","134%"],
+    answer:1, explanation:"3 divided by 4 equals 0.75, and multiplying by 100 converts it to 75%." },
+  { id:"ge3", subject:"gened", topic:"Science", difficulty:"Easy",
+    question:"Which organelle is primarily responsible for producing energy in a cell?",
+    choices:["Nucleus","Ribosome","Mitochondrion","Golgi apparatus"],
+    answer:2, explanation:"The mitochondrion converts nutrients into ATP through cellular respiration, earning its nickname as the powerhouse of the cell." },
+  { id:"ge4", subject:"gened", topic:"Filipino", difficulty:"Medium",
+    question:"Alin sa mga sumusunod ang tamang gamit ng pang-uri sa pangungusap?",
+    choices:["Siya ay tumakbo mabilis.","Siya ay mabilis na tumakbo.","Siya mabilis tumakbo.","Siya ay tumakbo ng mabilis."],
+    answer:1, explanation:"Ang pang-uring 'mabilis' ay dapat sundan ng pang-angkop na 'na' bago ang pandiwa upang maging wasto ang balangkas ng pangungusap." },
+  { id:"ge5", subject:"gened", topic:"Social Sciences", difficulty:"Medium",
+    question:"Which branch of Philippine government is primarily responsible for interpreting laws?",
+    choices:["Executive","Legislative","Judiciary","Constitutional Commissions"],
+    answer:2, explanation:"The Judiciary interprets laws and settles disputes, while the Legislative branch creates laws and the Executive implements them." },
+  { id:"ge6", subject:"gened", topic:"Mathematics", difficulty:"Hard",
+    question:"A class has 40 students, and the ratio of boys to girls is 3:5. How many girls are in the class?",
+    choices:["15","20","24","25"],
+    answer:3, explanation:"The ratio parts total 8 (3+5). Each part equals 40/8 = 5 students, so girls (5 parts) = 5 x 5 = 25." },
 
-  let currentPage = "home";
+  { id:"mj1", subject:"major", topic:"Major Subject 1", difficulty:"Medium",
+    question:"In a lesson plan, which section identifies what students should be able to do by the end of the lesson?",
+    choices:["Learning objectives","Materials","Assignment","Reference"],
+    answer:0, explanation:"Learning objectives state the specific, measurable outcomes students are expected to achieve by the end of a lesson." },
+  { id:"mj2", subject:"major", topic:"Major Subject 2", difficulty:"Easy",
+    question:"Which instructional material is most appropriate for teaching abstract mathematical concepts to young learners?",
+    choices:["Manipulatives","Lecture only","Textbook reading only","Verbal explanation only"],
+    answer:0, explanation:"Manipulatives make abstract concepts concrete and tangible, which is especially useful for young learners still developing abstract reasoning." },
+  { id:"mj3", subject:"major", topic:"Major Subject 3", difficulty:"Medium",
+    question:"Which questioning technique encourages higher-order thinking rather than simple recall?",
+    choices:["Yes or no questions","Fill-in-the-blank questions","Open-ended 'why' and 'how' questions","Multiple choice recall questions"],
+    answer:2, explanation:"Open-ended questions that ask 'why' or 'how' require analysis, synthesis, or evaluation, pushing students beyond simple recall." },
+  { id:"mj4", subject:"major", topic:"Major Subject 1", difficulty:"Hard",
+    question:"Which classroom management approach focuses on building intrinsic motivation rather than external rewards?",
+    choices:["Token economy","Democratic classroom management","Punishment-based discipline","Strict authoritarian control"],
+    answer:1, explanation:"Democratic classroom management involves students in decision-making, which fosters intrinsic motivation and a sense of ownership over their behavior." }
+];
 
-  let practiceType = "quick";
+const SUBJECT_META = {
+  gened: { name: "General Education", icon: "📘" },
+  profed: { name: "Professional Education", icon: "🧠" },
+  major: { name: "Major / Specialization", icon: "🎓" }
+};
 
-  let currentQuestion = 1;
+const REVIEW_TOPICS = {
+  gened: ["English Language","Mathematics","Science","Filipino","Social Sciences"],
+  profed: ["Learner Development","Facilitating Learning","Assessment of Learning","Curriculum Development","Teaching Profession","Educational Technology"],
+  major: ["Major Subject 1","Major Subject 2","Major Subject 3"]
+};
 
-  let selectedAnswer = null;
+/* =========================================================
+   STATE
+   ========================================================= */
+let state = {
+  theme: "dark",
+  totalAnswered: 0,
+  totalCorrect: 0,
+  studySeconds: 0,
+  streak: 0,
+  lastActiveDate: null,
+  dailyGoal: 30,
+  dailyProgress: { date: null, questions: 0, seconds: 0 },
+  subjectStats: { gened: {answered:0, correct:0}, profed: {answered:0, correct:0}, major: {answered:0, correct:0} },
+  topicStats: {},
+  mistakes: [],
+  bookmarks: [],
+  sessions: []
+};
 
-  let timerSeconds = 1200;
+let session = null;
+const STORE_KEY = "letready_state_v1";
 
-  let timerInterval = null;
-
-
-  /* =========================================================
-     NAVIGATION
-     ========================================================= */
-
-  function navigate(page) {
-
-    currentPage = page;
-
-    document
-      .querySelectorAll(".page")
-      .forEach(el => el.classList.remove("active"));
-
-    const target = document.getElementById(page + "Page");
-
-    if (target) {
-      target.classList.add("active");
+/* =========================================================
+   PERSISTENCE
+   ========================================================= */
+async function loadState() {
+  try {
+    const res = await window.storage.get(STORE_KEY, false);
+    if (res && res.value) {
+      const loaded = JSON.parse(res.value);
+      state = Object.assign(state, loaded);
     }
+  } catch (e) {
+    /* no saved state yet */
+  }
+  checkStreak();
+  applyTheme(state.theme || "dark");
+  renderAll();
+}
 
-    document
-      .querySelectorAll(".nav-btn")
-      .forEach(btn => {
+async function saveState() {
+  try {
+    await window.storage.set(STORE_KEY, JSON.stringify(state), false);
+  } catch (e) {
+    console.error("Storage error", e);
+  }
+}
 
-        btn.classList.remove("active");
+function todayStr() {
+  return new Date().toISOString().slice(0,10);
+}
 
-        if (btn.dataset.page === page) {
-          btn.classList.add("active");
-        }
+function checkStreak() {
+  const today = todayStr();
+  if (!state.dailyProgress || state.dailyProgress.date !== today) {
+    state.dailyProgress = { date: today, questions: 0, seconds: 0 };
+  }
+  if (state.lastActiveDate) {
+    const last = new Date(state.lastActiveDate);
+    const now = new Date(today);
+    const diffDays = Math.round((now - last) / 86400000);
+    if (diffDays === 1) {
+      /* streak continues, will increment on next answered question today */
+    } else if (diffDays > 1) {
+      state.streak = 0;
+    }
+  }
+}
 
-      });
+/* =========================================================
+   THEME
+   ========================================================= */
+const THEME_ORDER = ["dark","light","neu"];
+const THEME_ICON = { dark: "🌙", light: "☀️", neu: "🧊" };
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
+function applyTheme(t) {
+  document.body.setAttribute("data-theme", t);
+  document.getElementById("themeBtn").textContent = THEME_ICON[t];
+  document.querySelectorAll(".theme-opt").forEach(el => {
+    el.classList.toggle("active", el.dataset.t === t);
+  });
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) {
+    meta.setAttribute("content", t === "dark" ? "#070b14" : t === "light" ? "#eef1f7" : "#e6e9f0");
+  }
+}
+
+function setTheme(t) {
+  state.theme = t;
+  applyTheme(t);
+  saveState();
+  showToast(t === "dark" ? "Dark mode enabled" : t === "light" ? "Light mode enabled" : "Neumorphic mode enabled");
+}
+
+function cycleTheme() {
+  const idx = THEME_ORDER.indexOf(state.theme || "dark");
+  const next = THEME_ORDER[(idx + 1) % THEME_ORDER.length];
+  setTheme(next);
+}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+function navigate(page) {
+  document.querySelectorAll(".page").forEach(el => el.classList.remove("active"));
+  const target = document.getElementById(page + "Page");
+  if (target) target.classList.add("active");
+
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.page === page);
+  });
+
+  if (page === "review") renderReview();
+  if (page === "progress") renderProgress();
+  if (page === "mistakes") renderMistakes();
+  if (page === "bookmarks") renderBookmarks();
+  if (page === "home") renderHome();
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* =========================================================
+   RENDER: HOME
+   ========================================================= */
+function computeReadiness() {
+  const total = state.totalAnswered;
+  if (total === 0) return 0;
+  return Math.round((state.totalCorrect / total) * 100);
+}
+
+function greetingText() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning! 👋";
+  if (h < 18) return "Good afternoon! 👋";
+  return "Good evening! 👋";
+}
+
+function renderHome() {
+  document.getElementById("greeting").textContent = greetingText();
+
+  const score = computeReadiness();
+  document.getElementById("scoreValue").textContent = score + "%";
+  document.getElementById("scoreRing").style.setProperty("--score-pct", score + "%");
+  document.getElementById("progressScore").textContent = score;
+
+  let word = "GETTING STARTED", color = "var(--muted)", statusText = "● GETTING STARTED";
+  if (state.totalAnswered > 0) {
+    if (score >= 80) { word = "EXCELLENT"; color = "#8fe6bc"; statusText = "● EXCELLENT READINESS"; }
+    else if (score >= 65) { word = "GOOD"; color = "#8fe6bc"; statusText = "● GOOD READINESS"; }
+    else if (score >= 50) { word = "FAIR"; color = "#f6b73c"; statusText = "● FAIR READINESS"; }
+    else { word = "NEEDS WORK"; color = "#ff5f6d"; statusText = "● NEEDS MORE PRACTICE"; }
+  }
+  document.getElementById("readinessWord").textContent = word;
+  document.getElementById("readinessWord").style.color = color;
+  const statusEl = document.getElementById("progressStatus");
+  statusEl.textContent = statusText;
+  statusEl.style.color = color;
+  statusEl.style.background = "color-mix(in srgb," + color + " 16%, transparent)";
+  statusEl.style.borderColor = "color-mix(in srgb," + color + " 30%, transparent)";
+
+  document.getElementById("streakPill").textContent = "🔥 " + state.streak + "-day streak";
+
+  const weakSubjects = Object.keys(state.subjectStats).filter(s => {
+    const st = state.subjectStats[s];
+    return st.answered > 0 && (st.correct / st.answered) < 0.75;
+  });
+  document.getElementById("weakPill").textContent = "🎯 " + weakSubjects.length + " weak area" + (weakSubjects.length === 1 ? "" : "s");
+
+  document.getElementById("statQuestions").textContent = state.totalAnswered.toLocaleString();
+  document.getElementById("statAccuracy").textContent = score + "%";
+  document.getElementById("statTime").textContent = Math.round(state.studySeconds / 60) + "m";
+  document.getElementById("statStreak").textContent = state.streak;
+
+  const goalQ = state.dailyProgress.questions;
+  const goalPct = Math.min(100, Math.round((goalQ / state.dailyGoal) * 100));
+  document.getElementById("goalPct").textContent = goalPct + "% complete";
+  document.getElementById("goalCount").textContent = goalQ + " / " + state.dailyGoal + " questions";
+  document.getElementById("goalBar").style.width = goalPct + "%";
+  document.getElementById("goalQ").textContent = goalQ;
+  document.getElementById("goalMin").textContent = Math.round(state.dailyProgress.seconds / 60) + "m";
+  document.getElementById("goalStreak").textContent = "🔥 " + state.streak;
+
+  let weakestTopic = null, weakestScore = 101;
+  Object.keys(state.topicStats).forEach(t => {
+    const ts = state.topicStats[t];
+    if (ts.answered >= 2) {
+      const pct = (ts.correct / ts.answered) * 100;
+      if (pct < weakestScore) { weakestScore = pct; weakestTopic = t; }
+    }
+  });
+  if (weakestTopic) {
+    document.getElementById("recTitle").textContent = "Focus on " + weakestTopic;
+    document.getElementById("recBody").textContent = "Your recent accuracy is " + Math.round(weakestScore) + "%. Improve this topic before your next mock exam.";
+  } else {
+    document.getElementById("recTitle").textContent = "Take your first practice session";
+    document.getElementById("recBody").textContent = "Answer a few questions and LETReady will recommend where to focus next.";
+  }
+
+  const grid = document.getElementById("subjectGrid");
+  grid.innerHTML = "";
+  Object.keys(SUBJECT_META).forEach(key => {
+    const meta = SUBJECT_META[key];
+    const st = state.subjectStats[key];
+    const pct = st.answered > 0 ? Math.round((st.correct / st.answered) * 100) : 0;
+    const label = st.answered === 0 ? "Not started yet" : pct >= 80 ? "Strong performance" : pct >= 60 ? "Good performance" : "Needs improvement";
+    const color = st.answered === 0 ? "var(--muted)" : pct >= 60 ? "var(--text)" : "var(--warning)";
+    grid.innerHTML += `
+      <div class="subject-card">
+        <div class="subject-top">
+          <div class="subject-info">
+            <div class="subject-icon">${meta.icon}</div>
+            <div><strong>${meta.name}</strong><span>${label}</span></div>
+          </div>
+          <div class="subject-score" style="color:${color}">${st.answered ? pct + "%" : "—"}</div>
+        </div>
+        <div class="subject-bar"><div class="progress"><div style="width:${pct}%"></div></div></div>
+      </div>`;
+  });
+}
+
+/* =========================================================
+   RENDER: REVIEW
+   ========================================================= */
+function topicMasteryTag(topic) {
+  const ts = state.topicStats[topic];
+  if (!ts || ts.answered === 0) return `<small>Not started</small>`;
+  const pct = Math.round((ts.correct / ts.answered) * 100);
+  const bg = pct >= 80 ? "rgba(33,201,130,.16)" : pct >= 60 ? "rgba(246,183,60,.16)" : "rgba(255,95,109,.16)";
+  const fg = pct >= 80 ? "var(--success)" : pct >= 60 ? "var(--warning)" : "var(--danger)";
+  return `<span class="mastery-tag" style="background:${bg};color:${fg}">${pct}%</span>`;
+}
+
+function renderReview() {
+  const container = document.getElementById("reviewContent");
+  container.innerHTML = "";
+  Object.keys(SUBJECT_META).forEach(key => {
+    const meta = SUBJECT_META[key];
+    const topics = REVIEW_TOPICS[key];
+    const topicHtml = topics.map(t => {
+      const count = QUESTION_BANK.filter(q => q.subject === key && q.topic === t).length;
+      return `<button class="topic" onclick="reviewTopic('${key}','${t.replace(/'/g,"\\'")}')">
+        <span>${t}</span>
+        <span style="display:flex;align-items:center;gap:8px;">${topicMasteryTag(t)}<small>${count} question${count === 1 ? "" : "s"}</small></span>
+      </button>`;
+    }).join("");
+    container.innerHTML += `
+      <div class="category-card topic-search">
+        <div class="category-head">
+          <div class="category-icon">${meta.icon}</div>
+          <div><strong>${meta.name}</strong><span>${topics.length} topics available</span></div>
+        </div>
+        <div class="topic-list">${topicHtml}</div>
+      </div>`;
+  });
+}
+
+function reviewTopic(subject, topic) {
+  const qs = QUESTION_BANK.filter(q => q.subject === subject && q.topic === topic);
+  if (qs.length === 0) { showToast("No questions for this topic yet."); return; }
+  showToast("Starting practice on " + topic);
+  session = buildSession(qs, 0);
+  document.getElementById("testScreen").classList.add("show");
+  renderQuestion();
+  startTimer();
+}
+
+function filterTopics(value) {
+  const query = value.toLowerCase().trim();
+  document.querySelectorAll(".topic-search").forEach(category => {
+    const topics = category.querySelectorAll(".topic");
+    let visible = 0;
+    topics.forEach(topic => {
+      const match = topic.textContent.toLowerCase().includes(query);
+      topic.style.display = match ? "flex" : "none";
+      if (match) visible++;
     });
+    category.style.display = visible > 0 ? "block" : "none";
+  });
+}
+
+/* =========================================================
+   PRACTICE MODAL
+   ========================================================= */
+let practiceType = "quick";
+
+const MODAL_TITLES = { quick: "Quick Practice", weak: "Practice My Weak Areas", question: "Question Bank", test: "Practice Test", mock: "Mock LET", mistakes: "Practice My Mistakes" };
+const MODAL_SUBTITLES = {
+  quick: "Complete a short practice session.",
+  weak: "Questions will focus on your weakest topics.",
+  question: "Customize your question-bank practice.",
+  test: "Create your own timed practice test.",
+  mock: "Simulate the full LET examination experience.",
+  mistakes: "Retry questions you previously answered incorrectly."
+};
+
+function openPractice(type) {
+  practiceType = type;
+  document.getElementById("modalTitle").textContent = MODAL_TITLES[type] || "Start Practice";
+  document.getElementById("modalSubtitle").textContent = MODAL_SUBTITLES[type] || "Customize your practice session.";
+
+  const subjectSel = document.getElementById("cfgSubject");
+  const timeSel = document.getElementById("cfgTime");
+  if (type === "mock") { subjectSel.value = "all"; timeSel.value = "1800"; }
+  else if (type === "weak" || type === "mistakes") { subjectSel.value = "all"; }
+
+  document.getElementById("practiceModal").classList.add("show");
+}
+
+function closePractice() {
+  document.getElementById("practiceModal").classList.remove("show");
+}
+
+function buildSession(list, timeLimit) {
+  return {
+    questions: list,
+    index: 0,
+    answers: new Array(list.length).fill(null),
+    bookmarked: new Array(list.length).fill(false),
+    timeLimit: timeLimit,
+    timeLeft: timeLimit,
+    startedAt: Date.now(),
+    answered: false
+  };
+}
+
+function startTest() {
+  const subject = document.getElementById("cfgSubject").value;
+  const countSel = document.getElementById("cfgCount").value;
+  const difficulty = document.getElementById("cfgDifficulty").value;
+  const timeLimit = parseInt(document.getElementById("cfgTime").value, 10);
+
+  let pool = QUESTION_BANK.slice();
+
+  if (practiceType === "mistakes") {
+    const mistakeIds = new Set(state.mistakes.map(m => m.id));
+    pool = pool.filter(q => mistakeIds.has(q.id));
+    if (pool.length === 0) { showToast("No mistakes to review yet — great job!"); closePractice(); return; }
+  } else if (practiceType === "weak") {
+    const weakTopics = new Set(Object.keys(state.topicStats).filter(t => {
+      const ts = state.topicStats[t];
+      return ts.answered > 0 && (ts.correct / ts.answered) < 0.75;
+    }));
+    if (weakTopics.size > 0) pool = pool.filter(q => weakTopics.has(q.topic));
   }
 
+  if (subject !== "all") pool = pool.filter(q => q.subject === subject);
+  if (difficulty !== "all") pool = pool.filter(q => q.difficulty === difficulty);
 
-  /* =========================================================
-     PRACTICE
-     ========================================================= */
+  if (pool.length === 0) { showToast("No questions match those filters."); return; }
 
-  function openPractice(type) {
+  pool = shuffle(pool.slice());
+  const count = countSel === "20" ? pool.length : Math.min(parseInt(countSel, 10), pool.length);
+  pool = pool.slice(0, count);
 
-    practiceType = type;
+  closePractice();
+  session = buildSession(pool, timeLimit);
+  document.getElementById("testScreen").classList.add("show");
+  renderQuestion();
+  startTimer();
+}
 
-    const modal =
-      document.getElementById("practiceModal");
-
-    const title =
-      document.getElementById("modalTitle");
-
-    const subtitle =
-      document.getElementById("modalSubtitle");
-
-
-    const titles = {
-
-      quick: "Quick Practice",
-
-      weak: "Practice My Weak Areas",
-
-      question: "Question Bank",
-
-      test: "Practice Test",
-
-      mock: "Mock LET",
-
-      mistakes: "Practice My Mistakes"
-
-    };
-
-
-    const subtitles = {
-
-      quick:
-        "Complete a short practice session.",
-
-      weak:
-        "Questions will focus on your weakest topics.",
-
-      question:
-        "Customize your question-bank practice.",
-
-      test:
-        "Create your own timed practice test.",
-
-      mock:
-        "Simulate the full LET examination experience.",
-
-      mistakes:
-        "Retry questions you previously answered incorrectly."
-
-    };
-
-
-    title.textContent =
-      titles[type] || "Start Practice";
-
-    subtitle.textContent =
-      subtitles[type] ||
-      "Customize your practice session.";
-
-
-    modal.classList.add("show");
-
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
+  return arr;
+}
 
+/* =========================================================
+   TIMER
+   ========================================================= */
+let timerInterval = null;
 
-  function closePractice() {
-
-    document
-      .getElementById("practiceModal")
-      .classList.remove("show");
-
+function startTimer() {
+  clearInterval(timerInterval);
+  updateTimerDisplay();
+  if (session.timeLimit === 0) {
+    document.getElementById("timer").textContent = "∞";
+    return;
   }
-
-
-  /* =========================================================
-     START TEST
-     ========================================================= */
-
-  function startTest() {
-
-    closePractice();
-
-    currentQuestion = 1;
-
-    selectedAnswer = null;
-
-    timerSeconds = 1200;
-
-    document
-      .getElementById("testScreen")
-      .classList.add("show");
-
-    updateQuestion();
-
-    startTimer();
-
-  }
-
-
-  /* =========================================================
-     TIMER
-     ========================================================= */
-
-  function startTimer() {
-
-    clearInterval(timerInterval);
-
-    timerInterval =
-      setInterval(() => {
-
-        if (timerSeconds <= 0) {
-
-          clearInterval(timerInterval);
-
-          finishTest();
-
-          return;
-
-        }
-
-        timerSeconds--;
-
-        updateTimer();
-
-      },1000);
-
-    updateTimer();
-
-  }
-
-
-  function updateTimer() {
-
-    const minutes =
-      Math.floor(timerSeconds / 60)
-        .toString()
-        .padStart(2,"0");
-
-    const seconds =
-      (timerSeconds % 60)
-        .toString()
-        .padStart(2,"0");
-
-    document
-      .getElementById("timer")
-      .textContent =
-      `${minutes}:${seconds}`;
-
-  }
-
-
-  /* =========================================================
-     QUESTIONS
-     ========================================================= */
-
-  const questions = [
-
-    {
-      question:
-        "Which type of assessment is primarily used during instruction to monitor student learning and provide feedback?",
-
-      choices: [
-        "Summative assessment",
-        "Formative assessment",
-        "Placement assessment",
-        "Norm-referenced assessment"
-      ],
-
-      answer: 1
-
-    },
-
-    {
-      question:
-        "Which learning theory emphasizes that learners actively construct knowledge through experience?",
-
-      choices: [
-        "Behaviorism",
-        "Essentialism",
-        "Constructivism",
-        "Perennialism"
-      ],
-
-      answer: 2
-
-    },
-
-    {
-      question:
-        "Which principle states that learners differ in their abilities, interests and learning needs?",
-
-      choices: [
-        "Individual differences",
-        "Uniformity principle",
-        "Standardization",
-        "Isolation principle"
-      ],
-
-      answer: 0
-
-    },
-
-    {
-      question:
-        "Which approach encourages students to connect new information with their prior knowledge?",
-
-      choices: [
-        "Passive learning",
-        "Meaningful learning",
-        "Mechanical repetition",
-        "Direct memorization"
-      ],
-
-      answer: 1
-
-    },
-
-    {
-      question:
-        "Which assessment is commonly administered at the end of an instructional period?",
-
-      choices: [
-        "Diagnostic",
-        "Formative",
-        "Summative",
-        "Informal"
-      ],
-
-      answer: 2
-
-    }
-
-  ];
-
-
-  function updateQuestion() {
-
-    const q =
-      questions[currentQuestion - 1];
-
-    document
-      .getElementById("questionNumber")
-      .textContent =
-      currentQuestion;
-
-    document
-      .getElementById("questionProgress")
-      .style.width =
-      ((currentQuestion / questions.length) * 100) + "%";
-
-
-    document
-      .getElementById("questionText")
-      .textContent =
-      q.question;
-
-
-    const choices =
-      document.getElementById("choices");
-
-    choices.innerHTML = "";
-
-
-    q.choices.forEach((choice,index) => {
-
-      const button =
-        document.createElement("button");
-
-      button.className = "choice";
-
-      button.onclick =
-        () => selectChoice(button,index);
-
-      button.innerHTML = `
-        <span class="choice-letter">
-          ${String.fromCharCode(65 + index)}
-        </span>
-
-        <span class="choice-text">
-          ${choice}
-        </span>
-      `;
-
-      choices.appendChild(button);
-
-    });
-
-    selectedAnswer = null;
-
-  }
-
-
-  function selectChoice(button,index) {
-
-    document
-      .querySelectorAll("#choices .choice")
-      .forEach(el =>
-        el.classList.remove("selected")
-      );
-
-    button.classList.add("selected");
-
-    selectedAnswer = index;
-
-  }
-
-
-  function nextQuestion() {
-
-    if (selectedAnswer === null) {
-
-      showToast("Please select an answer first.");
-
-      return;
-
-    }
-
-
-    if (currentQuestion >= questions.length) {
-
-      finishTest();
-
-      return;
-
-    }
-
-
-    currentQuestion++;
-
-    updateQuestion();
-
-  }
-
-
-  function previousQuestion() {
-
-    if (currentQuestion <= 1) {
-
-      showToast("This is the first question.");
-
-      return;
-
-    }
-
-    currentQuestion--;
-
-    updateQuestion();
-
-  }
-
-
-  function markQuestion() {
-
-    showToast("Question bookmarked.");
-
-  }
-
-
-  function confirmExitTest() {
-
-    if (
-      confirm(
-        "Exit this practice test? Your current progress will be lost."
-      )
-    ) {
-
+  timerInterval = setInterval(() => {
+    session.timeLeft--;
+    session.elapsedTick = (session.elapsedTick || 0) + 1;
+    if (session.timeLeft <= 0) {
       clearInterval(timerInterval);
-
-      document
-        .getElementById("testScreen")
-        .classList.remove("show");
-
+      finishTest();
+      return;
     }
+    updateTimerDisplay();
+  }, 1000);
+}
 
+function updateTimerDisplay() {
+  if (session.timeLimit === 0) { document.getElementById("timer").textContent = "∞"; return; }
+  const m = Math.floor(session.timeLeft / 60).toString().padStart(2, "0");
+  const s = (session.timeLeft % 60).toString().padStart(2, "0");
+  document.getElementById("timer").textContent = `${m}:${s}`;
+}
+
+/* =========================================================
+   QUESTION RENDER / ANSWER
+   ========================================================= */
+function renderQuestion() {
+  const q = session.questions[session.index];
+  document.getElementById("questionNumber").textContent = session.index + 1;
+  document.getElementById("questionTotal").textContent = session.questions.length;
+  document.getElementById("questionProgress").style.width = (((session.index + 1) / session.questions.length) * 100) + "%";
+  document.getElementById("qSubjectPill").textContent = SUBJECT_META[q.subject] ? SUBJECT_META[q.subject].name : q.subject;
+  document.getElementById("qDifficultyPill").textContent = q.difficulty;
+  document.getElementById("questionText").textContent = q.question;
+
+  const choicesEl = document.getElementById("choices");
+  choicesEl.innerHTML = "";
+  const existingAnswer = session.answers[session.index];
+
+  q.choices.forEach((choice, idx) => {
+    const button = document.createElement("button");
+    button.className = "choice";
+    button.innerHTML = `<span class="choice-letter">${String.fromCharCode(65 + idx)}</span><span class="choice-text">${choice}</span>`;
+    button.onclick = () => selectChoice(idx);
+    if (existingAnswer !== null) {
+      button.disabled = true;
+      if (idx === q.answer) button.classList.add("correct");
+      if (idx === existingAnswer && existingAnswer !== q.answer) button.classList.add("incorrect");
+      if (idx === existingAnswer) button.classList.add("selected");
+    }
+    choicesEl.appendChild(button);
+  });
+
+  const explainBox = document.getElementById("explainBox");
+  if (existingAnswer !== null) {
+    explainBox.textContent = q.explanation;
+    explainBox.classList.add("show");
+  } else {
+    explainBox.classList.remove("show");
+    explainBox.textContent = "";
   }
 
+  const bookmarkBtn = document.getElementById("bookmarkBtn");
+  bookmarkBtn.classList.toggle("active", session.bookmarked[session.index] || state.bookmarks.includes(q.id));
+  bookmarkBtn.textContent = (session.bookmarked[session.index] || state.bookmarks.includes(q.id)) ? "🔖 Marked" : "🔖 Mark";
 
-  /* =========================================================
-     FINISH TEST
-     ========================================================= */
+  document.getElementById("nextBtn").textContent = session.index >= session.questions.length - 1 ? "Finish" : "Next →";
+}
 
-  function finishTest() {
+function selectChoice(idx) {
+  if (session.answers[session.index] !== null) return;
+  const q = session.questions[session.index];
+  session.answers[session.index] = idx;
 
+  const buttons = document.querySelectorAll("#choices .choice");
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.answer) btn.classList.add("correct");
+    if (i === idx && idx !== q.answer) btn.classList.add("incorrect");
+    if (i === idx) btn.classList.add("selected");
+  });
+
+  const explainBox = document.getElementById("explainBox");
+  explainBox.textContent = q.explanation;
+  explainBox.classList.add("show");
+
+  recordAnswer(q, idx === q.answer);
+}
+
+function recordAnswer(q, correct) {
+  state.totalAnswered++;
+  if (correct) state.totalCorrect++;
+
+  if (!state.subjectStats[q.subject]) state.subjectStats[q.subject] = { answered: 0, correct: 0 };
+  state.subjectStats[q.subject].answered++;
+  if (correct) state.subjectStats[q.subject].correct++;
+
+  if (!state.topicStats[q.topic]) state.topicStats[q.topic] = { answered: 0, correct: 0 };
+  state.topicStats[q.topic].answered++;
+  if (correct) state.topicStats[q.topic].correct++;
+
+  const today = todayStr();
+  if (state.dailyProgress.date !== today) state.dailyProgress = { date: today, questions: 0, seconds: 0 };
+  state.dailyProgress.questions++;
+
+  if (state.lastActiveDate !== today) {
+    if (state.lastActiveDate) {
+      const diffDays = Math.round((new Date(today) - new Date(state.lastActiveDate)) / 86400000);
+      state.streak = diffDays === 1 ? state.streak + 1 : 1;
+    } else {
+      state.streak = 1;
+    }
+    state.lastActiveDate = today;
+  }
+
+  const existingMistakeIdx = state.mistakes.findIndex(m => m.id === q.id);
+  if (!correct) {
+    const record = { id: q.id, question: q.question, yourAnswer: q.choices[session.answers[session.index]], correctAnswer: q.choices[q.answer], subject: SUBJECT_META[q.subject] ? SUBJECT_META[q.subject].name : q.subject, explanation: q.explanation };
+    if (existingMistakeIdx === -1) state.mistakes.unshift(record);
+    else state.mistakes[existingMistakeIdx] = record;
+  } else if (existingMistakeIdx !== -1) {
+    state.mistakes.splice(existingMistakeIdx, 1);
+  }
+
+  saveState();
+}
+
+function nextQuestion() {
+  if (session.answers[session.index] === null) { showToast("Please select an answer first."); return; }
+  if (session.index >= session.questions.length - 1) { finishTest(); return; }
+  session.index++;
+  renderQuestion();
+}
+
+function previousQuestion() {
+  if (session.index <= 0) { showToast("This is the first question."); return; }
+  session.index--;
+  renderQuestion();
+}
+
+function toggleBookmark() {
+  const q = session.questions[session.index];
+  const already = state.bookmarks.includes(q.id);
+  if (already) {
+    state.bookmarks = state.bookmarks.filter(id => id !== q.id);
+    showToast("Removed from bookmarks");
+  } else {
+    state.bookmarks.push(q.id);
+    showToast("Question bookmarked");
+  }
+  saveState();
+  renderQuestion();
+}
+
+function confirmExitTest() {
+  if (confirm("Exit this practice test? Your current progress on this session will be lost.")) {
     clearInterval(timerInterval);
-
-    document
-      .getElementById("testScreen")
-      .classList.remove("show");
-
-
-    showToast(
-      "Practice completed! Your results are ready."
-    );
-
-    navigate("progress");
-
+    document.getElementById("testScreen").classList.remove("show");
   }
+}
 
+/* =========================================================
+   FINISH / RESULTS
+   ========================================================= */
+function finishTest() {
+  clearInterval(timerInterval);
+  document.getElementById("testScreen").classList.remove("show");
 
-  /* =========================================================
-     SEARCH
-     ========================================================= */
+  const elapsed = Math.round((Date.now() - session.startedAt) / 1000);
+  state.studySeconds += elapsed;
+  state.dailyProgress.seconds += elapsed;
 
-  function filterTopics(value) {
+  const answeredCount = session.answers.filter(a => a !== null).length;
+  const correctCount = session.answers.reduce((sum, a, i) => sum + (a === session.questions[i].answer ? 1 : 0), 0);
+  const scorePct = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
 
-    const query =
-      value.toLowerCase().trim();
+  state.sessions.unshift({ date: todayStr(), subject: document.getElementById("cfgSubject").value, count: answeredCount, correct: correctCount, score: scorePct });
+  state.sessions = state.sessions.slice(0, 10);
 
-    document
-      .querySelectorAll(".topic-search")
-      .forEach(category => {
+  saveState();
 
-        const topics =
-          category.querySelectorAll(".topic");
+  document.getElementById("finalScore").textContent = scorePct;
+  document.getElementById("finalCorrect").textContent = correctCount;
+  document.getElementById("finalWrong").textContent = answeredCount - correctCount;
+  const m = Math.floor(elapsed / 60), s = elapsed % 60;
+  document.getElementById("finalTime").textContent = m + ":" + s.toString().padStart(2, "0");
 
-        let visible = 0;
+  let status = "● KEEP PRACTICING", color = "var(--danger)";
+  if (scorePct >= 80) { status = "● EXCELLENT WORK"; color = "var(--success)"; }
+  else if (scorePct >= 60) { status = "● GOOD JOB"; color = "var(--warning)"; }
+  const statusEl = document.getElementById("finalStatus");
+  statusEl.textContent = status;
+  statusEl.style.color = color;
+  statusEl.style.background = "color-mix(in srgb," + color + " 16%, transparent)";
+  statusEl.style.borderColor = "color-mix(in srgb," + color + " 30%, transparent)";
 
-        topics.forEach(topic => {
+  document.getElementById("resultScreen").classList.add("show");
+}
 
-          const text =
-            topic.textContent.toLowerCase();
+function closeResults(destination) {
+  document.getElementById("resultScreen").classList.remove("show");
+  navigate(destination);
+}
 
-          const match =
-            text.includes(query);
-
-          topic.style.display =
-            match ? "flex" : "none";
-
-          if (match) visible++;
-
-        });
-
-
-        category.style.display =
-          visible > 0 ? "block" : "none";
-
-      });
-
-  }
-
-
-  /* =========================================================
-     TOAST
-     ========================================================= */
-
-  let toastTimeout;
-
-  function showToast(message) {
-
-    const toast =
-      document.getElementById("toast");
-
-    toast.textContent = message;
-
-    toast.classList.add("show");
-
-    clearTimeout(toastTimeout);
-
-    toastTimeout =
-      setTimeout(() => {
-
-        toast.classList.remove("show");
-
-      },2200);
-
-  }
-
-
-  /* =========================================================
-     MODAL CLICK OUTSIDE
-     ========================================================= */
-
-  document
-    .getElementById("practiceModal")
-    .addEventListener("click", function(e) {
-
-      if (e.target === this) {
-        closePractice();
-      }
-
-    });
-
-
-  /* =========================================================
-     KEYBOARD SUPPORT
-     ========================================================= */
-
-  document.addEventListener("keydown", function(e) {
-
-    if (
-      document
-        .getElementById("testScreen")
-        .classList.contains("show")
-    ) {
-
-      if (e.key === "ArrowRight") {
-        nextQuestion();
-      }
-
-      if (e.key === "ArrowLeft") {
-        previousQuestion();
-      }
-
-    }
-
+/* =========================================================
+   RENDER: PROGRESS
+   ========================================================= */
+function renderProgress() {
+  const subjWrap = document.getElementById("progressSubjects");
+  subjWrap.innerHTML = "";
+  Object.keys(SUBJECT_META).forEach(key => {
+    const meta = SUBJECT_META[key];
+    const st = state.subjectStats[key];
+    const pct = st.answered > 0 ? Math.round((st.correct / st.answered) * 100) : 0;
+    subjWrap.innerHTML += `
+      <div class="metric-row">
+        <div class="metric-label"><span>${meta.name}</span><span>${st.answered ? pct + "%" : "No data"}</span></div>
+        <div class="progress"><div style="width:${pct}%"></div></div>
+      </div>`;
   });
 
-
-  /* =========================================================
-     PWA / SERVICE-WORKER READY
-     ========================================================= */
-
-  // The UI is ready to be connected to a manifest.json
-  // and service worker when deployed as a PWA.
-
-
-  /* =========================================================
-     INITIALIZATION
-     ========================================================= */
-
-  document.addEventListener("DOMContentLoaded", () => {
-
-    navigate("home");
-
+  const topics = Object.keys(state.topicStats);
+  let strong = 0, dev = 0, weak = 0;
+  topics.forEach(t => {
+    const ts = state.topicStats[t];
+    const pct = (ts.correct / ts.answered) * 100;
+    if (pct >= 80) strong++;
+    else if (pct >= 60) dev++;
+    else weak++;
   });
+  const totalTopics = topics.length || 1;
+  document.getElementById("masteryCount").textContent = topics.length + " topic" + (topics.length === 1 ? "" : "s") + " attempted";
+  document.getElementById("masteryStrong").textContent = strong + " topics";
+  document.getElementById("masteryDev").textContent = dev + " topics";
+  document.getElementById("masteryWeak").textContent = weak + " topics";
+  document.getElementById("masteryStrongBar").style.width = Math.round((strong / totalTopics) * 100) + "%";
+  document.getElementById("masteryDevBar").style.width = Math.round((dev / totalTopics) * 100) + "%";
+  document.getElementById("masteryWeakBar").style.width = Math.round((weak / totalTopics) * 100) + "%";
 
+  const weekAgo = Date.now() - 7 * 86400000;
+  const recentSessions = state.sessions.filter(s => new Date(s.date).getTime() >= weekAgo);
+  const weekQ = recentSessions.reduce((sum, s) => sum + s.count, 0);
+  const weekCorrect = recentSessions.reduce((sum, s) => sum + s.correct, 0);
+  document.getElementById("weekQuestions").textContent = weekQ;
+  document.getElementById("weekTime").textContent = (state.studySeconds / 3600).toFixed(1) + "h";
+  document.getElementById("weekAccuracy").textContent = weekQ > 0 ? Math.round((weekCorrect / weekQ) * 100) + "%" : "0%";
+
+  renderHome();
+}
+
+/* =========================================================
+   RENDER: MISTAKES
+   ========================================================= */
+function renderMistakes() {
+  document.getElementById("mistakeCountText").textContent = state.mistakes.length + " question" + (state.mistakes.length === 1 ? "" : "s") + " need review";
+  const list = document.getElementById("mistakesList");
+
+  if (state.mistakes.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="emoji">🎉</div>No mistakes logged. Keep practicing to build your review list.</div>`;
+    return;
+  }
+
+  list.innerHTML = state.mistakes.map((m, i) => `
+    <div class="mistake-card">
+      <small>❌ ${m.subject.toUpperCase()}</small>
+      <strong>${m.question}</strong>
+      <div class="mistake-answer">
+        Your answer: <span style="color:var(--danger)">${m.yourAnswer}</span><br>
+        Correct answer: <b>${m.correctAnswer}</b>
+      </div>
+      <button class="btn btn-secondary" style="margin-top:12px;width:100%;" onclick="toggleExplanation(${i})">View Explanation</button>
+      <div class="explain-box" id="mistakeExplain${i}">${m.explanation}</div>
+    </div>`).join("") +
+    `<button class="btn btn-primary btn-full" onclick="openPractice('mistakes')">🔄 Practice My Mistakes</button>`;
+}
+
+function toggleExplanation(i) {
+  document.getElementById("mistakeExplain" + i).classList.toggle("show");
+}
+
+/* =========================================================
+   RENDER: BOOKMARKS
+   ========================================================= */
+function renderBookmarks() {
+  const list = document.getElementById("bookmarksList");
+  const items = QUESTION_BANK.filter(q => state.bookmarks.includes(q.id));
+
+  document.getElementById("bookmarkCountBadge").textContent = state.bookmarks.length > 0 ? state.bookmarks.length : "›";
+
+  if (items.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="emoji">🔖</div>No saved questions yet. Tap Mark on any question during practice to save it here.</div>`;
+    return;
+  }
+
+  list.innerHTML = items.map(q => `
+    <div class="mistake-card">
+      <small style="color:var(--primary)">${SUBJECT_META[q.subject].name.toUpperCase()} · ${q.topic}</small>
+      <strong>${q.question}</strong>
+      <div class="mistake-answer">Correct answer: <b>${q.choices[q.answer]}</b></div>
+      <button class="btn btn-secondary" style="margin-top:12px;width:100%;" onclick="removeBookmark('${q.id}')">Remove Bookmark</button>
+    </div>`).join("");
+}
+
+function removeBookmark(id) {
+  state.bookmarks = state.bookmarks.filter(b => b !== id);
+  saveState();
+  renderBookmarks();
+  showToast("Removed from bookmarks");
+}
+
+/* =========================================================
+   RESET
+   ========================================================= */
+function confirmResetData() {
+  if (confirm("Reset all your LETReady progress? This cannot be undone.")) {
+    state = {
+      theme: state.theme,
+      totalAnswered: 0, totalCorrect: 0, studySeconds: 0, streak: 0, lastActiveDate: null,
+      dailyGoal: 30, dailyProgress: { date: todayStr(), questions: 0, seconds: 0 },
+      subjectStats: { gened: {answered:0, correct:0}, profed: {answered:0, correct:0}, major: {answered:0, correct:0} },
+      topicStats: {}, mistakes: [], bookmarks: [], sessions: []
+    };
+    saveState();
+    renderAll();
+    showToast("Progress reset.");
+  }
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+let toastTimeout;
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove("show"), 2200);
+}
+
+/* =========================================================
+   MISC WIRING
+   ========================================================= */
+document.getElementById("practiceModal").addEventListener("click", function (e) {
+  if (e.target === this) closePractice();
+});
+
+document.addEventListener("keydown", function (e) {
+  if (document.getElementById("testScreen").classList.contains("show")) {
+    if (e.key === "ArrowRight") nextQuestion();
+    if (e.key === "ArrowLeft") previousQuestion();
+  }
+});
+
+function renderAll() {
+  renderHome();
+  renderReview();
+  renderMistakes();
+  renderBookmarks();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  navigate("home");
+  loadState();
+});
 </script>
 
 </body>
