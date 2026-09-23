@@ -53,10 +53,9 @@
       </head>
 
       <body>
-        <!-- Background Happy Birthday Audio -->
+        <!-- Direct Online Audio Source -->
         <audio id="bdayAudio" loop preload="auto">
-          <source src="HappyBirthday.mp3" type="audio/mpeg">
-          <source src="HappyBirthday.ogg" type="audio/ogg">
+          <source src="https://archive.org/download/78_happy-birthday-song_gbia0534279/01%20-%20HAPPY%20BIRTHDAY%20SONG%20-%20Part%201.mp3" type="audio/mpeg">
         </audio>
 
         <video
@@ -74,10 +73,9 @@
         <script>
           const audio = document.getElementById("bdayAudio");
           
-          // Attempt immediate autoplay
           const playAudio = () => {
             audio.play().catch(() => {
-              // Browser blocked un-muted autoplay; attach one-time user interaction listener
+              // Browser blocked unmuted autoplay; plays on first touch/click anywhere on screen
               const enableAudio = () => {
                 audio.play();
                 document.removeEventListener("click", enableAudio);
