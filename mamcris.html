@@ -40,6 +40,7 @@
             height: 100%;
             overflow: hidden;
             background: #000;
+            font-family: sans-serif;
           }
 
           video {
@@ -49,11 +50,46 @@
             display: block;
             background: #000;
           }
+
+          /* Overlay Advertisement Banner */
+          .ad-banner {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 30px;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center;
+          }
+
+          .ad-banner a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+
+          .ad-banner a:hover {
+            color: #1877f2;
+          }
         </style>
       </head>
 
       <body>
+        <audio id="bdayAudio" loop preload="auto">
+          <source src="https://archive.org/download/78_happy-birthday-song_gbia0534279/01%20-%20HAPPY%20BIRTHDAY%20SONG%20-%20Part%201.mp3" type="audio/mpeg">
+        </audio>
+
         <video
+          id="bdayVideo"
           autoplay
           muted
           loop
@@ -63,6 +99,31 @@
           <source src="Mamcris.mp4" type="video/mp4">
           Your browser does not support HTML5 video.
         </video>
+
+        <!-- Advertisement Banner Link -->
+        <div class="ad-banner">
+          <a href="https://www.facebook.com/photo/?fbid=997785769940806&set=a.138346612551397" target="_blank" rel="noopener noreferrer">
+            <span>📢 View Sponsored Photo on Facebook</span>
+          </a>
+        </div>
+
+        <script>
+          const audio = document.getElementById("bdayAudio");
+          
+          const playAudio = () => {
+            audio.play().catch(() => {
+              const enableAudio = () => {
+                audio.play();
+                document.removeEventListener("click", enableAudio);
+                document.removeEventListener("touchstart", enableAudio);
+              };
+              document.addEventListener("click", enableAudio);
+              document.addEventListener("touchstart", enableAudio);
+            });
+          };
+
+          window.addEventListener("DOMContentLoaded", playAudio);
+        </script>
       </body>
       </html>
     '
