@@ -8,6 +8,10 @@
 <link rel="icon" type="image/png" href="profile.gif">
 <link rel="preconnect" href="https://script.google.com" crossorigin>
 <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://ssl.gstatic.com">
+<link rel="dns-prefetch" href="https://accounts.google.com">
+<meta name="color-scheme" content="dark">
 <style>
 :root{
   --bg:#05070d;--panel:rgba(10,15,26,.96);--cy:#00f0ff;--mg:#ff00c8;--gr:#00ff88;--am:#ffcc00;--rd:#ff3b3b;
@@ -58,14 +62,16 @@ button{cursor:pointer}
 /* ---------- stage ---------- */
 #stage{position:relative;flex:1;min-height:0;margin-bottom:var(--nav);background:#080d18}
 .overview{position:absolute;top:0;bottom:0;left:0;right:var(--ov-r);transition:right .35s var(--ease)}
-#app{width:100%;height:100%;border:0;background:#080d18;opacity:0;transition:opacity .4s ease}
-#app.ready{opacity:1}
+#app{position:relative;z-index:1;display:block;width:100%;height:100%;border:0;background:transparent}
+.bar{position:absolute;top:0;left:0;height:2px;width:0;z-index:3;background:linear-gradient(90deg,var(--cy),var(--mg));box-shadow:0 0 8px var(--cy);animation:load 9s cubic-bezier(.1,.6,.2,1) forwards}
+.bar.done{animation:none;width:100%;opacity:0;transition:opacity .4s .1s}
+@keyframes load{to{width:92%}}
 .skel{
-  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  position:absolute;inset:0;z-index:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
   color:var(--dim);font:12px ui-monospace,Consolas,monospace;pointer-events:none;transition:opacity .35s;
   background:linear-gradient(110deg,#080d18 30%,#0d1628 45%,#080d18 60%);background-size:220% 100%;animation:shim 1.6s linear infinite
 }
-.skel.hide{opacity:0;visibility:hidden;transition:opacity .35s,visibility 0s .35s}
+.skel.hide{opacity:0;visibility:hidden;animation:none;transition:opacity .15s,visibility 0s .15s}
 .ring{width:34px;height:34px;border-radius:50%;border:3px solid rgba(0,240,255,.18);border-top-color:var(--cy);animation:spin .9s linear infinite}
 @keyframes shim{to{background-position:-220% 0}}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -164,10 +170,12 @@ button{cursor:pointer}
 
 <main id="stage">
   <section class="overview" id="ov" aria-label="Primary overview">
-    <iframe id="app" title="Primary overview"
+    <iframe id="app" title="Primary overview" onload="window.__frLoaded=1"
       src="https://script.google.com/macros/s/AKfycbwulG1YH14qqpbMP-BX8pLwnDpBkuFGpOU0HQS1HFdgaXSQItg9tAXHIdbtyJMZwUU7XA/exec"
       allow="fullscreen; clipboard-read; clipboard-write; autoplay"
+      loading="eager" fetchpriority="high"
       referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <div class="bar" id="bar"></div>
     <div class="skel" id="skel"><div class="ring"></div><div>Connecting to overview…</div></div>
     <div class="fb" id="fb" role="status">
       <p><b>The overview is slow to respond.</b> <span>It may still be loading. If it stays blank, the script link may be stale or the deployment may block embedding.</span></p>
@@ -218,7 +226,7 @@ function toast(msg, kind = '', ms = 4500) {
 }
 
 /* ---------- overview iframe: always mounted, watched, self-healing ---------- */
-const fr = $('#app'), skel = $('#skel'), fb = $('#fb'), pill = $('#st'), pillTxt = $('#stTxt');
+const bar = $('#bar'), fr = $('#app'), skel = $('#skel'), fb = $('#fb'), pill = $('#st'), pillTxt = $('#stTxt');
 let loaded = false, t0 = performance.now(), slowTimer, autoTimer;
 
 function setState(s, text) { pill.dataset.s = s; pillTxt.innerHTML = text; }
@@ -226,7 +234,8 @@ function setState(s, text) { pill.dataset.s = s; pillTxt.innerHTML = text; }
 function watch() {
   loaded = false; t0 = performance.now();
   setState('loading', 'Loading overview');
-  skel.classList.remove('hide'); fb.classList.remove('show'); fr.classList.remove('ready');
+  skel.classList.remove('hide'); fb.classList.remove('show');
+  bar.classList.remove('done'); void bar.offsetWidth;
   clearTimeout(slowTimer);
   slowTimer = setTimeout(() => {
     if (loaded) return;
@@ -240,7 +249,7 @@ function reloadOverview(bust = true) {
 }
 fr.addEventListener('load', () => {
   loaded = true; clearTimeout(slowTimer);
-  fr.classList.add('ready'); skel.classList.add('hide'); fb.classList.remove('show');
+  skel.classList.add('hide'); bar.classList.add('done'); fb.classList.remove('show');
   setState('live', 'Live · <b>' + ((performance.now() - t0) / 1000).toFixed(1) + 's</b>');
 });
 fr.addEventListener('error', () => { setState('error', 'Failed to load'); fb.classList.add('show'); });
@@ -429,7 +438,8 @@ tick(); setInterval(tick, 1000);
 /* ---------- init: overview first, unless the URL asks otherwise ---------- */
 const h = location.hash.slice(1);
 setMode(h === 'split' || h === 'hub' ? h : 'overview');
-renderHub();
+(window.requestIdleCallback || setTimeout)(renderHub);   // hub builds while idle, never blocks the overview
+if (window.__frLoaded) fr.dispatchEvent(new Event('load')); // iframe finished before this script ran
 })();
 </script>
 </body>
