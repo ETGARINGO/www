@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ops Dashboard · Overview</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070d">
+<link rel="icon" type="image/png" href="profile.gif">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<style>
+:root{
+  --bg:#05070d;--panel:rgba(10,15,26,.96);--cy:#00f0ff;--mg:#ff00c8;--gr:#00ff88;--am:#ffcc00;--rd:#ff3b3b;
+  --tx:#e2e8f0;--dim:#8391a7;--bd:rgba(0,240,255,.26);--top:48px;--nav:0px;
+  --hub-w:0px;--ov-r:0px;--ease:cubic-bezier(.4,0,.2,1);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  height:100dvh;display:flex;flex-direction:column;overflow:hidden;color:var(--tx);
+  font:13px/1.45 "Segoe UI",system-ui,-apple-system,sans-serif;
+  background:radial-gradient(1200px 600px at 20% -10%,#0b1a30 0%,transparent 60%),var(--bg);
+}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+
+/* ---------- top bar ---------- */
+.top{
+  height:var(--top);flex:none;display:flex;align-items:center;gap:14px;padding:0 14px;
+  padding-top:env(safe-area-inset-top,0);background:var(--panel);border-bottom:1px solid var(--bd);z-index:50;
+}
+.brand{font-weight:700;letter-spacing:.3px;color:var(--cy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;padding:3px 10px;border:1px solid var(--bd);border-radius:20px;
+  font:11px/1.4 ui-monospace,Consolas,monospace;color:var(--dim);white-space:nowrap
+}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--dim)}
+.pill[data-s=live] i{background:var(--gr);box-shadow:0 0 8px var(--gr)}
+.pill[data-s=loading] i,.pill[data-s=slow] i{background:var(--am);animation:blink 1.1s infinite}
+.pill[data-s=error] i,.pill[data-s=offline] i{background:var(--rd)}
+.pill b{color:var(--tx);font-weight:600}
+.spacer{flex:1}
+.clock{font:11px ui-monospace,Consolas,monospace;color:var(--dim)}
+@keyframes blink{50%{opacity:.35}}
+
+/* ---------- action bar ---------- */
+.actions{display:flex;gap:4px}
+.actions button{
+  display:flex;align-items:center;gap:6px;height:32px;padding:0 11px;border-radius:6px;
+  background:transparent;border:1px solid transparent;color:var(--dim);transition:background .15s,color .15s,border-color .15s
+}
+.actions button:hover{color:var(--tx);background:rgba(0,240,255,.07)}
+.actions button.on{color:#001418;background:var(--cy);border-color:var(--cy)}
+.actions .ic{font-size:15px;line-height:1}
+.actions .sep{width:1px;background:var(--bd);margin:4px 6px}
+
+/* ---------- stage ---------- */
+#stage{position:relative;flex:1;min-height:0;margin-bottom:var(--nav);background:#080d18}
+.overview{position:absolute;top:0;bottom:0;left:0;right:var(--ov-r);transition:right .35s var(--ease)}
+#app{width:100%;height:100%;border:0;background:#080d18;opacity:0;transition:opacity .4s ease}
+#app.ready{opacity:1}
+.skel{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  color:var(--dim);font:12px ui-monospace,Consolas,monospace;pointer-events:none;transition:opacity .35s;
+  background:linear-gradient(110deg,#080d18 30%,#0d1628 45%,#080d18 60%);background-size:220% 100%;animation:shim 1.6s linear infinite
+}
+.skel.hide{opacity:0;visibility:hidden;transition:opacity .35s,visibility 0s .35s}
+.ring{width:34px;height:34px;border-radius:50%;border:3px solid rgba(0,240,255,.18);border-top-color:var(--cy);animation:spin .9s linear infinite}
+@keyframes shim{to{background-position:-220% 0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.fb{
+  position:absolute;left:50%;bottom:16px;transform:translate(-50%,20px);opacity:0;pointer-events:none;
+  width:min(520px,92%);padding:12px 14px;background:var(--panel);border:1px solid var(--am);border-radius:8px;
+  box-shadow:0 8px 30px rgba(0,0,0,.5);transition:.3s var(--ease);z-index:5
+}
+.fb.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.fb p{margin:0 0 10px;color:var(--tx)}
+.fb p span{color:var(--dim)}
+.btn{background:rgba(0,240,255,.1);border:1px solid var(--cy);color:var(--cy);border-radius:6px;padding:6px 12px;margin-right:6px}
+.btn:hover{background:var(--cy);color:#001418}
+
+/* ---------- tools hub ---------- */
+.hub{
+  position:absolute;top:0;bottom:0;right:0;width:var(--hub-w);overflow:hidden;visibility:hidden;
+  background:var(--panel);border-left:1px solid var(--bd);z-index:10;
+  transition:width .35s var(--ease),visibility 0s .35s
+}
+.m-split .hub,.m-hub .hub{visibility:visible;transition:width .35s var(--ease),visibility 0s 0s}
+.hub-in{width:100%;min-width:min(440px,100vw);height:100%;display:flex;flex-direction:column}
+.hub-head{padding:12px 14px 8px;display:grid;gap:8px;border-bottom:1px solid var(--bd)}
+.hub-head .row{display:flex;gap:8px}
+.hub input,.hub select{
+  flex:1;min-width:0;height:34px;padding:0 10px;background:rgba(0,240,255,.05);border:1px solid var(--bd);border-radius:6px;outline:0
+}
+.hub input:focus{border-color:var(--cy)}
+.hub select{flex:none;color:var(--tx);background:#0a1120}
+.hub label{display:flex;align-items:center;gap:6px;color:var(--dim);font-size:11px;white-space:nowrap}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
+.chip{flex:none;padding:4px 11px;border-radius:16px;border:1px solid var(--bd);background:transparent;color:var(--dim);font-size:11px}
+.chip.on{background:var(--cy);border-color:var(--cy);color:#001418}
+.hub-body{flex:1;overflow-y:auto;padding:6px 14px 20px}
+.sec{margin:16px 0 8px;display:flex;justify-content:space-between;color:var(--mg);font-weight:600;font-size:12px}
+.sec span{color:var(--dim);font-weight:400}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.tile{
+  position:relative;display:block;padding:9px 30px 9px 11px;border:1px solid rgba(0,240,255,.14);border-left:3px solid var(--cy);
+  border-radius:5px;background:rgba(255,255,255,.02);color:var(--tx);text-decoration:none;transition:transform .15s,background .15s,border-color .15s
+}
+.tile:hover{transform:translateX(2px);background:rgba(0,240,255,.07);border-left-color:var(--mg)}
+.tile b{display:block;color:var(--cy);font-weight:600}
+.tile small{color:var(--dim);font-size:11px;line-height:1.35;display:block}
+.tile em{font-style:normal;color:var(--mg);margin-left:4px}
+.pin{position:absolute;top:6px;right:6px;width:24px;height:24px;display:grid;place-items:center;color:var(--dim);border-radius:50%;background:none;border:0}
+.pin.on{color:var(--am)}
+.pin:hover{background:rgba(255,255,255,.08)}
+.empty{padding:28px 0;text-align:center;color:var(--dim)}
+
+/* ---------- modes ---------- */
+.m-split{--hub-w:min(460px,42vw);--ov-r:var(--hub-w)}
+.m-hub{--hub-w:100%;--ov-r:0px}
+
+/* ---------- toasts ---------- */
+#toasts{position:fixed;left:50%;bottom:calc(20px + var(--nav));transform:translateX(-50%);z-index:90;display:grid;gap:8px;width:min(440px,92vw);pointer-events:none}
+.toast{pointer-events:auto;padding:10px 12px;background:var(--panel);border:1px solid var(--bd);border-left:3px solid var(--cy);border-radius:6px;animation:tin .25s ease}
+.toast.warn{border-left-color:var(--am)}.toast.error{border-left-color:var(--rd)}.toast.ok{border-left-color:var(--gr)}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}}
+
+/* ---------- mobile: actions become a thumb bar ---------- */
+@media(max-width:800px){
+  :root{--nav:calc(58px + env(safe-area-inset-bottom,0px))}
+  .clock,.actions .lbl-d,.actions .sep,.actions [data-mode=split]{display:none}
+  .actions{
+    position:fixed;left:0;right:0;bottom:0;z-index:60;justify-content:space-around;gap:0;
+    padding:4px 4px env(safe-area-inset-bottom,0);background:var(--panel);border-top:1px solid var(--bd)
+  }
+  .actions button{flex:1;flex-direction:column;justify-content:center;gap:2px;height:54px;font-size:10px}
+  .actions .ic{font-size:18px}
+  .m-split{--hub-w:100%;--ov-r:0px}
+  .top{gap:8px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body class="m-overview">
+
+<header class="top">
+  <div class="brand">Ops Dashboard</div>
+  <span class="pill" id="st" data-s="loading"><i></i><span id="stTxt">Loading overview</span></span>
+  <div class="spacer"></div>
+  <span class="clock" id="clock"></span>
+
+  <nav class="actions" aria-label="Views and controls">
+    <button data-mode="overview" class="on" title="Overview (1)"><span class="ic">◈</span><span>Overview</span></button>
+    <button data-mode="split" title="Overview + tools (2)"><span class="ic">◧</span><span class="lbl-d">Split</span></button>
+    <button data-mode="hub" title="Tools (3 or /)"><span class="ic">▤</span><span>Tools</span></button>
+    <span class="sep"></span>
+    <button id="bReload" title="Reload overview (R)"><span class="ic">⟳</span><span>Reload</span></button>
+    <button id="bOpen" title="Open overview in a new tab"><span class="ic">↗</span><span>New tab</span></button>
+    <button id="bFull" title="Fullscreen overview (F)"><span class="ic">⛶</span><span>Full</span></button>
+  </nav>
+</header>
+
+<main id="stage">
+  <section class="overview" id="ov" aria-label="Primary overview">
+    <iframe id="app" title="Primary overview"
+      src="https://script.google.com/macros/s/AKfycbwulG1YH14qqpbMP-BX8pLwnDpBkuFGpOU0HQS1HFdgaXSQItg9tAXHIdbtyJMZwUU7XA/exec"
+      allow="fullscreen; clipboard-read; clipboard-write; autoplay"
+      referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <div class="skel" id="skel"><div class="ring"></div><div>Connecting to overview…</div></div>
+    <div class="fb" id="fb" role="status">
+      <p><b>The overview is slow to respond.</b> <span>It may still be loading. If it stays blank, the script link may be stale or the deployment may block embedding.</span></p>
+      <button class="btn" id="fbReload">Reload</button><button class="btn" id="fbOpen">Open in new tab</button>
+    </div>
+  </section>
+
+  <aside class="hub" id="hub" aria-label="Tools">
+    <div class="hub-in">
+      <div class="hub-head">
+        <div class="row">
+          <input id="fFilter" type="search" placeholder="Filter tools…  ( / )" autocomplete="off" aria-label="Filter tools">
+          <input id="fTarget" type="text" placeholder="Domain / IP / query" autocomplete="off" aria-label="Value used by tools marked ⌕">
+        </div>
+        <div class="row" style="align-items:center;justify-content:space-between">
+          <div class="chips" id="chips"></div>
+          <label>Auto-refresh
+            <select id="fAuto" aria-label="Auto-refresh overview">
+              <option value="0">Off</option><option value="5">5 min</option><option value="15">15 min</option><option value="30">30 min</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="hub-body" id="hubBody"></div>
+    </div>
+  </aside>
+</main>
+
+<div id="toasts" aria-live="polite"></div>
+
+<noscript><p style="padding:20px">JavaScript is required.
+<a style="color:#00f0ff" href="https://script.google.com/macros/s/AKfycbwulG1YH14qqpbMP-BX8pLwnDpBkuFGpOU0HQS1HFdgaXSQItg9tAXHIdbtyJMZwUU7XA/exec">Open the overview directly</a></p></noscript>
+
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const APP_URL = 'https://script.google.com/macros/s/AKfycbwulG1YH14qqpbMP-BX8pLwnDpBkuFGpOU0HQS1HFdgaXSQItg9tAXHIdbtyJMZwUU7XA/exec';
+const SLOW_MS = 10000;
+
+/* ---------- toast ---------- */
+function toast(msg, kind = '', ms = 4500) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + kind; el.textContent = msg;
+  el.onclick = () => el.remove();
+  $('#toasts').appendChild(el);
+  if (ms) setTimeout(() => el.remove(), ms);
+}
+
+/* ---------- overview iframe: always mounted, watched, self-healing ---------- */
+const fr = $('#app'), skel = $('#skel'), fb = $('#fb'), pill = $('#st'), pillTxt = $('#stTxt');
+let loaded = false, t0 = performance.now(), slowTimer, autoTimer;
+
+function setState(s, text) { pill.dataset.s = s; pillTxt.innerHTML = text; }
+
+function watch() {
+  loaded = false; t0 = performance.now();
+  setState('loading', 'Loading overview');
+  skel.classList.remove('hide'); fb.classList.remove('show'); fr.classList.remove('ready');
+  clearTimeout(slowTimer);
+  slowTimer = setTimeout(() => {
+    if (loaded) return;
+    setState(navigator.onLine ? 'slow' : 'offline', navigator.onLine ? 'Slow response' : 'Offline');
+    fb.classList.add('show');
+  }, SLOW_MS);
+}
+function reloadOverview(bust = true) {
+  watch();
+  fr.src = bust ? APP_URL + '?_=' + Date.now() : APP_URL;
+}
+fr.addEventListener('load', () => {
+  loaded = true; clearTimeout(slowTimer);
+  fr.classList.add('ready'); skel.classList.add('hide'); fb.classList.remove('show');
+  setState('live', 'Live · <b>' + ((performance.now() - t0) / 1000).toFixed(1) + 's</b>');
+});
+fr.addEventListener('error', () => { setState('error', 'Failed to load'); fb.classList.add('show'); });
+watch();  // covers the first load, which starts from the src attribute
+
+const openDirect = () => window.open(APP_URL, '_blank', 'noopener');
+$('#bReload').onclick = () => { reloadOverview(); toast('Reloading overview…', '', 2000); };
+$('#fbReload').onclick = () => reloadOverview();
+$('#bOpen').onclick = $('#fbOpen').onclick = openDirect;
+
+/* Fullscreen applies to the overview pane only. */
+function toggleFull() {
+  if (document.fullscreenElement) { document.exitFullscreen(); return; }
+  const t = $('#ov');
+  (t.requestFullscreen ? t.requestFullscreen() : Promise.reject(new Error('not supported')))
+    .catch(e => toast('Fullscreen unavailable: ' + e.message, 'warn'));
+}
+$('#bFull').onclick = toggleFull;
+
+/* Optional auto-refresh (off by default; reloading discards state inside the overview). */
+$('#fAuto').onchange = e => {
+  clearInterval(autoTimer);
+  const m = +e.target.value;
+  if (m) {
+    autoTimer = setInterval(() => { if (!document.hidden && navigator.onLine) reloadOverview(); }, m * 60000);
+    toast('Overview will refresh every ' + m + ' minutes.', 'ok');
+  }
+};
+
+/* Connectivity awareness */
+addEventListener('offline', () => { setState('offline', 'Offline'); toast('You are offline. The overview will reconnect automatically.', 'error', 6000); });
+addEventListener('online', () => { toast('Back online.', 'ok', 2500); if (!loaded) reloadOverview(); else setState('live', 'Live'); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && !loaded && navigator.onLine) reloadOverview(false); });
+
+/* ---------- view modes ---------- */
+let mode = 'overview';
+function setMode(m) {
+  mode = m;
+  document.body.classList.remove('m-overview', 'm-split', 'm-hub');
+  document.body.classList.add('m-' + m);
+  document.querySelectorAll('.actions [data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+  try { history.replaceState(null, '', '#' + m); } catch (e) {}
+  if (m !== 'overview') renderHub();
+}
+document.querySelectorAll('.actions [data-mode]').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+
+/* ---------- tool catalog: [category, name, description, url, fallback-if-no-value] ---------- */
+const CATS = { office: 'Office', comms: 'Mail & meetings', storage: 'Storage', pm: 'Projects', pdf: 'PDF & files', design: 'Design', it: 'IT & network', keys: 'Shortcuts', docs: 'Research & docs' };
+const T = [
+ ['office','Google Docs','Online word processor','https://docs.google.com/document/u/0/'],
+ ['office','Google Sheets','Online spreadsheets','https://docs.google.com/spreadsheets/u/0/'],
+ ['office','Google Slides','Online presentations','https://docs.google.com/presentation/u/0/'],
+ ['office','Google Forms','Forms & surveys','https://docs.google.com/forms/u/0/'],
+ ['office','Word Online','Web version of Word','https://www.microsoft365.com/launch/word'],
+ ['office','Excel Online','Web version of Excel','https://www.microsoft365.com/launch/excel'],
+ ['office','PowerPoint Online','Web version of PowerPoint','https://www.microsoft365.com/launch/powerpoint'],
+ ['office','Office.com','Microsoft 365 launcher','https://www.office.com/'],
+ ['office','LibreOffice','Free open-source suite','https://www.libreoffice.org/download/download-libreoffice/'],
+ ['office','OnlyOffice','Online & desktop suite','https://www.onlyoffice.com/'],
+ ['comms','Gmail','Email','https://mail.google.com/'],
+ ['comms','Outlook','Mail & calendar','https://outlook.office.com/mail/'],
+ ['comms','Google Calendar','Scheduling','https://calendar.google.com/'],
+ ['comms','Google Meet','Video meetings','https://meet.google.com/'],
+ ['comms','Zoom','Video meetings','https://zoom.us/join'],
+ ['comms','Microsoft Teams','Chat & meetings','https://teams.microsoft.com/'],
+ ['comms','Slack','Team messaging','https://slack.com/signin'],
+ ['storage','Google Drive','Cloud storage','https://drive.google.com/'],
+ ['storage','OneDrive','Cloud storage','https://onedrive.live.com/'],
+ ['storage','Dropbox','Storage & sync','https://www.dropbox.com/home'],
+ ['pm','Notion','Notes & wiki','https://www.notion.so/'],
+ ['pm','Trello','Kanban boards','https://trello.com/'],
+ ['pm','Asana','Tasks & projects','https://app.asana.com/'],
+ ['pm','ClickUp','Productivity platform','https://clickup.com/'],
+ ['pm','Jira','Issue tracking','https://www.atlassian.com/software/jira'],
+ ['pdf','iLovePDF','Merge, split, compress','https://www.ilovepdf.com/'],
+ ['pdf','Smallpdf','Edit & convert PDFs','https://smallpdf.com/'],
+ ['pdf','PDF24 Tools','Free, no signup','https://tools.pdf24.org/en/'],
+ ['pdf','CloudConvert','200+ file formats','https://cloudconvert.com/'],
+ ['pdf','TinyPNG','Compress images','https://tinypng.com/'],
+ ['design','Canva','Graphics & templates','https://www.canva.com/'],
+ ['design','Figma','Collaborative UI design','https://www.figma.com/'],
+ ['design','diagrams.net','Free flowcharts','https://app.diagrams.net/'],
+ ['design','Miro','Online whiteboard','https://miro.com/'],
+ ['it','Downdetector','Is a service down?','https://downdetector.com/search/?q={q}','https://downdetector.com/'],
+ ['it','Speedtest','Internet speed','https://www.speedtest.net/'],
+ ['it','Fast.com','Quick speed check','https://fast.com/'],
+ ['it','DNS Checker','DNS propagation','https://dnschecker.org/#A/{q}','https://dnschecker.org/'],
+ ['it','MX Toolbox','Mail, DNS & MX issues','https://mxtoolbox.com/SuperTool.aspx?action=mx%3a{q}','https://mxtoolbox.com/'],
+ ['it','SSL Labs','HTTPS certificate test','https://www.ssllabs.com/ssltest/analyze.html?d={q}','https://www.ssllabs.com/ssltest/'],
+ ['it','WHOIS','Domain registration','https://who.is/whois/{q}','https://who.is/'],
+ ['it','VirusTotal','Domain, IP & file reputation','https://www.virustotal.com/gui/search/{q}','https://www.virustotal.com/'],
+ ['it','urlscan.io','Sandboxed URL scan','https://urlscan.io/search/#{q}','https://urlscan.io/'],
+ ['it','Microsoft 365 Status','Official outage status','https://status.office365.com/'],
+ ['it','Workspace Status','Official outage status','https://www.google.com/appsstatus/dashboard/'],
+ ['it','Can I use','Browser support tables','https://caniuse.com/'],
+ ['keys','Windows','Official shortcuts','https://support.microsoft.com/en-us/windows/keyboard-shortcuts-in-windows-dcc61a57-8ff0-cffe-9796-cb9706c75eec'],
+ ['keys','macOS','Official shortcuts','https://support.apple.com/en-us/102650'],
+ ['keys','Chrome','Official shortcuts','https://support.google.com/chrome/answer/157179'],
+ ['keys','Google Docs','Official shortcuts','https://support.google.com/docs/answer/179738'],
+ ['keys','Google Sheets','Official shortcuts','https://support.google.com/docs/answer/181110'],
+ ['keys','Excel','Official shortcuts','https://support.microsoft.com/en-us/office/keyboard-shortcuts-in-excel-1798d9d5-842a-42b8-9c99-9b7213f0040f'],
+ ['keys','Gmail','Official shortcuts','https://support.google.com/mail/answer/6594'],
+ ['keys','VS Code','Keybinding reference','https://code.visualstudio.com/docs/getstarted/keybindings'],
+ ['docs','Google Scholar','Scholarly literature','https://scholar.google.com/scholar?q={q}','https://scholar.google.com/'],
+ ['docs','Semantic Scholar','AI-powered paper search','https://www.semanticscholar.org/search?q={q}','https://www.semanticscholar.org/'],
+ ['docs','arXiv','Free preprints','https://arxiv.org/search/?query={q}&searchtype=all','https://arxiv.org/'],
+ ['docs','Internet Archive','Books, texts & media','https://archive.org/search?query={q}','https://archive.org/'],
+ ['docs','Open Library','Free borrowable books','https://openlibrary.org/search?q={q}','https://openlibrary.org/'],
+ ['docs','Wayback Machine','Historical page snapshots','https://web.archive.org/web/*/{q}','https://web.archive.org/'],
+ ['docs','Project Gutenberg','Public-domain ebooks','https://www.gutenberg.org/']
+];
+
+/* pins persist in this browser; storage failures are non-fatal */
+let pins = new Set();
+try { pins = new Set(JSON.parse(localStorage.getItem('ops.pins') || '[]')); } catch (e) {}
+const savePins = () => { try { localStorage.setItem('ops.pins', JSON.stringify([...pins])); } catch (e) {} };
+const key = t => t[0] + '/' + t[1];
+
+let chip = 'all';
+const fFilter = $('#fFilter'), fTarget = $('#fTarget'), body = $('#hubBody');
+
+$('#chips').innerHTML = [['all','All'], ['pin','★ Pinned'], ...Object.entries(CATS)]
+  .map(([k, v]) => `<button class="chip${k === 'all' ? ' on' : ''}" data-c="${k}">${v}</button>`).join('');
+$('#chips').onclick = e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  chip = c.dataset.c;
+  document.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === c));
+  renderHub();
+};
+
+function href(t) {
+  if (!t[3].includes('{q}')) return t[3];
+  const q = fTarget.value.trim();
+  return q ? t[3].replace('{q}', encodeURIComponent(q)) : (t[4] || t[3]);
+}
+function tile(t) {
+  const p = pins.has(key(t));
+  return `<a class="tile" href="${href(t)}" target="_blank" rel="noopener">
+    <b>${t[1]}${t[3].includes('{q}') ? '<em title="Uses the value field">⌕</em>' : ''}</b><small>${t[2]}</small>
+    <button class="pin${p ? ' on' : ''}" data-k="${key(t)}" aria-label="${p ? 'Unpin' : 'Pin'} ${t[1]}">${p ? '★' : '☆'}</button></a>`;
+}
+function renderHub() {
+  const f = fFilter.value.trim().toLowerCase();
+  const match = t => (!f || (t[1] + ' ' + t[2]).toLowerCase().includes(f)) &&
+    (chip === 'all' || (chip === 'pin' ? pins.has(key(t)) : t[0] === chip));
+  const list = T.filter(match);
+  let h = '';
+  if (chip === 'all' && !f && pins.size) {
+    const pl = T.filter(t => pins.has(key(t)));
+    h += `<div class="sec"><span style="color:var(--am)">★ Pinned</span><span>${pl.length}</span></div><div class="grid">${pl.map(tile).join('')}</div>`;
+  }
+  Object.keys(CATS).forEach(c => {
+    const items = list.filter(t => t[0] === c);
+    if (items.length) h += `<div class="sec"><span style="color:var(--mg)">${CATS[c]}</span><span>${items.length}</span></div><div class="grid">${items.map(tile).join('')}</div>`;
+  });
+  body.innerHTML = h || `<div class="empty">${chip === 'pin' && !f ? 'Nothing pinned yet. Tap ☆ on any tool.' : 'No tools match. Clear the filter or pick another category.'}</div>`;
+}
+body.addEventListener('click', e => {
+  const b = e.target.closest('.pin'); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  pins.has(b.dataset.k) ? pins.delete(b.dataset.k) : pins.add(b.dataset.k);
+  savePins(); renderHub();
+});
+let dbt;
+const debounced = () => { clearTimeout(dbt); dbt = setTimeout(renderHub, 90); };
+fFilter.oninput = debounced; fTarget.oninput = debounced;
+
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+  if (e.key === 'Escape') { if (typing) document.activeElement.blur(); else if (mode !== 'overview') setMode('overview'); return; }
+  if (typing) return;
+  if (e.key === '1') setMode('overview');
+  else if (e.key === '2') setMode(innerWidth <= 800 ? 'hub' : 'split');
+  else if (e.key === '3') setMode('hub');
+  else if (e.key === '/') { e.preventDefault(); if (mode === 'overview') setMode(innerWidth <= 800 ? 'hub' : 'split'); setTimeout(() => fFilter.focus(), 60); }
+  else if (e.key.toLowerCase() === 'r') reloadOverview();
+  else if (e.key.toLowerCase() === 'f') toggleFull();
+});
+
+/* ---------- clock ---------- */
+const tick = () => { $('#clock').textContent = new Date().toUTCString().slice(17, 25) + ' UTC'; };
+tick(); setInterval(tick, 1000);
+
+/* ---------- init: overview first, unless the URL asks otherwise ---------- */
+const h = location.hash.slice(1);
+setMode(h === 'split' || h === 'hub' ? h : 'overview');
+renderHub();
+})();
+</script>
+</body>
+</html>
