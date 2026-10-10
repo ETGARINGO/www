@@ -29,16 +29,17 @@ button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--cy);outline-offset:2px}
 
-/* ---------- entrance overlay (cyber i effect) ---------- */
+/* ---------- ENTRANCE OVERLAY: MATRIX PARTICLES & CYBER EYE ---------- */
 #entrance-overlay {
   position: fixed;
   inset: 0;
-  background: #05070d;
+  background: #030509;
   z-index: 99999;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   transition: opacity 0.8s ease, visibility 0.8s ease;
 }
 #entrance-overlay.fade-out {
@@ -46,56 +47,138 @@ button{cursor:pointer}
   visibility: hidden;
   pointer-events: none;
 }
+
+/* Canvas Particle Grid Background */
+#cyber-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* HUD Scanning Grid Line overlay */
+.hud-grid {
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Cyber Eye Structure */
+.cyber-eye-wrapper {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
 .cyber-eye-container {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 160px;
+  height: 160px;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: cyberPulse 2s infinite ease-in-out;
-}
-.cyber-ring {
-  position: absolute;
-  inset: 0;
-  border: 2px dashed rgba(0, 240, 255, 0.4);
-  border-radius: 50%;
-  animation: spin 6s linear infinite;
-}
-.cyber-ring-outer {
-  position: absolute;
-  inset: -15px;
-  border: 1px solid rgba(255, 0, 200, 0.3);
-  border-radius: 50%;
-  animation: spinReverse 10s linear infinite;
-}
-.cyber-pupil {
-  width: 40px;
-  height: 40px;
-  background: var(--cy);
-  border-radius: 50%;
-  box-shadow: 0 0 20px var(--cy), 0 0 40px var(--mg);
-  animation: pupilGlow 1.5s infinite alternate;
-}
-.entrance-text {
-  margin-top: 24px;
-  font: 16px/1.4 ui-monospace, Consolas, monospace;
-  color: var(--cy);
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.6);
-  animation: textFlicker 2s infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-@keyframes spinReverse { to { transform: rotate(-360deg); } }
-@keyframes cyberPulse { 0%, 100% { transform: scale(0.95); } 50% { transform: scale(1.05); } }
-@keyframes pupilGlow { from { box-shadow: 0 0 10px var(--cy); } to { box-shadow: 0 0 30px var(--cy), 0 0 50px var(--mg); } }
-@keyframes textFlicker {
-  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; text-shadow: 0 0 10px rgba(0, 240, 255, 0.6); }
-  20%, 24%, 55% { opacity: 0.4; text-shadow: none; }
+  filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.6));
 }
 
-/* ---------- stage ---------- */
+/* Rotating HUD Reticles */
+.reticle-outer {
+  position: absolute;
+  inset: 0;
+  border: 2px dashed var(--cy);
+  border-radius: 50%;
+  animation: spinOuter 8s linear infinite;
+}
+
+.reticle-mid {
+  position: absolute;
+  inset: 15px;
+  border: 2px solid transparent;
+  border-top-color: var(--mg);
+  border-bottom-color: var(--mg);
+  border-radius: 50%;
+  animation: spinInner 4s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+}
+
+.reticle-brackets {
+  position: absolute;
+  inset: -10px;
+  border: 2px solid transparent;
+  border-left-color: var(--cy);
+  border-right-color: var(--cy);
+  border-radius: 50%;
+  animation: pulseBrackets 1.5s ease-in-out infinite alternate;
+}
+
+/* Aperture Pupil */
+.cyber-pupil {
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, #fff 10%, var(--cy) 40%, #000 80%);
+  border-radius: 50%;
+  border: 2px solid var(--cy);
+  box-shadow: 0 0 20px var(--cy), inset 0 0 15px var(--mg);
+  animation: eyeBlink 3s infinite ease-in-out;
+}
+
+/* Target Crosshair Lines */
+.crosshair-v {
+  position: absolute;
+  top: -20px;
+  bottom: -20px;
+  width: 1px;
+  background: rgba(0, 240, 255, 0.3);
+}
+.crosshair-h {
+  position: absolute;
+  left: -20px;
+  right: -20px;
+  height: 1px;
+  background: rgba(0, 240, 255, 0.3);
+}
+
+/* Hologram Glitch Typography */
+.entrance-text {
+  margin-top: 30px;
+  font: 18px/1.2 ui-monospace, Consolas, monospace;
+  font-weight: 800;
+  color: var(--cy);
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  position: relative;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(255, 0, 200, 0.5);
+  animation: glitchText 2.5s infinite;
+}
+
+/* Keyframes */
+@keyframes spinOuter { to { transform: rotate(360deg); } }
+@keyframes spinInner { to { transform: rotate(-360deg); } }
+@keyframes pulseBrackets {
+  from { transform: scale(0.92); opacity: 0.6; }
+  to { transform: scale(1.08); opacity: 1; }
+}
+@keyframes eyeBlink {
+  0%, 45%, 55%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2, 0.1); opacity: 0.8; }
+}
+@keyframes glitchText {
+  0%, 100% { opacity: 1; transform: translate(0, 0); }
+  20% { transform: translate(-2px, 2px); color: var(--mg); }
+  22% { transform: translate(2px, -1px); color: var(--cy); }
+  70% { transform: translate(-1px, -1px); }
+  72% { transform: translate(1px, 2px); color: var(--gr); }
+}
+
+/* ---------- STAGE & TOOLS HUB ---------- */
 #stage{position:relative;flex:1;min-height:0;margin-bottom:var(--nav);background:#080d18}
 .overview{position:absolute;top:0;bottom:0;left:0;right:var(--ov-r);transition:right .35s var(--ease)}
 #app{position:relative;z-index:1;display:block;width:100%;height:100%;border:0;background:transparent}
@@ -108,7 +191,7 @@ button{cursor:pointer}
   background:linear-gradient(110deg,#080d18 30%,#0d1628 45%,#080d18 60%);background-size:220% 100%;animation:shim 1.6s linear infinite
 }
 .skel.hide{opacity:0;visibility:hidden;animation:none;transition:opacity .15s,visibility 0s .15s}
-.ring{width:34px;height:34px;border-radius:50%;border:3px solid rgba(0,240,255,.18);border-top-color:var(--cy);animation:spin .9s linear infinite}
+.ring{width:34px;height:34px;border-radius:50%;border:3px solid rgba(0,240,255,.18);border-top-color:var(--cy);animation:spinOuter .9s linear infinite}
 @keyframes shim{to{background-position:-220% 0}}
 
 .fb{
@@ -122,7 +205,7 @@ button{cursor:pointer}
 .btn{background:rgba(0,240,255,.1);border:1px solid var(--cy);color:var(--cy);border-radius:6px;padding:6px 12px;margin-right:6px}
 .btn:hover{background:var(--cy);color:#001418}
 
-/* ---------- tools hub ---------- */
+/* ---------- TOOLS HUB ---------- */
 .hub{
   position:absolute;top:0;bottom:0;right:0;width:var(--hub-w);overflow:hidden;visibility:hidden;
   background:var(--panel);border-left:1px solid var(--bd);z-index:10;
@@ -158,11 +241,9 @@ button{cursor:pointer}
 .pin:hover{background:rgba(255,255,255,.08)}
 .empty{padding:28px 0;text-align:center;color:var(--dim)}
 
-/* ---------- modes ---------- */
+/* ---------- MODES & TOASTS ---------- */
 .m-split{--hub-w:min(460px,42vw);--ov-r:var(--hub-w)}
 .m-hub{--hub-w:100%;--ov-r:0px}
-
-/* ---------- toasts ---------- */
 #toasts{position:fixed;left:50%;bottom:calc(20px + var(--nav));transform:translateX(-50%);z-index:90;display:grid;gap:8px;width:min(440px,92vw);pointer-events:none}
 .toast{pointer-events:auto;padding:10px 12px;background:var(--panel);border:1px solid var(--bd);border-left:3px solid var(--cy);border-radius:6px;animation:tin .25s ease}
 .toast.warn{border-left-color:var(--am)}.toast.error{border-left-color:var(--rd)}.toast.ok{border-left-color:var(--gr)}
@@ -173,14 +254,21 @@ button{cursor:pointer}
 </head>
 <body class="m-overview">
 
-<!-- Cyber I Entrance Overlay -->
+<!-- CYBER EYE ENTRANCE OVERLAY WITH CANVAS PARTICLES -->
 <div id="entrance-overlay">
-  <div class="cyber-eye-container">
-    <div class="cyber-ring-outer"></div>
-    <div class="cyber-ring"></div>
-    <div class="cyber-pupil"></div>
+  <canvas id="cyber-canvas"></canvas>
+  <div class="hud-grid"></div>
+  <div class="cyber-eye-wrapper">
+    <div class="cyber-eye-container">
+      <div class="crosshair-v"></div>
+      <div class="crosshair-h"></div>
+      <div class="reticle-brackets"></div>
+      <div class="reticle-outer"></div>
+      <div class="reticle-mid"></div>
+      <div class="cyber-pupil"></div>
+    </div>
+    <div class="entrance-text">I'M WATCHING YOU</div>
   </div>
-  <div class="entrance-text">I'M WATCHING YOU</div>
 </div>
 
 <main id="stage">
@@ -231,18 +319,96 @@ const $ = s => document.querySelector(s);
 const APP_URL = 'https://script.google.com/macros/s/AKfycbwulG1YH14qqpbMP-BX8pLwnDpBkuFGpOU0HQS1HFdgaXSQItg9tAXHIdbtyJMZwUU7XA/exec';
 const SLOW_MS = 10000;
 
-/* ---------- entrance overlay handler ---------- */
+/* ---------- CANVAS PARTICLES ENGINE ---------- */
+const canvas = $('#cyber-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [], animId;
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+class Particle {
+  constructor() {
+    this.reset();
+  }
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.vx = (Math.random() - 0.5) * 1.2;
+    this.vy = (Math.random() - 0.5) * 1.2;
+    this.size = Math.random() * 2 + 1;
+    this.color = Math.random() > 0.3 ? '#00f0ff' : '#ff00c8';
+    this.alpha = Math.random() * 0.7 + 0.3;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+      this.reset();
+    }
+  }
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.alpha;
+    ctx.fillStyle = this.color;
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+for (let i = 0; i < 70; i++) particles.push(new Particle());
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw connecting constellation lines
+  for (let i = 0; i < particles.length; i++) {
+    particles[i].update();
+    particles[i].draw();
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 100) {
+        ctx.save();
+        ctx.globalAlpha = (1 - dist / 100) * 0.25;
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  }
+  animId = requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+/* ---------- ENTRANCE OVERLAY DISMISSAL ---------- */
 window.addEventListener('load', () => {
   setTimeout(() => {
     const overlay = $('#entrance-overlay');
     if (overlay) {
       overlay.classList.add('fade-out');
-      setTimeout(() => overlay.remove(), 800);
+      setTimeout(() => {
+        cancelAnimationFrame(animId);
+        overlay.remove();
+      }, 800);
     }
-  }, 1600);
+  }, 2200);
 });
 
-/* ---------- toast ---------- */
+/* ---------- TOAST NOTIFICATIONS ---------- */
 function toast(msg, kind = '', ms = 4500) {
   const el = document.createElement('div');
   el.className = 'toast ' + kind; el.textContent = msg;
@@ -251,7 +417,7 @@ function toast(msg, kind = '', ms = 4500) {
   if (ms) setTimeout(() => el.remove(), ms);
 }
 
-/* ---------- overview iframe: always mounted, watched, self-healing ---------- */
+/* ---------- IFRAME MONITORING & WATCHDOG ---------- */
 const bar = $('#bar'), fr = $('#app'), skel = $('#skel'), fb = $('#fb');
 let loaded = false, t0 = performance.now(), slowTimer, autoTimer;
 
@@ -280,7 +446,7 @@ const openDirect = () => window.open(APP_URL, '_blank', 'noopener');
 $('#fbReload').onclick = () => reloadOverview();
 $('#fbOpen').onclick = openDirect;
 
-/* Optional auto-refresh */
+/* Auto-refresh Listener */
 $('#fAuto').onchange = e => {
   clearInterval(autoTimer);
   const m = +e.target.value;
@@ -290,12 +456,12 @@ $('#fAuto').onchange = e => {
   }
 };
 
-/* Connectivity awareness */
-addEventListener('offline', () => { toast('You are offline. The overview will reconnect automatically.', 'error', 6000); });
+/* Connectivity Awareness */
+addEventListener('offline', () => { toast('You are offline. Reconnecting automatically when online...', 'error', 6000); });
 addEventListener('online', () => { toast('Back online.', 'ok', 2500); if (!loaded) reloadOverview(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !loaded && navigator.onLine) reloadOverview(false); });
 
-/* ---------- tool catalog ---------- */
+/* ---------- TOOL CATALOG & PINNING SYSTEM ---------- */
 const CATS = { office: 'Office', comms: 'Mail & meetings', storage: 'Storage', pm: 'Projects', pdf: 'PDF & files', design: 'Design', it: 'IT & network', keys: 'Shortcuts', docs: 'Research & docs' };
 const T = [
   ['office','Google Docs','Online word processor','https://docs.google.com/document/u/0/'],
