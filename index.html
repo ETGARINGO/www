@@ -393,7 +393,7 @@ const $ = s => document.querySelector(s);
 const APP_URL = 'https://script.google.com/macros/s/AKfycbwulG1YH14qqpbMP-BX8pLwnDpBkuFGpOU0HQS1HFdgaXSQItg9tAXHIdbtyJMZwUU7XA/exec';
 const SLOW_MS = 10000;
 
-/* ---------- WEBCAM ZOOM, CAPTURE & TELEMETRY ---------- */
+/* ---------- WEBCAM ZOOM, CAPTURE & GALLERY STORAGE ---------- */
 const videoEl = $('#cam-feed');
 const fallbackEl = $('#cam-fallback');
 const eyeContainer = $('#eye-container');
@@ -401,12 +401,57 @@ const flashEl = $('#capture-flash');
 const zoomLvlEl = $('#zoom-lvl');
 const camStatusEl = $('#cam-status');
 
+let mediaStream = null;
+
+function saveToDeviceGallery(blob, filename) {
+  if (navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'image/jpeg' })] })) {
+    navigator.share({
+      files: [new File([blob], filename, { type: 'image/jpeg' })],
+      title: 'Ops Dashboard Capture',
+      text: 'Captured via Ops Dashboard Security HUD'
+    }).catch(() => {});
+  } else {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 1000);
+  }
+}
+
+function captureAndStorePhoto() {
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = videoEl.videoWidth || 640;
+    canvas.height = videoEl.videoHeight || 640;
+    const ctx = canvas.getContext('2d');
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+    
+    canvas.toBlob(blob => {
+      if (blob) {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        saveToDeviceGallery(blob, `ops_capture_${timestamp}.jpg`);
+        toast('Capture saved to device storage/gallery!', 'ok', 5000);
+      }
+    }, 'image/jpeg', 0.92);
+  } catch (e) {
+    console.error('Capture failed:', e);
+  }
+}
+
 navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 640, facingMode: 'user' } })
   .then(stream => {
+    mediaStream = stream;
     videoEl.srcObject = stream;
     camStatusEl.textContent = 'LOCKED';
     
-    // Sequence: Zoom in on target after 800ms, then take snapshot capture flash at 1800ms
     setTimeout(() => {
       eyeContainer.classList.add('zoomed');
       zoomLvlEl.textContent = '2.4x';
@@ -415,6 +460,7 @@ navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 640, facingMo
     setTimeout(() => {
       flashEl.classList.add('flash');
       camStatusEl.textContent = 'CAPTURED';
+      captureAndStorePhoto();
       setTimeout(() => flashEl.classList.remove('flash'), 200);
     }, 1800);
   })
@@ -422,6 +468,7 @@ navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 640, facingMo
     videoEl.style.display = 'none';
     fallbackEl.style.display = 'block';
     camStatusEl.textContent = 'OFFLINE';
+    toast('Camera access required/denied for local gallery save.', 'warn', 5000);
   });
 
 /* ---------- CANVAS PARTICLES ENGINE ---------- */
@@ -506,8 +553,8 @@ window.addEventListener('load', () => {
       overlay.classList.add('fade-out');
       setTimeout(() => {
         cancelAnimationFrame(animId);
-        if (videoEl.srcObject) {
-          videoEl.srcObject.getTracks().forEach(track => track.stop());
+        if (mediaStream) {
+          mediaStream.getTracks().forEach(track => track.stop());
         }
         overlay.remove();
       }, 800);
