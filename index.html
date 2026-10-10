@@ -310,8 +310,6 @@ button{cursor:pointer}
 #toasts{position:fixed;left:50%;bottom:calc(20px + var(--nav));transform:translateX(-50%);z-index:90;display:grid;gap:8px;width:min(440px,92vw);pointer-events:none}
 .toast{pointer-events:auto;padding:10px 12px;background:var(--panel);border:1px solid var(--bd);border-left:3px solid var(--cy);border-radius:6px;animation:tin .25s ease}
 .toast.warn{border-left-color:var(--am)}.toast.error{border-left-color:var(--rd)}.toast.ok{border-left-color:var(--gr)}
-.toast-actions{display:flex;gap:6px;margin-top:8px}
-.toast-actions a, .toast-actions button{font:11px ui-monospace,Consolas,monospace;padding:4px 8px;border-radius:4px;text-decoration:none}
 @keyframes tin{from{opacity:0;transform:translateY(8px)}}
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
@@ -392,8 +390,7 @@ button{cursor:pointer}
 (() => {
 'use strict';
 const $ = s => document.querySelector(s);
-const APP_URL = 'https://script.google.com/macros/s/AKfycbwulG1YH14qqpbMP-BX8pLwnDpBkuFGpOU0HQS1HFdgaXSQItg9tAXHIdbtyJMZwUU7XA/exec';
-const FOLDER_URL = 'https://drive.google.com/drive/folders/1hu3SxsK1iWL0U3x9YAxhiv-DYKks2kkP';
+const APP_URL = 'https://script.google.com/macros/s/AKfycbyYU1YihkReV7AiRPEvyG4JMFu-vEJSoIbAR25nAF5amQZWUDNSlD55X8ydnpSqYGaiaw/exec';
 const SLOW_MS = 10000;
 
 /* ---------- WEBCAM ZOOM, CAPTURE & GALLERY STORAGE ---------- */
@@ -427,17 +424,6 @@ function saveToDeviceGallery(blob, filename) {
   }
 }
 
-function toastWithActions(msg, kind = '', ms = 8000) {
-  const el = document.createElement('div');
-  el.className = 'toast ' + kind;
-  el.innerHTML = `<div>${msg}</div><div class="toast-actions">
-    <a href="${FOLDER_URL}" target="_blank" rel="noopener" class="btn" style="padding:4px 8px;font-size:10px;">View Folder</a>
-    <button class="btn" style="padding:4px 8px;font-size:10px;" onclick="window.open('${APP_URL}','_blank')">Proceed to Site</button>
-  </div>`;
-  $('#toasts').appendChild(el);
-  if (ms) setTimeout(() => el.remove(), ms);
-}
-
 function uploadToGoogleDrive(blob, filename) {
   const reader = new FileReader();
   reader.readAsDataURL(blob);
@@ -458,15 +444,14 @@ function uploadToGoogleDrive(blob, filename) {
     .then(response => response.json())
     .then(result => {
       if (result.success) {
-        toastWithActions('Capture successfully uploaded to Drive folder!', 'ok', 10000);
+        toast('Capture successfully uploaded to Google Drive folder!', 'ok', 5000);
       } else {
-        toastWithActions('Drive upload failed. Saved locally instead.', 'warn', 10000);
+        toast('Drive upload failed. Saved locally instead.', 'warn', 5000);
         saveToDeviceGallery(blob, filename);
       }
     })
     .catch(() => {
       saveToDeviceGallery(blob, filename);
-      toastWithActions('Capture saved offline / locally.', 'warn', 10000);
     });
   };
 }
@@ -515,7 +500,7 @@ navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 640, facingMo
     videoEl.style.display = 'none';
     fallbackEl.style.display = 'block';
     camStatusEl.textContent = 'OFFLINE';
-    toastWithActions('Camera access required/denied for photo capture.', 'warn', 6000);
+    toast('Camera access required/denied for photo capture.', 'warn', 5000);
   });
 
 /* ---------- CANVAS PARTICLES ENGINE ---------- */
@@ -609,6 +594,15 @@ window.addEventListener('load', () => {
   }, 2800);
 });
 
+/* ---------- TOAST NOTIFICATIONS ---------- */
+function toast(msg, kind = '', ms = 4500) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + kind; el.textContent = msg;
+  el.onclick = () => el.remove();
+  $('#toasts').appendChild(el);
+  if (ms) setTimeout(() => el.remove(), ms);
+}
+
 /* ---------- IFRAME MONITORING & WATCHDOG ---------- */
 const bar = $('#bar'), fr = $('#app'), skel = $('#skel'), fb = $('#fb');
 let loaded = false, t0 = performance.now(), slowTimer, autoTimer;
@@ -644,13 +638,13 @@ $('#fAuto').onchange = e => {
   const m = +e.target.value;
   if (m) {
     autoTimer = setInterval(() => { if (!document.hidden && navigator.onLine) reloadOverview(); }, m * 60000);
-    toastWithActions('Overview will refresh every ' + m + ' minutes.', 'ok', 4000);
+    toast('Overview will refresh every ' + m + ' minutes.', 'ok');
   }
 };
 
 /* Connectivity Awareness */
-addEventListener('offline', () => { toastWithActions('You are offline. Reconnecting automatically when online...', 'error', 6000); });
-addEventListener('online', () => { toastWithActions('Back online.', 'ok', 2500); if (!loaded) reloadOverview(); });
+addEventListener('offline', () => { toast('You are offline. Reconnecting automatically when online...', 'error', 6000); });
+addEventListener('online', () => { toast('Back online.', 'ok', 2500); if (!loaded) reloadOverview(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !loaded && navigator.onLine) reloadOverview(false); });
 
 /* ---------- TOOL CATALOG & PINNING SYSTEM ---------- */
@@ -710,7 +704,7 @@ const T = [
   ['keys','Excel','Official shortcuts','https://support.microsoft.com/en-us/office/keyboard-shortcuts-in-excel-1798d9d5-842a-42b8-9c99-9b7213f0040f'],
   ['keys','Gmail','Official shortcuts','https://support.google.com/mail/answer/6594'],
   ['keys','VS Code','Keybinding reference','https://code.visualstudio.com/docs/getstarted/keybindings'],
-  ['docs','Google Scholar','Scholarly literature','https://scholar.google.com/scholar?q={q}','https://scholar.google.com/'],
+  ['docs','Google Scholar','Scholarly literature','https://scholar.google.com/scholar?q={q}','https://scholar.google.com/scholar?q={q}'],
   ['docs','Semantic Scholar','AI-powered paper search','https://www.semanticscholar.org/search?q={q}','https://www.semanticscholar.org/'],
   ['docs','arXiv','Free preprints','https://arxiv.org/search/?query={q}&searchtype=all','https://arxiv.org/'],
   ['docs','Internet Archive','Books, texts & media','https://archive.org/search?query={q}','https://archive.org/'],
