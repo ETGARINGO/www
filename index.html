@@ -29,7 +29,7 @@ button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--cy);outline-offset:2px}
 
-/* ---------- ENTRANCE OVERLAY: WEBCAM FEED & PARTICLES ---------- */
+/* ---------- ENTRANCE OVERLAY: WEBCAM ZOOM, CAPTURE & HUD ---------- */
 #entrance-overlay {
   position: fixed;
   inset: 0;
@@ -68,6 +68,30 @@ button{cursor:pointer}
   pointer-events: none;
 }
 
+/* Tactical HUD Target Box Overlay */
+.hud-target-box {
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border: 1px dashed rgba(0, 240, 255, 0.4);
+  z-index: 5;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: boxScanPulse 2s infinite alternate ease-in-out;
+}
+.hud-target-box::before, .hud-target-box::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--cy);
+  border-style: solid;
+}
+.hud-target-box::before { top: -2px; left: -2px; border-width: 3px 0 0 3px; }
+.hud-target-box::after { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; }
+
 .cyber-eye-wrapper {
   position: relative;
   z-index: 10;
@@ -79,39 +103,48 @@ button{cursor:pointer}
 
 .cyber-eye-container {
   position: relative;
-  width: 180px;
-  height: 180px;
+  width: 220px;
+  height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.6));
+  filter: drop-shadow(0 0 30px rgba(0, 240, 255, 0.7));
+  transform: scale(0.6);
+  transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.cyber-eye-container.zoomed {
+  transform: scale(1.35);
 }
 
 /* Webcam feed inside the cyber pupil */
 #cam-feed {
   position: absolute;
-  width: 65px;
-  height: 65px;
+  width: 85px;
+  height: 85px;
   border-radius: 50%;
   object-fit: cover;
-  transform: scaleX(-1); /* mirror */
+  transform: scaleX(-1);
   z-index: 3;
-  opacity: 0.85;
-  filter: contrast(120%) brightness(90%) hue-rotate(180deg);
+  opacity: 0.9;
+  filter: contrast(130%) brightness(95%) hue-rotate(180deg) saturate(150%);
   border: 2px solid var(--cy);
-  box-shadow: 0 0 15px var(--cy), inset 0 0 10px var(--mg);
+  box-shadow: 0 0 25px var(--cy), inset 0 0 15px var(--mg);
+  transition: all 0.8s ease;
+}
+.cyber-eye-container.zoomed #cam-feed {
+  width: 140px;
+  height: 140px;
+  box-shadow: 0 0 40px var(--cy), 0 0 70px var(--mg), inset 0 0 25px var(--cy);
 }
 
-/* Fallback cyber pupil if cam is denied/unavailable */
 .cyber-pupil-fallback {
   position: absolute;
-  width: 55px;
-  height: 55px;
+  width: 70px;
+  height: 70px;
   background: radial-gradient(circle, #fff 10%, var(--cy) 40%, #000 80%);
   border-radius: 50%;
   border: 2px solid var(--cy);
-  box-shadow: 0 0 20px var(--cy), inset 0 0 15px var(--mg);
-  animation: eyeBlink 3s infinite ease-in-out;
+  box-shadow: 0 0 25px var(--cy), inset 0 0 15px var(--mg);
   z-index: 3;
 }
 
@@ -120,63 +153,92 @@ button{cursor:pointer}
   inset: 0;
   border: 2px dashed var(--cy);
   border-radius: 50%;
-  animation: spinOuter 8s linear infinite;
+  animation: spinOuter 6s linear infinite;
   z-index: 4;
 }
 
 .reticle-mid {
   position: absolute;
-  inset: 15px;
+  inset: 20px;
   border: 2px solid transparent;
   border-top-color: var(--mg);
   border-bottom-color: var(--mg);
   border-radius: 50%;
-  animation: spinInner 4s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+  animation: spinInner 3s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
   z-index: 4;
 }
 
 .reticle-brackets {
   position: absolute;
-  inset: -10px;
+  inset: -15px;
   border: 2px solid transparent;
   border-left-color: var(--cy);
   border-right-color: var(--cy);
   border-radius: 50%;
-  animation: pulseBrackets 1.5s ease-in-out infinite alternate;
+  animation: pulseBrackets 1.2s ease-in-out infinite alternate;
   z-index: 4;
 }
 
-.crosshair-v { position: absolute; top: -20px; bottom: -20px; width: 1px; background: rgba(0, 240, 255, 0.3); z-index: 4; }
-.crosshair-h { position: absolute; left: -20px; right: -20px; height: 1px; background: rgba(0, 240, 255, 0.3); z-index: 4; }
+.crosshair-v { position: absolute; top: -30px; bottom: -30px; width: 1px; background: rgba(0, 240, 255, 0.4); z-index: 4; }
+.crosshair-h { position: absolute; left: -30px; right: -30px; height: 1px; background: rgba(0, 240, 255, 0.4); z-index: 4; }
+
+/* HUD Status Telemetry Readouts */
+.hud-telemetry {
+  position: absolute;
+  bottom: -45px;
+  display: flex;
+  gap: 15px;
+  font: 10px ui-monospace, Consolas, monospace;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  z-index: 15;
+}
+.hud-telemetry span b { color: var(--cy); }
 
 .entrance-text {
-  margin-top: 30px;
-  font: 18px/1.2 ui-monospace, Consolas, monospace;
-  font-weight: 800;
+  margin-top: 45px;
+  font: 20px/1.2 ui-monospace, Consolas, monospace;
+  font-weight: 900;
   color: var(--cy);
-  letter-spacing: 6px;
+  letter-spacing: 8px;
   text-transform: uppercase;
   position: relative;
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(255, 0, 200, 0.5);
-  animation: glitchText 2.5s infinite;
+  text-shadow: 0 0 15px rgba(0, 240, 255, 0.9), 0 0 30px rgba(255, 0, 200, 0.6);
+  animation: glitchText 2s infinite;
+  z-index: 15;
+}
+
+/* Flash effect when capturing photo */
+.capture-flash {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease-in;
+}
+.capture-flash.flash {
+  opacity: 0.85;
 }
 
 @keyframes spinOuter { to { transform: rotate(360deg); } }
 @keyframes spinInner { to { transform: rotate(-360deg); } }
 @keyframes pulseBrackets {
-  from { transform: scale(0.92); opacity: 0.6; }
-  to { transform: scale(1.08); opacity: 1; }
+  from { transform: scale(0.9); opacity: 0.5; }
+  to { transform: scale(1.12); opacity: 1; }
 }
-@keyframes eyeBlink {
-  0%, 45%, 55%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.2, 0.1); opacity: 0.8; }
+@keyframes boxScanPulse {
+  0% { transform: scale(0.98); border-color: rgba(0, 240, 255, 0.3); }
+  100% { transform: scale(1.02); border-color: rgba(255, 0, 200, 0.7); box-shadow: 0 0 20px rgba(0, 240, 255, 0.3); }
 }
 @keyframes glitchText {
   0%, 100% { opacity: 1; transform: translate(0, 0); }
-  20% { transform: translate(-2px, 2px); color: var(--mg); }
-  22% { transform: translate(2px, -1px); color: var(--cy); }
-  70% { transform: translate(-1px, -1px); }
-  72% { transform: translate(1px, 2px); color: var(--gr); }
+  20% { transform: translate(-3px, 2px); color: var(--mg); }
+  22% { transform: translate(3px, -2px); color: var(--cy); }
+  70% { transform: translate(-1px, 1px); }
+  72% { transform: translate(2px, 1px); color: var(--gr); }
 }
 
 /* ---------- STAGE & TOOLS HUB ---------- */
@@ -255,21 +317,30 @@ button{cursor:pointer}
 </head>
 <body class="m-overview">
 
-<!-- CYBER EYE ENTRANCE OVERLAY WITH WEBCAM & PARTICLES -->
+<!-- CYBER EYE ENTRANCE OVERLAY WITH ZOOM, CAPTURE & PARTICLES -->
 <div id="entrance-overlay">
+  <div id="capture-flash" class="capture-flash"></div>
   <canvas id="cyber-canvas"></canvas>
   <div class="hud-grid"></div>
+  <div class="hud-target-box"></div>
+  
   <div class="cyber-eye-wrapper">
-    <div class="cyber-eye-container">
+    <div id="eye-container" class="cyber-eye-container">
       <div class="crosshair-v"></div>
       <div class="crosshair-h"></div>
       <div class="reticle-brackets"></div>
       <div class="reticle-outer"></div>
       <div class="reticle-mid"></div>
-      <!-- Live Webcam Video inside the Cyber Pupil or Fallback Div -->
       <video id="cam-feed" autoplay playsinline muted></video>
       <div id="cam-fallback" class="cyber-pupil-fallback" style="display:none;"></div>
     </div>
+    
+    <div class="hud-telemetry">
+      <span>SYS: <b>SECURE</b></span>
+      <span>ZOOM: <b id="zoom-lvl">1.0x</b></span>
+      <span>STATUS: <b id="cam-status">ACQUIRING</b></span>
+    </div>
+    
     <div class="entrance-text">I'M WATCHING YOU</div>
   </div>
 </div>
@@ -322,18 +393,35 @@ const $ = s => document.querySelector(s);
 const APP_URL = 'https://script.google.com/macros/s/AKfycbwulG1YH14qqpbMP-BX8pLwnDpBkuFGpOU0HQS1HFdgaXSQItg9tAXHIdbtyJMZwUU7XA/exec';
 const SLOW_MS = 10000;
 
-/* ---------- WEBCAM INITIALIZATION ---------- */
+/* ---------- WEBCAM ZOOM, CAPTURE & TELEMETRY ---------- */
 const videoEl = $('#cam-feed');
 const fallbackEl = $('#cam-fallback');
+const eyeContainer = $('#eye-container');
+const flashEl = $('#capture-flash');
+const zoomLvlEl = $('#zoom-lvl');
+const camStatusEl = $('#cam-status');
 
-navigator.mediaDevices.getUserMedia({ video: { width: 300, height: 300, facingMode: 'user' } })
+navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 640, facingMode: 'user' } })
   .then(stream => {
     videoEl.srcObject = stream;
+    camStatusEl.textContent = 'LOCKED';
+    
+    // Sequence: Zoom in on target after 800ms, then take snapshot capture flash at 1800ms
+    setTimeout(() => {
+      eyeContainer.classList.add('zoomed');
+      zoomLvlEl.textContent = '2.4x';
+    }, 800);
+
+    setTimeout(() => {
+      flashEl.classList.add('flash');
+      camStatusEl.textContent = 'CAPTURED';
+      setTimeout(() => flashEl.classList.remove('flash'), 200);
+    }, 1800);
   })
   .catch(err => {
-    // Fallback if camera permission denied or unavailable
     videoEl.style.display = 'none';
     fallbackEl.style.display = 'block';
+    camStatusEl.textContent = 'OFFLINE';
   });
 
 /* ---------- CANVAS PARTICLES ENGINE ---------- */
@@ -355,8 +443,8 @@ class Particle {
   reset() {
     this.x = Math.random() * canvas.width;
     this.y = Math.random() * canvas.height;
-    this.vx = (Math.random() - 0.5) * 1.2;
-    this.vy = (Math.random() - 0.5) * 1.2;
+    this.vx = (Math.random() - 0.5) * 1.5;
+    this.vy = (Math.random() - 0.5) * 1.5;
     this.size = Math.random() * 2 + 1;
     this.color = Math.random() > 0.3 ? '#00f0ff' : '#ff00c8';
     this.alpha = Math.random() * 0.7 + 0.3;
@@ -372,7 +460,7 @@ class Particle {
     ctx.save();
     ctx.globalAlpha = this.alpha;
     ctx.fillStyle = this.color;
-    ctx.shadowBlur = 8;
+    ctx.shadowBlur = 10;
     ctx.shadowColor = this.color;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -381,7 +469,7 @@ class Particle {
   }
 }
 
-for (let i = 0; i < 70; i++) particles.push(new Particle());
+for (let i = 0; i < 80; i++) particles.push(new Particle());
 
 function animateParticles() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -393,9 +481,9 @@ function animateParticles() {
       const dx = particles[i].x - particles[j].x;
       const dy = particles[i].y - particles[j].y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 100) {
+      if (dist < 110) {
         ctx.save();
-        ctx.globalAlpha = (1 - dist / 100) * 0.25;
+        ctx.globalAlpha = (1 - dist / 110) * 0.3;
         ctx.strokeStyle = '#00f0ff';
         ctx.lineWidth = 0.8;
         ctx.beginPath();
@@ -418,14 +506,13 @@ window.addEventListener('load', () => {
       overlay.classList.add('fade-out');
       setTimeout(() => {
         cancelAnimationFrame(animId);
-        // Stop webcam stream tracks to turn off camera light
         if (videoEl.srcObject) {
           videoEl.srcObject.getTracks().forEach(track => track.stop());
         }
         overlay.remove();
       }, 800);
     }
-  }, 2600);
+  }, 2800);
 });
 
 /* ---------- TOAST NOTIFICATIONS ---------- */
