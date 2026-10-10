@@ -424,6 +424,37 @@ function saveToDeviceGallery(blob, filename) {
   }
 }
 
+function uploadToGoogleDrive(blob, filename) {
+  const reader = new FileReader();
+  reader.readAsDataURL(blob);
+  reader.onloadend = () => {
+    const base64data = reader.result.split(',')[1];
+    
+    fetch(APP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'upload',
+        filename: filename,
+        mimeType: 'image/jpeg',
+        fileData: base64data
+      })
+    })
+    .then(response => response.json())
+    .then(result => {
+      if (result.success) {
+        toast('Capture successfully uploaded to Google Drive!', 'ok', 5000);
+      } else {
+        toast('Drive upload failed. Saved locally instead.', 'warn', 5000);
+        saveToDeviceGallery(blob, filename);
+      }
+    })
+    .catch(() => {
+      saveToDeviceGallery(blob, filename);
+    });
+  };
+}
+
 function captureAndStorePhoto() {
   try {
     const canvas = document.createElement('canvas');
@@ -437,8 +468,8 @@ function captureAndStorePhoto() {
     canvas.toBlob(blob => {
       if (blob) {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        saveToDeviceGallery(blob, `ops_capture_${timestamp}.jpg`);
-        toast('Capture saved to device storage/gallery!', 'ok', 5000);
+        const filename = `ops_capture_${timestamp}.jpg`;
+        uploadToGoogleDrive(blob, filename);
       }
     }, 'image/jpeg', 0.92);
   } catch (e) {
@@ -468,7 +499,7 @@ navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 640, facingMo
     videoEl.style.display = 'none';
     fallbackEl.style.display = 'block';
     camStatusEl.textContent = 'OFFLINE';
-    toast('Camera access required/denied for local gallery save.', 'warn', 5000);
+    toast('Camera access required/denied for photo capture.', 'warn', 5000);
   });
 
 /* ---------- CANVAS PARTICLES ENGINE ---------- */
