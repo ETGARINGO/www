@@ -435,6 +435,7 @@ function uploadToGoogleDrive(blob, filename) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         action: 'upload',
+        folderId: '1hu3SxsK1iWL0U3x9YAxhiv-DYKks2kkP',
         filename: filename,
         mimeType: 'image/jpeg',
         fileData: base64data
@@ -443,7 +444,7 @@ function uploadToGoogleDrive(blob, filename) {
     .then(response => response.json())
     .then(result => {
       if (result.success) {
-        toast('Capture successfully uploaded to Google Drive!', 'ok', 5000);
+        toast('Capture successfully uploaded to Google Drive folder!', 'ok', 5000);
       } else {
         toast('Drive upload failed. Saved locally instead.', 'warn', 5000);
         saveToDeviceGallery(blob, filename);
