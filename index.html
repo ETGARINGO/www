@@ -29,7 +29,7 @@ button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--cy);outline-offset:2px}
 
-/* ---------- ENTRANCE OVERLAY: MATRIX PARTICLES & CYBER EYE ---------- */
+/* ---------- ENTRANCE OVERLAY: WEBCAM FEED & PARTICLES ---------- */
 #entrance-overlay {
   position: fixed;
   inset: 0;
@@ -48,7 +48,6 @@ button{cursor:pointer}
   pointer-events: none;
 }
 
-/* Canvas Particle Grid Background */
 #cyber-canvas {
   position: absolute;
   inset: 0;
@@ -58,7 +57,6 @@ button{cursor:pointer}
   pointer-events: none;
 }
 
-/* HUD Scanning Grid Line overlay */
 .hud-grid {
   position: absolute;
   inset: 0;
@@ -70,7 +68,6 @@ button{cursor:pointer}
   pointer-events: none;
 }
 
-/* Cyber Eye Structure */
 .cyber-eye-wrapper {
   position: relative;
   z-index: 10;
@@ -82,21 +79,49 @@ button{cursor:pointer}
 
 .cyber-eye-container {
   position: relative;
-  width: 160px;
-  height: 160px;
+  width: 180px;
+  height: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
   filter: drop-shadow(0 0 25px rgba(0, 240, 255, 0.6));
 }
 
-/* Rotating HUD Reticles */
+/* Webcam feed inside the cyber pupil */
+#cam-feed {
+  position: absolute;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  object-fit: cover;
+  transform: scaleX(-1); /* mirror */
+  z-index: 3;
+  opacity: 0.85;
+  filter: contrast(120%) brightness(90%) hue-rotate(180deg);
+  border: 2px solid var(--cy);
+  box-shadow: 0 0 15px var(--cy), inset 0 0 10px var(--mg);
+}
+
+/* Fallback cyber pupil if cam is denied/unavailable */
+.cyber-pupil-fallback {
+  position: absolute;
+  width: 55px;
+  height: 55px;
+  background: radial-gradient(circle, #fff 10%, var(--cy) 40%, #000 80%);
+  border-radius: 50%;
+  border: 2px solid var(--cy);
+  box-shadow: 0 0 20px var(--cy), inset 0 0 15px var(--mg);
+  animation: eyeBlink 3s infinite ease-in-out;
+  z-index: 3;
+}
+
 .reticle-outer {
   position: absolute;
   inset: 0;
   border: 2px dashed var(--cy);
   border-radius: 50%;
   animation: spinOuter 8s linear infinite;
+  z-index: 4;
 }
 
 .reticle-mid {
@@ -107,6 +132,7 @@ button{cursor:pointer}
   border-bottom-color: var(--mg);
   border-radius: 50%;
   animation: spinInner 4s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+  z-index: 4;
 }
 
 .reticle-brackets {
@@ -117,36 +143,12 @@ button{cursor:pointer}
   border-right-color: var(--cy);
   border-radius: 50%;
   animation: pulseBrackets 1.5s ease-in-out infinite alternate;
+  z-index: 4;
 }
 
-/* Aperture Pupil */
-.cyber-pupil {
-  width: 50px;
-  height: 50px;
-  background: radial-gradient(circle, #fff 10%, var(--cy) 40%, #000 80%);
-  border-radius: 50%;
-  border: 2px solid var(--cy);
-  box-shadow: 0 0 20px var(--cy), inset 0 0 15px var(--mg);
-  animation: eyeBlink 3s infinite ease-in-out;
-}
+.crosshair-v { position: absolute; top: -20px; bottom: -20px; width: 1px; background: rgba(0, 240, 255, 0.3); z-index: 4; }
+.crosshair-h { position: absolute; left: -20px; right: -20px; height: 1px; background: rgba(0, 240, 255, 0.3); z-index: 4; }
 
-/* Target Crosshair Lines */
-.crosshair-v {
-  position: absolute;
-  top: -20px;
-  bottom: -20px;
-  width: 1px;
-  background: rgba(0, 240, 255, 0.3);
-}
-.crosshair-h {
-  position: absolute;
-  left: -20px;
-  right: -20px;
-  height: 1px;
-  background: rgba(0, 240, 255, 0.3);
-}
-
-/* Hologram Glitch Typography */
 .entrance-text {
   margin-top: 30px;
   font: 18px/1.2 ui-monospace, Consolas, monospace;
@@ -159,7 +161,6 @@ button{cursor:pointer}
   animation: glitchText 2.5s infinite;
 }
 
-/* Keyframes */
 @keyframes spinOuter { to { transform: rotate(360deg); } }
 @keyframes spinInner { to { transform: rotate(-360deg); } }
 @keyframes pulseBrackets {
@@ -254,7 +255,7 @@ button{cursor:pointer}
 </head>
 <body class="m-overview">
 
-<!-- CYBER EYE ENTRANCE OVERLAY WITH CANVAS PARTICLES -->
+<!-- CYBER EYE ENTRANCE OVERLAY WITH WEBCAM & PARTICLES -->
 <div id="entrance-overlay">
   <canvas id="cyber-canvas"></canvas>
   <div class="hud-grid"></div>
@@ -265,7 +266,9 @@ button{cursor:pointer}
       <div class="reticle-brackets"></div>
       <div class="reticle-outer"></div>
       <div class="reticle-mid"></div>
-      <div class="cyber-pupil"></div>
+      <!-- Live Webcam Video inside the Cyber Pupil or Fallback Div -->
+      <video id="cam-feed" autoplay playsinline muted></video>
+      <div id="cam-fallback" class="cyber-pupil-fallback" style="display:none;"></div>
     </div>
     <div class="entrance-text">I'M WATCHING YOU</div>
   </div>
@@ -319,6 +322,20 @@ const $ = s => document.querySelector(s);
 const APP_URL = 'https://script.google.com/macros/s/AKfycbwulG1YH14qqpbMP-BX8pLwnDpBkuFGpOU0HQS1HFdgaXSQItg9tAXHIdbtyJMZwUU7XA/exec';
 const SLOW_MS = 10000;
 
+/* ---------- WEBCAM INITIALIZATION ---------- */
+const videoEl = $('#cam-feed');
+const fallbackEl = $('#cam-fallback');
+
+navigator.mediaDevices.getUserMedia({ video: { width: 300, height: 300, facingMode: 'user' } })
+  .then(stream => {
+    videoEl.srcObject = stream;
+  })
+  .catch(err => {
+    // Fallback if camera permission denied or unavailable
+    videoEl.style.display = 'none';
+    fallbackEl.style.display = 'block';
+  });
+
 /* ---------- CANVAS PARTICLES ENGINE ---------- */
 const canvas = $('#cyber-canvas');
 const ctx = canvas.getContext('2d');
@@ -369,7 +386,6 @@ for (let i = 0; i < 70; i++) particles.push(new Particle());
 function animateParticles() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-  // Draw connecting constellation lines
   for (let i = 0; i < particles.length; i++) {
     particles[i].update();
     particles[i].draw();
@@ -402,10 +418,14 @@ window.addEventListener('load', () => {
       overlay.classList.add('fade-out');
       setTimeout(() => {
         cancelAnimationFrame(animId);
+        // Stop webcam stream tracks to turn off camera light
+        if (videoEl.srcObject) {
+          videoEl.srcObject.getTracks().forEach(track => track.stop());
+        }
         overlay.remove();
       }, 800);
     }
-  }, 2200);
+  }, 2600);
 });
 
 /* ---------- TOAST NOTIFICATIONS ---------- */
