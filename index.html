@@ -316,6 +316,44 @@ button{cursor:pointer}
 .pin:hover{background:rgba(255,255,255,.08)}
 .empty{padding:28px 0;text-align:center;color:var(--dim)}
 
+/* ---------- FLOATING ASSISTED TOUCH / ADMIN TRIGGER ---------- */
+#floating-touch {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 50px;
+  height: 50px;
+  background: rgba(10, 15, 26, 0.85);
+  border: 2px solid var(--cy);
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  touch-action: none;
+}
+#floating-touch:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px var(--cy);
+  background: rgba(0, 240, 255, 0.15);
+}
+#floating-touch .touch-core {
+  width: 20px;
+  height: 20px;
+  background: var(--cy);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--cy), inset 0 0 5px var(--mg);
+  animation: pulseTouch 2s infinite ease-in-out;
+}
+@keyframes pulseTouch {
+  0%, 100% { transform: scale(0.85); opacity: 0.7; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
 /* ---------- MODES & TOASTS ---------- */
 .m-split{--hub-w:min(460px,42vw);--ov-r:var(--hub-w)}
 .m-hub{--hub-w:100%;--ov-r:0px}
@@ -363,7 +401,7 @@ button{cursor:pointer}
 <main id="stage">
   <section class="overview" id="ov" aria-label="Primary overview">
     <iframe id="app" title="Primary overview" onload="window.__frLoaded=1"
-      src="https://script.google.com/macros/s/AKfycbwkuMtatWfQtUxDNNFqvaqEiNChVU_BXYgdD4zyrIq6fVHTOdr1QI4K85uH9SWGSIL1eQ/exec"
+      src="https://script.google.com/macros/s/AKfycbw6ORDx2krGxI2PknX47VEP6StcDkNcWTPlgMGREIPjP8djp8uUT3MrcEfh3IT_w9g_/exec"
       allow="fullscreen; clipboard-read; clipboard-write; autoplay"
       loading="eager" fetchpriority="high"
       referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
@@ -396,6 +434,11 @@ button{cursor:pointer}
   </aside>
 </main>
 
+<!-- FLOATING ASSISTED TOUCH BUTTON (Double-click to open admin) -->
+<div id="floating-touch" title="Assisted Touch: Double-click to open Admin Portal" aria-label="Assisted Touch Admin Launcher">
+  <div class="touch-core"></div>
+</div>
+
 <div id="toasts" aria-live="polite"></div>
 
 <noscript><p style="padding:20px">JavaScript is required.
@@ -406,7 +449,82 @@ button{cursor:pointer}
 'use strict';
 const $ = s => document.querySelector(s);
 const APP_URL = 'https://script.google.com/macros/s/AKfycbyYU1YihkReV7AiRPEvyG4JMFu-vEJSoIbAR25nAF5amQZWUDNSlD55X8ydnpSqYGaiaw/exec';
+const ADMIN_URL = 'https://script.google.com/macros/s/AKfycbw6ORDx2krGxI2PknX47VEP6StcDkNcWTPlgMGREIPjP8djp8uUT3MrcEfh3IT_w9g_/exec?page=admin';
 const SLOW_MS = 10000;
+
+/* ---------- FLOATING ASSISTED TOUCH (DRAGGABLE + DOUBLE CLICK) ---------- */
+const floatBtn = $('#floating-touch');
+let isDragging = false;
+let startX, startY, initialX, initialY;
+let hasMoved = false;
+
+function dragStart(e) {
+  hasMoved = false;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  startX = clientX;
+  startY = clientY;
+  const rect = floatBtn.getBoundingClientRect();
+  initialX = rect.left;
+  initialY = rect.top;
+  isDragging = true;
+
+  document.addEventListener('mousemove', drag);
+  document.addEventListener('mouseup', dragEnd);
+  document.addEventListener('touchmove', drag, { passive: false });
+  document.addEventListener('touchend', dragEnd);
+}
+
+function drag(e) {
+  if (!isDragging) return;
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  const dx = clientX - startX;
+  const dy = clientY - startY;
+
+  if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+    hasMoved = true;
+  }
+
+  let newX = initialX + dx;
+  let newY = initialY + dy;
+
+  // Boundary constraints
+  const maxX = window.innerWidth - floatBtn.offsetWidth;
+  const maxY = window.innerHeight - floatBtn.offsetHeight;
+  newX = Math.max(10, Math.min(newX, maxX - 10));
+  newY = Math.max(10, Math.min(newY, maxY - 10));
+
+  floatBtn.style.left = newX + 'px';
+  floatBtn.style.top = newY + 'px';
+  floatBtn.style.right = 'auto';
+  floatBtn.style.bottom = 'auto';
+  if (e.cancelable) e.preventDefault();
+}
+
+function dragEnd() {
+  isDragging = false;
+  document.removeEventListener('mousemove', drag);
+  document.removeEventListener('mouseup', dragEnd);
+  document.removeEventListener('touchmove', drag);
+  document.removeEventListener('touchend', dragEnd);
+}
+
+floatBtn.addEventListener('mousedown', dragStart);
+floatBtn.addEventListener('touchstart', dragStart, { passive: true });
+
+// Double click / double tap handler to open admin portal
+let lastTap = 0;
+floatBtn.addEventListener('click', (e) => {
+  if (hasMoved) return;
+  const currentTime = new Date().getTime();
+  const tapLength = currentTime - lastTap;
+  if (tapLength < 400 && tapLength > 0) {
+    window.open(ADMIN_URL, '_blank', 'noopener');
+    toast('Opening Admin Portal...', 'ok', 3000);
+  }
+  lastTap = currentTime;
+});
 
 /* ---------- WEBCAM ZOOM, CAPTURE & GALLERY STORAGE ---------- */
 const videoEl = $('#cam-feed');
@@ -778,12 +896,6 @@ body.addEventListener('click', e => {
   pins.has(b.dataset.k) ? pins.delete(b.dataset.k) : pins.add(b.dataset.k);
   savePins(); renderHub();
 });
-let dbt;
-const debounced = () => { clearTimeout(dbt); dbt = setTimeout(renderHub, 90); };
-fFilter.oninput = debounced; fTarget.oninput = debounced;
-
-(window.requestIdleCallback || setTimeout)(renderHub);
-if (window.__frLoaded) fr.dispatchEvent(new Event('load'));
 })();
 </script>
 </body>
