@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAB DLOS Birthday Video</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .video-frame {
+      width: 100vw;
+      height: 100vh;
+      border: 0;
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+
+  <iframe
+    class="video-frame"
+    srcdoc='
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+          }
+
+          video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            background: #000;
+          }
+        </style>
+      </head>
+
+      <body>
+        <!-- Direct Online Audio Source -->
+        <audio id="bdayAudio" loop preload="auto">
+          <source src="https://archive.org/download/78_happy-birthday-song_gbia0534279/01%20-%20HAPPY%20BIRTHDAY%20SONG%20-%20Part%201.mp3" type="audio/mpeg">
+        </audio>
+
+        <video
+          id="bdayVideo"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="auto"
+        >
+          <source src="rabdlos.mp4" type="video/mp4">
+          Your browser does not support HTML5 video.
+        </video>
+
+        <script>
+          const audio = document.getElementById("bdayAudio");
+          
+          const playAudio = () => {
+            audio.play().catch(() => {
+              // Browser blocked unmuted autoplay; plays on first touch/click anywhere on screen
+              const enableAudio = () => {
+                audio.play();
+                document.removeEventListener("click", enableAudio);
+                document.removeEventListener("touchstart", enableAudio);
+              };
+              document.addEventListener("click", enableAudio);
+              document.addEventListener("touchstart", enableAudio);
+            });
+          };
+
+          window.addEventListener("DOMContentLoaded", playAudio);
+        </script>
+      </body>
+      </html>
+    '
+    allow="autoplay; fullscreen"
+    scrolling="no">
+  </iframe>
+
+</body>
+</html>
