@@ -7,11 +7,11 @@
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts for Celebration Styling -->
+  <!-- Google Fonts: Montserrat & Poppins for Ultra-Clean Crisp Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Outfit:wght@400;600;800&family=Pacifico&display=swap" rel="stylesheet">
-  <!-- Canvas Confetti Library -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Poppins:wght@400;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti Library for Fireworks & Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>
@@ -25,64 +25,80 @@
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      font-family: 'Outfit', sans-serif;
-      background: #050508;
-      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      background: #030308;
+      color: #ffffff;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Font Utility Classes */
+    .font-montserrat {
+      font-family: 'Montserrat', sans-serif;
+    }
+
     .font-pacifico {
       font-family: 'Pacifico', cursive;
     }
 
-    .font-fredoka {
-      font-family: 'Fredoka One', cursive;
+    /* Crisp 3D Gold & Neon Glow Title */
+    .title-3d-gold {
+      background: linear-gradient(135deg, #FFF5C0 0%, #FFD700 40%, #FFA500 70%, #FF8C00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 15px rgba(255, 215, 0, 0.6)) 
+              drop-shadow(0 0 30px rgba(255, 140, 0, 0.4));
+      animation: goldPulse 3s ease-in-out infinite alternate;
     }
 
-    /* Glowing Text Animations */
-    .glow-text {
-      text-shadow: 0 0 15px rgba(255, 215, 0, 0.8),
-                   0 0 30px rgba(255, 105, 180, 0.6),
-                   0 0 45px rgba(0, 240, 255, 0.6);
-      animation: neonGlow 2.5s ease-in-out infinite alternate;
-    }
-
-    @keyframes neonGlow {
+    @keyframes goldPulse {
       0% {
-        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7)) drop-shadow(0 0 25px rgba(255, 0, 128, 0.5));
+        filter: drop-shadow(0 4px 15px rgba(255, 215, 0, 0.5)) 
+                drop-shadow(0 0 25px rgba(255, 140, 0, 0.3));
       }
       100% {
-        filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.9)) drop-shadow(0 0 40px rgba(255, 215, 0, 0.8));
+        filter: drop-shadow(0 6px 25px rgba(255, 215, 0, 0.9)) 
+                drop-shadow(0 0 45px rgba(255, 0, 128, 0.6));
       }
     }
 
-    /* Floating Animations for Elements */
-    .floating-element {
-      animation: float 4s ease-in-out infinite;
+    /* Modern Glassmorphism Card Styling */
+    .glass-card-premium {
+      background: rgba(10, 15, 30, 0.65);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6),
+                  inset 0 1px 1px rgba(255, 255, 255, 0.3);
     }
 
-    @keyframes float {
+    /* Floating Animations for Interactive Elements */
+    .floating-badge {
+      animation: floatBadge 3.5s ease-in-out infinite;
+    }
+
+    @keyframes floatBadge {
       0%, 100% {
-        transform: translateY(0px) rotate(0deg);
+        transform: translateY(0px) scale(1);
       }
       50% {
-        transform: translateY(-18px) rotate(3deg);
+        transform: translateY(-10px) scale(1.03);
       }
     }
 
-    /* Floating Balloons Overlay */
+    /* Smooth Floating Balloons */
     .balloon {
       position: absolute;
-      bottom: -120px;
-      opacity: 0.85;
-      animation: riseBalloon 12s linear infinite;
+      bottom: -100px;
+      opacity: 0.9;
+      animation: riseBalloon 10s linear infinite;
       cursor: pointer;
       user-select: none;
-      transition: transform 0.2s ease;
+      transition: transform 0.2s ease, filter 0.2s ease;
+      filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
     }
 
     .balloon:hover {
-      transform: scale(1.15);
+      transform: scale(1.25) rotate(5deg);
+      filter: drop-shadow(0 0 15px rgba(255,215,0,0.9));
     }
 
     @keyframes riseBalloon {
@@ -91,52 +107,54 @@
         opacity: 0;
       }
       10% {
-        opacity: 0.9;
+        opacity: 0.95;
       }
       90% {
-        opacity: 0.9;
+        opacity: 0.95;
       }
       100% {
-        transform: translateY(-115vh) rotate(20deg);
+        transform: translateY(-115vh) rotate(25deg);
         opacity: 0;
       }
     }
 
-    /* Pulse Glow Border */
-    .glass-card {
-      background: rgba(15, 23, 42, 0.55);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    /* Vibrant Shimmer Buttons */
+    .btn-gold-glow {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+      transition: all 0.3s ease;
     }
 
-    /* Shimmer Effect for Buttons */
-    .btn-shimmer {
-      background-size: 200% auto;
-      background-image: linear-gradient(to right, #ff007f 0%, #7928ca 50%, #4facfe 100%);
-      transition: 0.4s ease;
+    .btn-gold-glow:hover {
+      box-shadow: 0 6px 30px rgba(245, 158, 11, 0.7);
+      transform: translateY(-2px) scale(1.02);
     }
 
-    .btn-shimmer:hover {
-      background-position: right center;
-      transform: translateY(-2px) scale(1.03);
+    .btn-pink-glow {
+      background: linear-gradient(135deg, #ec4899 0%, #d946ef 50%, #8b5cf6 100%);
+      box-shadow: 0 4px 20px rgba(236, 72, 153, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .btn-pink-glow:hover {
+      box-shadow: 0 6px 30px rgba(236, 72, 153, 0.7);
+      transform: translateY(-2px) scale(1.02);
     }
   </style>
 </head>
 
 <body class="relative flex items-center justify-center min-h-screen">
 
-  <!-- Main Audio Track -->
+  <!-- Audio Source: Birthday Track from archive.org -->
   <audio id="bdayAudio" loop preload="auto">
     <source src="https://archive.org/download/78_happy-birthday-song_gbia0534279/01%20-%20HAPPY%20BIRTHDAY%20SONG%20-%20Part%201.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- Fullscreen Video Background -->
-  <div class="fixed inset-0 w-full h-full overflow-hidden z-0">
+  <!-- Fullscreen Video Background with Sharp Clear Fitting -->
+  <div class="fixed inset-0 w-full h-full overflow-hidden z-0 bg-black">
     <video
       id="bdayVideo"
-      class="w-full h-full object-cover"
+      class="w-full h-full object-cover object-center scale-[1.01]"
       autoplay
       muted
       loop
@@ -147,136 +165,126 @@
       Your browser does not support HTML5 video.
     </video>
 
-    <!-- Dark gradient overlay to ensure text contrast and legibility -->
-    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/70"></div>
+    <!-- Subtle, crisp dark gradient overlay ensuring readability without washing out video -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60 pointer-events-none"></div>
   </div>
 
-  <!-- Interactive Balloons Container -->
+  <!-- Interactive Floating Balloons Overlay -->
   <div id="balloonsContainer" class="fixed inset-0 pointer-events-auto z-10 overflow-hidden"></div>
 
-  <!-- Audio Prompt Overlay (If Autoplay is restricted by Browser) -->
-  <div id="audioNotice" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-black/70 backdrop-blur-md text-amber-300 border border-amber-500/40 px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-lg animate-bounce transition-opacity duration-500 cursor-pointer">
-    <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-      <path d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414z"/>
-    </svg>
-    <span>Tap anywhere on screen to enable music 🎵</span>
+  <!-- Audio Prompt Banner (Dissolves automatically on first click/tap) -->
+  <div id="audioNotice" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-black/80 backdrop-blur-lg text-amber-300 border border-amber-500/50 px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold flex items-center gap-3 shadow-2xl animate-bounce transition-opacity duration-500 cursor-pointer">
+    <span class="relative flex h-3 w-3">
+      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+      <span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+    </span>
+    <span>Tap anywhere to enable music & sound 🎵</span>
   </div>
 
-  <!-- Interactive Controls Bar (Top Right) -->
-  <div class="fixed top-5 right-5 z-40 flex items-center gap-3">
-    <!-- Music Toggle Button -->
-    <button id="toggleAudioBtn" class="p-3 bg-slate-900/80 hover:bg-slate-800/90 text-white rounded-full backdrop-blur-md border border-white/20 shadow-lg transition transform hover:scale-105 active:scale-95" title="Toggle Music">
-      <svg id="musicIconOn" class="w-6 h-6 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 .895-2 3-2 3 .895 3 2zm12 0c0 1.105-1.343 2-3 2s-3-.895-3-2 .895-2 3-2 3 .895 3 2zM9 10l12-3" />
-      </svg>
-      <svg id="musicIconOff" class="w-6 h-6 text-gray-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
-      </svg>
-    </button>
-  </div>
-
-  <!-- Main Hero Celebration Overlay -->
-  <main class="relative z-20 text-center px-4 max-w-4xl mx-auto flex flex-col items-center justify-center min-h-screen py-12">
+  <!-- Main Hero Content Overlay -->
+  <main class="relative z-20 text-center px-4 max-w-4xl mx-auto flex flex-col items-center justify-center min-h-screen py-10">
     
-    <!-- Top Celebration Tag -->
-    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/20 border border-pink-500/40 backdrop-blur-md text-pink-300 text-sm sm:text-base font-semibold mb-4 floating-element shadow-xl">
-      <span>🎉</span>
-      <span>IT'S A CELEBRATION!</span>
-      <span>✨</span>
+    <!-- Celebration Tag Badge -->
+    <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-amber-400/10 border border-amber-400/30 backdrop-blur-md text-amber-300 text-xs sm:text-sm font-bold tracking-widest uppercase mb-4 floating-badge shadow-xl">
+      <span class="text-base">✨</span>
+      <span>IT'S TIME TO CELEBRATE</span>
+      <span class="text-base">🎉</span>
     </div>
 
     <!-- Main Title Banner -->
-    <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight mb-2 uppercase font-fredoka glow-text text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-pink-400 to-cyan-300 leading-tight">
-      Happy Birthday
+    <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight mb-1 uppercase font-montserrat title-3d-gold leading-none">
+      HAPPY BIRTHDAY
     </h1>
 
-    <h2 class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wider mb-6 text-yellow-300 font-pacifico drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]">
+    <h2 class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wide mb-6 text-pink-400 font-pacifico drop-shadow-[0_5px_20px_rgba(236,72,153,0.8)]">
       RAB DLOS!
     </h2>
 
-    <!-- Festive Decorative Message Card -->
-    <div class="glass-card p-6 sm:p-8 rounded-3xl max-w-2xl w-full mb-8 transform transition hover:scale-[1.01]">
-      <p class="text-base sm:text-lg md:text-xl text-slate-200 font-medium leading-relaxed mb-4">
-        Wishing you a fantastic day filled with endless joy, laughter, success, and memorable moments! May all your big dreams come true. 🎂🎂🎂
+    <!-- Glassmorphism Card containing Wish Message & Controls -->
+    <div class="glass-card-premium p-6 sm:p-8 rounded-3xl max-w-2xl w-full mb-8 transform transition hover:scale-[1.01]">
+      <p class="text-base sm:text-lg md:text-xl text-slate-100 font-medium leading-relaxed mb-6 drop-shadow">
+        Wishing you an incredible birthday filled with endless happiness, great achievements, and unforgettable memories! May this year bring success and joy in all your endeavors. 🎂🚀✨
       </p>
 
-      <div class="flex flex-wrap justify-center gap-3 text-2xl sm:text-3xl">
-        <span class="hover:scale-125 transition transform cursor-pointer" onclick="triggerConfetti()">🎁</span>
-        <span class="hover:scale-125 transition transform cursor-pointer" onclick="triggerConfetti()">🎈</span>
-        <span class="hover:scale-125 transition transform cursor-pointer" onclick="triggerConfetti()">🍰</span>
-        <span class="hover:scale-125 transition transform cursor-pointer" onclick="triggerConfetti()">🥳</span>
-        <span class="hover:scale-125 transition transform cursor-pointer" onclick="triggerConfetti()">⚡</span>
+      <!-- Music Toggle & Quick Particle Burst Row -->
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-2 border-t border-white/10">
+        
+        <!-- Music Control Button -->
+        <button 
+          id="toggleAudioBtn"
+          class="flex items-center gap-3 px-5 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-amber-300 border border-amber-500/40 font-semibold text-sm transition transform active:scale-95 shadow-md"
+        >
+          <svg id="musicIconOn" class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 .895-2 3-2 3 .895 3 2zm12 0c0 1.105-1.343 2-3 2s-3-.895-3-2 .895-2 3-2 3 .895 3 2zM9 10l12-3" />
+          </svg>
+          <svg id="musicIconOff" class="w-5 h-5 text-gray-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          </svg>
+          <span id="musicBtnText">Pause Music</span>
+        </button>
+
+        <!-- Quick Emojis Interaction -->
+        <div class="flex items-center gap-2 text-2xl">
+          <span class="hover:scale-130 transition transform cursor-pointer active:scale-90" title="Pop Confetti" onclick="triggerConfetti()">🎁</span>
+          <span class="hover:scale-130 transition transform cursor-pointer active:scale-90" title="Pop Confetti" onclick="triggerConfetti()">🎈</span>
+          <span class="hover:scale-130 transition transform cursor-pointer active:scale-90" title="Pop Confetti" onclick="triggerConfetti()">🍰</span>
+          <span class="hover:scale-130 transition transform cursor-pointer active:scale-90" title="Pop Fireworks" onclick="triggerFireworks()">🎆</span>
+        </div>
+
       </div>
     </div>
 
-    <!-- Action Buttons -->
+    <!-- Action Buttons Row -->
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full max-w-md">
-      <!-- Confetti Cannon Button -->
+      <!-- Fireworks Blast Button -->
       <button 
-        id="confettiBtn"
-        onclick="triggerBurstConfetti()"
-        class="w-full sm:w-auto flex-1 btn-shimmer px-8 py-4 rounded-2xl font-bold text-white shadow-2xl flex items-center justify-center gap-3 text-lg border border-white/20 active:scale-95"
+        onclick="triggerFireworks()"
+        class="w-full sm:w-auto flex-1 btn-gold-glow px-8 py-4 rounded-2xl font-extrabold text-slate-950 shadow-2xl flex items-center justify-center gap-2 text-base uppercase tracking-wider active:scale-95"
       >
-        <span>🎉 Pop Confetti!</span>
+        <span>🎆 Fireworks Blast</span>
       </button>
 
-      <!-- Wishes Pop-up Trigger -->
+      <!-- Confetti Cannon Button -->
       <button 
-        onclick="showWishModal()"
-        class="w-full sm:w-auto px-8 py-4 bg-slate-900/90 hover:bg-slate-800 text-amber-300 border border-amber-400/40 rounded-2xl font-bold text-lg shadow-xl backdrop-blur-lg transition hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+        onclick="triggerBurstConfetti()"
+        class="w-full sm:w-auto flex-1 btn-pink-glow px-8 py-4 rounded-2xl font-extrabold text-white shadow-2xl flex items-center justify-center gap-2 text-base uppercase tracking-wider active:scale-95"
       >
-        <span>💌 Birthday Wish</span>
+        <span>🎉 Confetti Cannon</span>
       </button>
     </div>
 
   </main>
 
-  <!-- Interactive Birthday Wish Modal -->
-  <div id="wishModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
-    <div class="glass-card max-w-lg w-full p-6 sm:p-8 rounded-3xl relative transform scale-95 transition-transform duration-300" id="modalCard">
-      <button onclick="closeWishModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 text-xl font-bold">
-        ✕
-      </button>
-      <div class="text-center">
-        <div class="text-5xl mb-3">👑</div>
-        <h3 class="text-2xl sm:text-3xl font-bold text-amber-300 font-fredoka mb-3">Cheers to RAB DLOS!</h3>
-        <p class="text-slate-200 text-sm sm:text-base leading-relaxed mb-6">
-          "Another trip around the sun! May this year bring extraordinary achievements, unforgettable adventures, and happiness in everything you do."
-        </p>
-        <button onclick="closeWishModal(); triggerBurstConfetti();" class="btn-shimmer px-6 py-3 rounded-xl font-bold text-white shadow-lg text-sm sm:text-base w-full">
-          Celebrate Now! 🚀
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- JavaScript Interaction Logic -->
+  <!-- Interactive JavaScript Logic -->
   <script>
-    // Elements
     const audio = document.getElementById("bdayAudio");
     const audioNotice = document.getElementById("audioNotice");
     const toggleAudioBtn = document.getElementById("toggleAudioBtn");
     const musicIconOn = document.getElementById("musicIconOn");
     const musicIconOff = document.getElementById("musicIconOff");
+    const musicBtnText = document.getElementById("musicBtnText");
     const balloonsContainer = document.getElementById("balloonsContainer");
 
     let isAudioPlaying = false;
 
-    // Play Audio Function
+    // Start Audio Playback Function
     const startAudio = () => {
       audio.play().then(() => {
         isAudioPlaying = true;
         musicIconOn.classList.remove("hidden");
         musicIconOff.classList.add("hidden");
-        if (audioNotice) audioNotice.style.opacity = "0";
-        setTimeout(() => audioNotice?.remove(), 500);
-      }).catch((err) => {
-        console.log("Autoplay restricted by browser. Waiting for tap interaction.");
+        musicBtnText.innerText = "Pause Music";
+        if (audioNotice) {
+          audioNotice.style.opacity = "0";
+          setTimeout(() => audioNotice?.remove(), 500);
+        }
+      }).catch(() => {
+        console.log("Autoplay blocked. User tap required.");
       });
     };
 
-    // User tap listener to unblock audio restrictions
+    // User Interaction Listener to enable browser audio
     const enableAudioOnInteraction = () => {
       if (!isAudioPlaying) {
         startAudio();
@@ -288,7 +296,7 @@
     document.addEventListener("click", enableAudioOnInteraction);
     document.addEventListener("touchstart", enableAudioOnInteraction);
 
-    // Audio Toggle Handler
+    // Toggle Audio Play/Pause Button
     toggleAudioBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       if (audio.paused) {
@@ -296,29 +304,58 @@
         isAudioPlaying = true;
         musicIconOn.classList.remove("hidden");
         musicIconOff.classList.add("hidden");
+        musicBtnText.innerText = "Pause Music";
       } else {
         audio.pause();
         isAudioPlaying = false;
-        musicIconOn.add("hidden");
-        musicIconOff.remove("hidden");
+        musicIconOn.classList.add("hidden");
+        musicIconOff.classList.remove("hidden");
+        musicBtnText.innerText = "Play Music";
       }
     });
 
-    // Fireworks / Confetti Generator
+    // Fireworks Animation Effect
+    function triggerFireworks() {
+      if (typeof confetti !== 'function') return;
+
+      const duration = 2.5 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+      function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      const interval = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.4), y: Math.random() - 0.2 } });
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.6, 0.9), y: Math.random() - 0.2 } });
+      }, 250);
+    }
+
+    // Single Burst Confetti Cannon
     function triggerConfetti() {
       if (typeof confetti === 'function') {
         confetti({
-          particleCount: 50,
-          spread: 60,
+          particleCount: 60,
+          spread: 70,
           origin: { y: 0.7 }
         });
       }
     }
 
+    // Heavy Burst Confetti
     function triggerBurstConfetti() {
       if (typeof confetti !== 'function') return;
 
-      const count = 200;
+      const count = 250;
       const defaults = { origin: { y: 0.7 } };
 
       function fire(particleRatio, opts) {
@@ -329,26 +366,29 @@
         });
       }
 
-      fire(0.25, { spread: 26, startVelocity: 55, colors: ['#ff007f', '#ffffff'] });
-      fire(0.2, { spread: 60, colors: ['#ffd700', '#00ffff'] });
+      fire(0.25, { spread: 26, startVelocity: 55, colors: ['#ffd700', '#ffffff'] });
+      fire(0.2, { spread: 60, colors: ['#ff007f', '#00ffff'] });
       fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
       fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, colors: ['#ff4500', '#00ff00'] });
       fire(0.1, { spread: 120, startVelocity: 45 });
     }
 
-    // Continuous Floating Balloons
-    const balloonEmojis = ['🎈', '🎈', '✨', '⭐', '🎈'];
+    // Continuous Interactive Floating Balloons
+    const balloonEmojis = ['🎈', '🎈', '⭐', '✨', '🎈', '👑'];
     function createBalloon() {
       const balloon = document.createElement('div');
-      balloon.className = 'balloon text-3xl sm:text-5xl';
+      balloon.className = 'balloon text-4xl sm:text-6xl';
       balloon.innerText = balloonEmojis[Math.floor(Math.random() * balloonEmojis.length)];
       balloon.style.left = Math.random() * 92 + '%';
       balloon.style.animationDuration = (8 + Math.random() * 6) + 's';
       
+      // Tap/Click balloon to pop with confetti
       balloon.addEventListener('click', (e) => {
         e.stopPropagation();
         triggerConfetti();
-        balloon.remove();
+        balloon.style.transform = 'scale(1.5)';
+        balloon.style.opacity = '0';
+        setTimeout(() => balloon.remove(), 200);
       });
 
       balloonsContainer.appendChild(balloon);
@@ -358,31 +398,15 @@
       }, 14000);
     }
 
-    // Spawn balloons periodically
-    setInterval(createBalloon, 1800);
+    // Periodically spawn floating balloons
+    setInterval(createBalloon, 1500);
 
-    // Initial Confetti Welcome Blast
+    // Trigger Initial Celebration Blast on Load
     window.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         triggerBurstConfetti();
-      }, 600);
+      }, 500);
     });
-
-    // Wish Modal Controls
-    const wishModal = document.getElementById("wishModal");
-    const modalCard = document.getElementById("modalCard");
-
-    function showWishModal() {
-      wishModal.classList.remove("opacity-0", "pointer-events-none");
-      modalCard.classList.remove("scale-95");
-      modalCard.classList.add("scale-100");
-    }
-
-    function closeWishModal() {
-      wishModal.classList.add("opacity-0", "pointer-events-none");
-      modalCard.classList.remove("scale-100");
-      modalCard.classList.add("scale-95");
-    }
   </script>
 </body>
 </html>
