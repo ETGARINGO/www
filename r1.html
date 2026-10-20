@@ -4,60 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#050914">
-<title>Happy Birthday</title>
+<title>Birthday</title>
 <style>
-:root{--gold:#f6d77a;--gold2:#c89b35;--navy:#050914;--white:#fffdf5}
+:root{--gold:#f6d77a;--navy:#050914}
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--navy);font-family:"Segoe UI",Arial,sans-serif;color:#fff}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--navy)}
 .stage{position:relative;width:100%;height:100%;min-height:100svh;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at center,#17233b,#080d1b 60%,#02040a)}
 .stage.stopped *{animation-play-state:paused !important}
 
-/* Photos: crossfading slideshow, photo stays clear */
 .slide{position:absolute;inset:0;opacity:0;transition:opacity 1.6s ease;z-index:-4}
 .slide.active{opacity:1}
 .slide .bd{position:absolute;inset:-30px;background-size:cover;background-position:center;filter:blur(26px) brightness(.35);transform:scale(1.1)}
-.slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;filter:brightness(.95) contrast(1.05)}
+.slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .slide.active img{animation:kb 14s ease-in-out infinite alternate}
 @keyframes kb{from{transform:scale(1)}to{transform:scale(1.06)}}
 
-/* Light in the middle (photo visible), strong at top/bottom (text readable) */
-.shade{position:absolute;inset:0;z-index:-3;background:
-  linear-gradient(180deg,rgba(2,5,14,.82) 0%,rgba(2,5,14,.25) 30%,rgba(2,5,14,.05) 50%,rgba(2,5,14,.55) 68%,rgba(2,5,14,.92) 100%)}
-.glow{position:absolute;left:50%;top:50%;width:65vw;height:65vw;max-width:700px;max-height:700px;border-radius:50%;background:rgba(211,162,58,.08);filter:blur(65px);transform:translate(-50%,-50%);z-index:-3;pointer-events:none;animation:breathe 5s ease-in-out infinite alternate}
-@keyframes breathe{from{opacity:.4}to{opacity:1}}
-
+.shade{position:absolute;inset:0;z-index:-3;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.45) 100%)}
 .frame{position:absolute;inset:14px;border:1px solid rgba(246,215,122,.5);pointer-events:none;z-index:2}
 .corner{position:absolute;width:34px;height:34px;border:0 solid var(--gold);filter:drop-shadow(0 0 6px #e4b950)}
 .tl{top:-4px;left:-4px;border-width:2px 0 0 2px}.tr{top:-4px;right:-4px;border-width:2px 2px 0 0}
 .bl{bottom:-4px;left:-4px;border-width:0 0 2px 2px}.br{bottom:-4px;right:-4px;border-width:0 2px 2px 0}
-
-.content{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;justify-content:space-between;align-items:center;text-align:center;padding:clamp(28px,5vh,52px) 24px 92px;pointer-events:none}
-.top,.bottom{display:flex;flex-direction:column;align-items:center;width:100%}
-.up{opacity:0;animation:riseIn 1.1s ease forwards}
-@keyframes riseIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-
-.eyebrow{font-size:clamp(11px,1.7vw,15px);font-weight:600;letter-spacing:.34em;color:var(--gold);text-transform:uppercase;text-shadow:0 2px 10px #000;animation-delay:.3s}
-.star{color:var(--gold);font-size:clamp(20px,3.4vw,30px);margin:8px 0 4px;animation-delay:.1s}
-.star i{display:inline-block;font-style:normal;animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 2px var(--gold))}50%{transform:scale(1.18);filter:drop-shadow(0 0 14px var(--gold))}}
-h1{margin:6px 0 0;font:700 clamp(40px,8.5vw,96px)/1.02 Georgia,"Times New Roman",serif;color:var(--white);text-shadow:0 3px 24px rgba(0,0,0,.7);animation-delay:.6s}
-h1 span{display:block;background:linear-gradient(110deg,#b88627,#fff0a8,#d2a442,#fff4bc,#b88627);background-size:250% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 3px 14px rgba(0,0,0,.6));animation:shimmer 5s linear infinite}
-@keyframes shimmer{to{background-position:250% center}}
-
-.name{margin-top:clamp(8px,2vh,18px);font-size:clamp(18px,3.4vw,34px);font-weight:700;letter-spacing:.14em;text-transform:uppercase;text-wrap:balance;text-shadow:0 2px 16px #000;animation-delay:1s}
-.name small{display:block;margin-top:6px;color:var(--gold);font-size:.55em;letter-spacing:.28em}
-
-/* Wish panel */
-.panel{width:min(720px,100%);padding:clamp(16px,2.6vh,26px) clamp(18px,3vw,34px) 0;background:rgba(5,9,20,.62);border:1px solid rgba(246,215,122,.35);border-radius:6px;backdrop-filter:blur(10px);overflow:hidden;animation-delay:1.4s}
-.wish{min-height:3.6em;display:flex;align-items:center;justify-content:center;font-size:clamp(15px,2.3vw,22px);line-height:1.6;letter-spacing:.03em;color:#fbf3dc;opacity:0;transform:translateY(10px);transition:opacity .8s ease,transform .8s ease}
-.wish.show{opacity:1;transform:none}
-.wish strong{color:var(--gold)}
-.sig{margin-top:10px;font-size:clamp(10px,1.4vw,13px);font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.8);padding-bottom:12px}
-.sig b{color:var(--gold)}
-.bar{height:3px;margin:0 calc(clamp(18px,3vw,34px) * -1);background:rgba(246,215,122,.15)}
-.bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));transform-origin:left;transform:scaleX(0)}
-.bar i.run{animation:fill var(--wish,5s) linear forwards}
-@keyframes fill{to{transform:scaleX(1)}}
 
 .fx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
 .particle{position:absolute;bottom:-15px;border-radius:50%;background:var(--gold);box-shadow:0 0 9px 2px rgba(246,215,122,.65);animation:floatUp linear infinite}
@@ -66,114 +32,41 @@ h1 span{display:block;background:linear-gradient(110deg,#b88627,#fff0a8,#d2a442,
 @keyframes floatUp{0%{transform:translateY(0) scale(.5);opacity:0}15%{opacity:.9}85%{opacity:.7}100%{transform:translateY(-110vh) scale(1.5);opacity:0}}
 @keyframes fall{from{transform:translateY(-10px) rotate(0)}to{transform:translateY(110vh) rotate(720deg)}}
 @keyframes burst{0%{transform:scale(.1);opacity:0}20%{opacity:1}100%{transform:scale(1.8);opacity:0}}
-
-.controls{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:12;display:flex;justify-content:center;flex-wrap:wrap;gap:10px;width:calc(100% - 50px)}
-.btn{padding:12px 20px;color:var(--gold);background:rgba(5,9,20,.8);border:1px solid rgba(246,215,122,.7);border-radius:3px;cursor:pointer;font:inherit;font-size:11px;letter-spacing:.13em;text-transform:uppercase;transition:.3s;backdrop-filter:blur(8px)}
-.btn:hover{color:#080b12;background:var(--gold);box-shadow:0 0 25px rgba(246,215,122,.3)}
-.btn:focus-visible{outline:2px solid #fff2bd;outline-offset:4px}
-
-@media (max-height:640px){.eyebrow,.star{display:none}.wish{min-height:3em}}
-@media (max-width:600px){.frame{inset:8px}.eyebrow{letter-spacing:.2em}.controls{bottom:18px;gap:7px}.btn{padding:10px 12px;font-size:10px}.content{padding-bottom:78px}}
+@media (max-width:600px){.frame{inset:8px}}
 @media (prefers-reduced-motion:reduce){.slide.active img,.particle,.confetti,.firework{animation:none}}
 </style>
 </head>
 <body>
 <main class="stage" id="stage">
-  <div class="glow"></div>
   <div class="shade"></div>
   <div class="fx" id="fx"></div>
   <div class="frame"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div>
-
-  <section class="content" aria-label="Birthday tribute">
-    <div class="top">
-      <div class="up eyebrow" id="eyebrow"></div>
-      <div class="up star" aria-hidden="true"><i>✦</i></div>
-      <h1 class="up" id="title"></h1>
-      <div class="up name" id="name"></div>
-    </div>
-    <div class="bottom">
-      <div class="up panel" id="panel">
-        <div class="wish" id="wish" aria-live="polite"></div>
-        <div class="sig" id="sig"></div>
-        <div class="bar"><i id="barFill"></i></div>
-      </div>
-    </div>
-  </section>
-
-  <div class="controls">
-    <button class="btn" id="stopBtn" type="button">■ Stop</button>
-    <button class="btn" id="soundBtn" type="button">♫ Sound</button>
-    <button class="btn" id="fsBtn" type="button">⛶ Fullscreen</button>
-  </div>
-
   <audio id="bdayAudio" preload="auto" loop>
     <source src="https://archive.org/download/78_happy-birthday-song_gbia0534279/01%20-%20HAPPY%20BIRTHDAY%20SONG%20-%20Part%201.mp3" type="audio/mpeg">
   </audio>
 </main>
 
 <script>
-/* ===== EDIT HERE ===== */
-const CONFIG = {
-  eyebrow: "A Special Celebration",
-  title: ["Happy", "Birthday"],
-  name: "Your Name Here",
-  subtitle: "Your Title / Message",
-  signature: "With best wishes · <b>Your Team</b>",
-  photos: ["r1.jfif"],            // add more: ["r1.jfif","r2.jpg","r3.jpg"]
-  wishes: [
-    "Wishing you a day filled with <strong>joy and laughter</strong>.",
-    "May this new year bring you <strong>health, success and happiness</strong>.",
-    "Thank you for everything you do. <strong>You are truly valued.</strong>",
-    "Here's to <strong>wonderful moments</strong> and bigger dreams ahead!"
-  ],
-  wishSeconds: 5,                  // time per message
-  photoSeconds: 7                  // time per photo
-};
-/* ===================== */
+const PHOTOS = ["r1.jfif"];   // add more: ["r1.jfif","r2.jpg","r3.jpg"]
+const PHOTO_SECONDS = 7;
 
-const $ = id => document.getElementById(id);
-const stage = $("stage"), audio = $("bdayAudio"), stopBtn = $("stopBtn"), soundBtn = $("soundBtn");
-let stopped = false, soundWanted = true, wishIdx = 0, photoIdx = 0, slides = [];
-let wishTimer = null, photoTimer = null;
+const stage = document.getElementById("stage"), audio = document.getElementById("bdayAudio");
+let stopped = false, photoIdx = 0, slides = [], photoTimer = null;
 
-/* Text */
-$("eyebrow").textContent = CONFIG.eyebrow;
-$("title").innerHTML = `${CONFIG.title[0]}<span>${CONFIG.title[1]}</span>`;
-$("name").innerHTML = `${CONFIG.name}<small>${CONFIG.subtitle}</small>`;
-$("sig").innerHTML = CONFIG.signature;
-stage.style.setProperty("--wish", CONFIG.wishSeconds + "s");
-
-/* Photos */
-CONFIG.photos.forEach(src => {
+PHOTOS.forEach(src => {
   const s = document.createElement("div"); s.className = "slide";
-  s.innerHTML = `<div class="bd" style="background-image:url('${src}')"></div><img src="${src}" alt="Birthday photograph">`;
+  s.innerHTML = `<div class="bd" style="background-image:url('${src}')"></div><img src="${src}" alt="">`;
   s.querySelector("img").onerror = () => { s.remove(); slides = slides.filter(x => x !== s); };
   stage.prepend(s); slides.push(s);
 });
 slides.reverse();
-function showPhoto() {
-  if (!slides.length) return;
-  slides.forEach((s, i) => s.classList.toggle("active", i === photoIdx % slides.length));
-}
-
-/* Rotating wishes + progress bar (loops forever) */
-function showWish() {
-  const w = $("wish"), bar = $("barFill");
-  w.classList.remove("show");
-  setTimeout(() => {
-    w.innerHTML = CONFIG.wishes[wishIdx % CONFIG.wishes.length];
-    w.classList.add("show");
-  }, 450);
-  bar.classList.remove("run"); void bar.offsetWidth; bar.classList.add("run");
-}
+function showPhoto() { slides.forEach((s, i) => s.classList.toggle("active", i === photoIdx % slides.length)); }
 function schedule() {
-  clearInterval(wishTimer); clearInterval(photoTimer);
-  wishTimer = setInterval(() => { wishIdx++; showWish(); }, CONFIG.wishSeconds * 1000);
-  if (slides.length > 1) photoTimer = setInterval(() => { photoIdx++; showPhoto(); }, CONFIG.photoSeconds * 1000);
+  clearInterval(photoTimer);
+  if (slides.length > 1) photoTimer = setInterval(() => { photoIdx++; showPhoto(); }, PHOTO_SECONDS * 1000);
 }
 
-/* Effects */
-const fx = $("fx");
+const fx = document.getElementById("fx");
 for (let i = 0; i < 60; i++) {
   const p = document.createElement("span"), s = 2 + Math.random() * 3;
   p.className = "particle";
@@ -193,49 +86,28 @@ for (let i = 0; i < 6; i++) {
   fx.appendChild(f);
 }
 
-/* Audio: autoplay, with first-touch fallback */
-function updateButtons() {
-  stopBtn.textContent = stopped ? "▶ Play" : "■ Stop";
-  soundBtn.textContent = audio.paused ? "♪ Sound Off" : "♫ Sound On";
-}
-function tryPlay() {
-  if (stopped || !soundWanted) return;
-  audio.volume = .65;
-  audio.play().then(updateButtons).catch(() => {});
-}
-["pointerdown", "keydown", "touchstart"].forEach(ev =>
-  window.addEventListener(ev, function once() {
-    tryPlay(); if (!audio.paused) window.removeEventListener(ev, once);
-  }, { passive: true })
-);
+/* Autoplay music; if the browser blocks it, it starts on the first tap/key */
+function tryPlay() { if (!stopped) { audio.volume = .65; audio.play().catch(() => {}); } }
+let firstTouch = true;
 
-/* Controls */
+/* Stop / play: tap or click anywhere, or press Space */
 function toggleStop() {
   stopped = !stopped;
   stage.classList.toggle("stopped", stopped);
-  if (stopped) { clearInterval(wishTimer); clearInterval(photoTimer); audio.pause(); }
-  else { schedule(); tryPlay(); }
-  updateButtons();
+  if (stopped) { clearInterval(photoTimer); audio.pause(); } else { schedule(); tryPlay(); }
 }
-function toggleSound() {
-  if (audio.paused) { soundWanted = true; audio.play().catch(() => {}); }
-  else { soundWanted = false; audio.pause(); }
-  updateButtons();
-}
-async function toggleFullscreen() {
-  try { document.fullscreenElement ? await document.exitFullscreen() : await document.documentElement.requestFullscreen(); } catch (e) {}
-}
-stopBtn.onclick = toggleStop; soundBtn.onclick = toggleSound; $("fsBtn").onclick = toggleFullscreen;
+stage.addEventListener("click", () => {
+  if (firstTouch && audio.paused && !stopped) { firstTouch = false; tryPlay(); return; }  // first tap just starts music if blocked
+  firstTouch = false; toggleStop();
+});
 window.addEventListener("keydown", e => {
   if (e.code === "Space") { e.preventDefault(); toggleStop(); }
-  else if (e.key === "m" || e.key === "M") toggleSound();
-  else if (e.key === "f" || e.key === "F") toggleFullscreen();
+  else if (e.key === "f" || e.key === "F") {
+    document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {});
+  }
 });
-audio.addEventListener("play", updateButtons);
-audio.addEventListener("pause", updateButtons);
 
-/* AUTO START */
-showPhoto(); showWish(); schedule(); tryPlay(); updateButtons();
+showPhoto(); schedule(); tryPlay();
 </script>
 </body>
 </html>
