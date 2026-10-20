@@ -5,7 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#050914">
-<title>Happy Birthday | PCOL Antonio T. Duruin, Jr.</title>
+<meta name="description" content="An elegant animated birthday presentation.">
+<title>Happy Birthday</title>
 
 <style>
 :root {
@@ -466,6 +467,37 @@ h1 span {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Corporate polish and responsive refinements */
+.main-content { position:absolute; inset:0; z-index:1; }
+.content { z-index:1; padding-bottom:90px; }
+.eyebrow { font-weight:600; letter-spacing:.32em; }
+.name { text-wrap:balance; text-shadow:0 2px 18px rgba(0,0,0,.55); }
+.message { text-shadow:0 1px 10px rgba(0,0,0,.6); }
+.signature { font-weight:600; }
+.controls { z-index:12; }
+.btn, .start-btn { font-family:inherit; }
+.btn:focus-visible, .start-btn:focus-visible { outline:2px solid #fff2bd; outline-offset:4px; }
+.start-screen { z-index:20; }
+.start-screen h2 { letter-spacing:.01em; }
+.start-screen p { max-width:560px; }
+.start-note { opacity:.72; font-size:11px !important; letter-spacing:.04em; }
+.end-card { z-index:8; }
+.end-card .btn { margin-top:18px; }
+@media (max-height:700px) {
+  .content { padding-top:22px; padding-bottom:80px; }
+  .name { margin-top:15px; }
+  .rule { margin:15px 0; }
+  .message { line-height:1.55; }
+  .signature { margin-top:14px; }
+}
+@media (max-width:600px) {
+  .eyebrow { letter-spacing:.22em; }
+  .name { letter-spacing:.07em; }
+  .controls { gap:7px; }
+  .btn { padding:10px 12px; }
+}
+
 </style>
 </head>
 
@@ -488,6 +520,33 @@ h1 span {
     <i class="corner bl"></i>
     <i class="corner br"></i>
   </div>
+
+  <section class="main-content" id="mainContent" aria-label="Birthday tribute">
+    <div class="content">
+      <div class="star" aria-hidden="true">✦</div>
+      <h1>Happy <span>Birthday</span></h1>
+      <div class="rule"></div>
+    </div>
+  </section>
+
+  <nav class="controls" aria-label="Presentation controls">
+    <button class="btn" id="soundBtn" type="button" onclick="toggleSound()" aria-label="Toggle sound">♫</button>
+    <button class="btn" type="button" onclick="toggleFullscreen()" aria-label="Toggle full screen">⛶</button>
+    <button class="btn" type="button" onclick="restartShow()" aria-label="Replay">↻</button>
+  </nav>
+
+  <section class="start-screen" id="startScreen">
+    <div class="star" aria-hidden="true">✦</div>
+    <h2>Happy Birthday</h2>
+    <button class="start-btn" type="button" onclick="startShow()">BEGIN&nbsp; →</button>
+  </section>
+
+  <section class="end-card" id="endCard" aria-label="Closing birthday message">
+    <div class="star" aria-hidden="true">✦</div>
+    <h2>Happy Birthday</h2>
+    <button class="btn" type="button" onclick="restartShow()">↻ Replay</button>
+  </section>
+
   <audio id="bdayAudio" preload="auto" loop>
     <source
       src="https://archive.org/download/78_happy-birthday-song_gbia0534279/01%20-%20HAPPY%20BIRTHDAY%20SONG%20-%20Part%201.mp3"
@@ -549,7 +608,7 @@ function launchFireworks() {
 launchFireworks();
 
 function updateSoundButton() {
-  soundBtn.textContent = soundEnabled ? "♫ Sound On" : "♫ Sound Off";
+  soundBtn.textContent = (!audio.paused && soundEnabled) ? "♫" : "♪̸";
 }
 
 async function startShow() {
@@ -557,7 +616,8 @@ async function startShow() {
   showStarted = true;
   soundEnabled = true;
   audio.muted = false;
-  audio.volume = 0.8;
+  audio.volume = 0.65;
+  audio.currentTime = 0;
 
   startScreen.classList.add("hidden");
   endCard.classList.remove("show");
@@ -579,19 +639,17 @@ function finishShow() {
 }
 
 function toggleSound() {
-  if (audio.paused && soundEnabled) {
-    audio.play().catch(() => {});
-  } else if (!audio.paused) {
-    audio.pause();
-  } else {
+  if (audio.paused) {
     soundEnabled = true;
-    audio.play().catch(() => {});
+    audio.muted = false;
+    audio.play().catch(() => {
+      soundEnabled = false;
+      updateSoundButton();
+    });
+  } else {
+    audio.pause();
+    soundEnabled = false;
   }
-
-  if (!audio.paused) audio.pause();
-  else if (soundEnabled) audio.play().catch(() => {});
-
-  soundEnabled = !audio.paused;
   updateSoundButton();
 }
 
